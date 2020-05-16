@@ -8,6 +8,23 @@ env.info( "------------------------------------------------" )
 env.info("          Loading include")
 env.info( "------------------------------------------------" )
 ----------------------------------------------------------------------
+-- Scoring
+----------------------------------------------------------------------        
+Scoring = SCORING:New("ScrewLoose") 
+
+----------------------------------------------------------------------
+-- ATC
+----------------------------------------------------------------------    
+pseudoATC=PSEUDOATC:New()
+pseudoATC:Start()
+
+--CleanUpAirports.SetCleanMissiles(true)
+CleanUpAirports = CLEANUP_AIRBASE:New( { AIRBASE.Caucasus.Senaki_Kolkhi,
+                                    AIRBASE.Caucasus.Kobuleti,
+                                    AIRBASE.Caucasus.Sochi_Adler,
+                                    AIRBASE.Caucasus.Nalchik } )
+
+----------------------------------------------------------------------
 -- Player Sets
 ----------------------------------------------------------------------
 PlayerGroup = SET_GROUP:New()
@@ -21,32 +38,13 @@ PlayerFixedWingGroup = SET_GROUP:New()
 PlayerRotaryGroup = SET_GROUP:New()
   :FilterPrefixes("P RW")
   :FilterStart()
-
+  
 ----------------------------------------------------------------------
--- Scoring
-----------------------------------------------------------------------        
-Scoring = SCORING:New("ScrewLoose") 
-
-----------------------------------------------------------------------
--- ATC
-----------------------------------------------------------------------    
-pseudoATC=PSEUDOATC:New()
-pseudoATC:Start()
-
---CleanUpAirports.SetCleanMissiles(true)
-CleanUpAirports = CLEANUP_AIRBASE:New( { AIRBASE.Caucasus.Senaki_Kolkhi, 
-                                        AIRBASE.Caucasus.Tbilisi_Lochini,
-                                        AIRBASE.Caucasus.Kobuleti,
-                                        AIRBASE.Caucasus.Krasnodar_Center,
-                                        AIRBASE.Caucasus.Mineralnye_Vody,
-                                        AIRBASE.Caucasus.Novorossiysk } )
-
-----------------------------------------------------------------------
--- Sets
+-- Generic Sets
 ----------------------------------------------------------------------
 -- SAM Set
 SAM_Set = SET_GROUP:New()
-  :FilterPrefixes("Blue AB SAM", "Red AB SAM")
+  :FilterPrefixes("Blue AB SAM", "Red AB SAM", "Blue Grn Anti-Air", "Red Grn Anti-Air")
   :FilterStart()
 
 ----------------------------------------------------------------------
@@ -54,19 +52,19 @@ SAM_Set = SET_GROUP:New()
 ----------------------------------------------------------------------
 -- Air detection set
 Blu_EWR_Set = SET_GROUP:New()
-  :FilterPrefixes({"Blue AB SAM", "Overlord"})
+  :FilterPrefixes({"Blue AB SAM", "Overlord", "Blue Grn Anti-Air"})
   :FilterStart()
 
 -- Ground force detector set
 Blu_A2G_Set = SET_GROUP:New()
-  :FilterPrefixes({"Blue"})
+  :FilterPrefixes({"Blue", "Blu_Air_Recce", "Blu_Helo_CAS"})
   :FilterStart()
 
 ----------------------------------------------------------------------
 -- Red Sets
 ----------------------------------------------------------------------
 Red_EWR_Set = SET_GROUP:New()
-  :FilterPrefixes({"Red AB SAM", "Red Gnd EWR"})
+  :FilterPrefixes({"Red AB SAM", "Red Gnd EWR", "Red Grn Anti-Air", "AWACS"})
   :FilterStart()
   
 -- Ground force detector set  
@@ -74,6 +72,39 @@ Red_A2G_Set = SET_GROUP:New()
   :FilterPrefixes({"Red"})
   :FilterStart()
 
+----------------------------------------------------------------------
+-- Blue Zones
+----------------------------------------------------------------------
+Blu_Arm_Zone = SET_ZONE:New()
+  :FilterPrefixes("Blu_Arm_Zone")
+  :FilterOnce()
+  
+Blu_Arm_SAM_Zone = SET_ZONE:New()
+  :FilterPrefixes("Blu_Arm_SAM_Zone")
+  :FilterOnce()
+  
+----------------------------------------------------------------------
+-- Red Zones
+----------------------------------------------------------------------
+Red_Arm_Zone = SET_ZONE:New()
+  :FilterPrefixes("Red_Arm_Zone")
+  :FilterOnce()
+  
+Red_Arm_SAM_Zone = SET_ZONE:New()
+  :FilterPrefixes("Red_Arm_SAM_Zone")
+  :FilterOnce()
+
+Red_Static_Zone = SET_ZONE:New()
+  :FilterPrefixes("Red_Static_Zone")
+  :FilterOnce()
+  
+Red_MSRW_Zone = SET_ZONE:New()
+  :FilterPrefixes("Red_MSRW_Zone")
+  :FilterOnce()
+    
+Red_MSRE_Zone = SET_ZONE:New()
+  :FilterPrefixes("Red_MSRE_Zone")
+  :FilterOnce()
 ----------------------------------------------------------------------
 -- Blue Detection
 ----------------------------------------------------------------------
@@ -83,52 +114,22 @@ Blu_Air_Detection:SetFriendliesRange(148160) -- 80nm
 Blu_Air_Detection:Start()
 
 -- GROUND
---Blu_Ground_Detection = DETECTION_AREAS:New(Blu_A2G_Set,1852) -- 1nm
---Blu_Ground_Detection:SetFriendliesRange( 3704 ) -- 2nm -- CAS or BAI 
---BLu_Ground_Detection:Start()
+Blu_Ground_Detection = DETECTION_AREAS:New(Blu_A2G_Set,1852) -- 1nm
+Blu_Ground_Detection:SetFriendliesRange( 9260 ) -- 5nm -- CAS or BAI 
+Blu_Ground_Detection:Start()
 
 ----------------------------------------------------------------------
 -- Red Detection
 ----------------------------------------------------------------------
 -- AIR
-Red_Air_Detection = DETECTION_AREAS:New(Red_EWR_Set,148160) -- 80Nm
+Red_Air_Detection = DETECTION_AREAS:New(Red_EWR_Set,55560) -- 20Nm
 Red_Air_Detection:SetFriendliesRange(148160) -- 80nm
 Red_Air_Detection:Start()
 
-----------------------------------------------------------------------
--- Blufor Command
-----------------------------------------------------------------------
-Blufor_HQ = GROUP:FindByName( "Blufor_HQ" )
-Blufor_CC = COMMANDCENTER:New( Blufor_HQ, "MotherHen" )
-
-----------------------------------------------------------------------
--- Opfor Command
-----------------------------------------------------------------------
-Opfor_HQ = GROUP:FindByName( "Opfor_HQ" )
-Opfor_CC = COMMANDCENTER:New( Opfor_HQ, "SnowFall" )
-
-----------------------------------------------------------------------
--- SAM Defensive actions
-----------------------------------------------------------------------
-env.info( "------------------------------------------------" )
-env.info("          Loading SAM C&C")
-env.info( "------------------------------------------------" )
-
-SAM_Defence = SEAD:New({"Blue AB SAM", "Red AB SAM"})
-
---SCHEDULER:New( nil, function()
---   SAM_Set:ForEachGroup(
---   function( MooseGroup )
---    local chance = math.random(1,99)
---     if chance > 75 then
---        MooseGroup:OptionAlarmStateRed()
---        env.info("*********** SAM: ON ***********")
---     else
---        MooseGroup: OptionAlarmStateGreen()
---        env.info("*********** SAM: Off ***********")
---     end
---    end)
---end, {},1, 120)
+-- GROUND
+Red_Ground_Detection = DETECTION_AREAS:New(Red_A2G_Set,1852) -- 1nm
+Red_Ground_Detection:SetFriendliesRange( 9260 ) -- 5nm CAS or BAI
+Red_Ground_Detection:Start()
 
 env.info( "------------------------------------------------" )
 env.info("          Loading blue_air")
@@ -150,18 +151,90 @@ Blu_GCI:SetDefaultGrouping(2)
 Blu_GCI:SetDefaultTakeoffFromParkingHot()
 Blu_GCI:SetDefaultLandingAtEngineShutdown()
   
-Blu_GCI:SetTacticalDisplay(true)
+Blu_GCI:SetTacticalDisplay(false)
 
 ----------------------------------------------------------------------
 -- Fighter Squadrons Defintions 
 ----------------------------------------------------------------------
 -- CAP Zones
-Blu_CAP = ZONE:New( "CAP Zone Blue" )
+Blu_CAP = ZONE_POLYGON:New("CAP Zone Blue",GROUP:FindByName("CAP Zone Blue"))
+Blu_CAP2 = ZONE_POLYGON:New("CAP Zone Blue 2",GROUP:FindByName("CAP Zone Blue 2"))
+Blu_CAP3 = ZONE_POLYGON:New("CAP Zone Blue 3",GROUP:FindByName("CAP Zone Blue 3"))
+Blu_Helo_CAP = ZONE_POLYGON:New("CAP Zone Blue Recce",GROUP:FindByName("CAP Zone Blue Recce"))
 
 -- Senaki-Kolkhi
-Blu_GCI:SetSquadron("Kol_CAP",AIRBASE.Caucasus.Senaki_Kolkhi,{"Blue Air CAP F16"})
+Blu_GCI:SetSquadron("Kol_CAP",AIRBASE.Caucasus.Senaki_Kolkhi,{"Blue Air CAP F16", "Blue Air CAP F15"})
 Blu_GCI:SetSquadronCap("Kol_CAP",Blu_CAP,3048,6096,560,750,560,1200,"BARO")
-Blu_GCI:SetSquadronCapInterval("Kol_CAP",1,30,600)
+Blu_GCI:SetSquadronCapInterval("Kol_CAP",1,180,600)
+
+-- Senaki-Kolkhi
+Blu_GCI:SetSquadron("Kol_CAP2",AIRBASE.Caucasus.Senaki_Kolkhi,{"Blue Air CAP F16", "Blue Air CAP F15"})
+Blu_GCI:SetSquadronCap("Kol_CAP2",Blu_CAP3,3048,6096,560,750,560,1200,"BARO")
+Blu_GCI:SetSquadronCapInterval("Kol_CAP2",1,180,600)
+
+--Stennis
+Blu_GCI:SetSquadron("Sten_CAP","CVN-Stennis",{"Blue Air CAP F18"})
+Blu_GCI:SetSquadronCap("Sten_CAP",Blu_CAP2,3048,6096,560,750,560,1200,"BARO")
+Blu_GCI:SetSquadronCapInterval("Sten_CAP",1,180,600)
+
+--Recce
+Blu_GCI:SetSquadron("Helo_Recce","FARP London",{"Blu_Air_Recce"})
+Blu_GCI:SetSquadronGrouping("Helo_Recce",1)
+Blu_GCI:SetSquadronCap("Helo_Recce",Blu_Helo_CAP,76,91, 148, 250, 250, 300,"BARO")
+Blu_GCI:SetSquadronCapInterval("Helo_Recce",1,180,600)
+
+----------------------------------------------------------------------
+-- Ground Attack Setup
+----------------------------------------------------------------------
+Blu_A2G = AI_A2G_DISPATCHER:New( Blu_Ground_Detection )
+ 
+Blu_A2G:AddDefenseCoordinate("A2G",ZONE:FindByName("A2G"):GetCoordinate())
+Blu_A2G:AddDefenseCoordinate("A2G Maykop",ZONE:FindByName("A2G Maykop"):GetCoordinate())
+Blu_A2G:AddDefenseCoordinate("A2G MSRW",ZONE:FindByName("A2G MSRW"):GetCoordinate())
+Blu_A2G:AddDefenseCoordinate("A2G Port Production",ZONE:FindByName("A2G Port Production"):GetCoordinate())
+Blu_A2G:AddDefenseCoordinate("A2G Sochi Port",ZONE:FindByName("A2G Sochi Port"):GetCoordinate())
+Blu_A2G:AddDefenseCoordinate("A2G Sochi",ZONE:FindByName("A2G Sochi"):GetCoordinate())
+Blu_A2G:AddDefenseCoordinate("A2G Gudauta",ZONE:FindByName("A2G Gudauta"):GetCoordinate())
+Blu_A2G:AddDefenseCoordinate("A2G Tbilisi",ZONE:FindByName("A2G Tbilisi"):GetCoordinate())
+--Blu_A2G:AddDefenseCoordinate("A2G MSRE",ZONE:FindByName("A2G MSRE"):GetCoordinate())
+--Blu_A2G:AddDefenseCoordinate("A2G Beslan",ZONE:FindByName("A2G Beslan"):GetCoordinate())
+Blu_A2G:SetDefenseRadius(92600) -- 50nm
+Blu_A2G:SetDefenseReactivityMedium()
+
+----------------------------------------------------------------------
+-- Ground Attack Squadron defaults
+----------------------------------------------------------------------
+Blu_A2G:SetDefaultFuelThreshold(0.2)
+Blu_A2G:SetDefaultOverhead(1)
+Blu_A2G:SetDefaultGrouping(2)
+Blu_A2G:SetDefaultTakeoffFromParkingHot()
+Blu_A2G:SetDefaultLandingAtEngineShutdown()
+Blu_A2G:SetDefaultEngageLimit(4)
+
+Blu_A2G:SetTacticalDisplay(false)
+
+----------------------------------------------------------------------
+-- Ground Attack Squadrons Defintions 
+----------------------------------------------------------------------
+-- Senaki-Kolkhi
+Blu_A2G:SetSquadron("Senaki_BAI",AIRBASE.Caucasus.Senaki_Kolkhi,{"Blue Air BAI F16 Mav", "Blue Air BAI F16 GBU", "Blue Air BAI F16 CBU"})
+Blu_A2G:SetSquadronBai("Senaki_BAI")
+
+Blu_A2G:SetSquadron("Senaki_SEAD",AIRBASE.Caucasus.Senaki_Kolkhi,{"Blue Air BAI F16 SEAD", "Blue Air BAI F16 Mav"})
+Blu_A2G:SetSquadronSead("Senaki_SEAD")
+
+-- Stennis
+Blu_A2G:SetSquadron("Sten_BAI","CVN-Stennis",{"Blue Air BAI F18 Mav", "Blue Air BAI F18 GBU", "Blue Air BAI F18 MK82"})
+Blu_A2G:SetSquadronBai("Sten_BAI")
+
+Blu_A2G:SetSquadron("Sten_SEAD","CVN-Stennis",{"Blue Air BAI F18 SEAD", "Blue Air BAI F18 Mav"})
+Blu_A2G:SetSquadronSead("Sten_SEAD")
+
+-- FARP
+Blu_A2G:SetSquadron("Helo_BAI","FARP London",{"Blu_Helo_CAS"})
+Blu_A2G:SetSquadronGrouping("Helo_BAI",1)
+Blu_A2G:SetSquadronBaiPatrol("Helo_BAI", Blu_Helo_CAP, 76, 91, 148, 250, 250, 300)
+Blu_A2G:SetSquadronPatrolInterval("Helo_BAI", 2, 180, 600, 1, "BAI")
 
 env.info( "------------------------------------------------" )
 env.info("          Loading red_air")
@@ -171,7 +244,7 @@ env.info( "------------------------------------------------" )
 ----------------------------------------------------------------------
 Red_GCI = AI_A2A_DISPATCHER:New(Red_Air_Detection)
   :SetEngageRadius(74080) -- 40Nm
-  :SetDisengageRadius(555600) -- 300Nm
+  :SetDisengageRadius(370400) -- 200Nm
 
 ----------------------------------------------------------------------
 -- Fighter Squadron defaults
@@ -183,27 +256,203 @@ Red_GCI:SetDefaultGrouping(2)
 Red_GCI:SetDefaultTakeoffFromParkingHot()
 Red_GCI:SetDefaultLandingAtEngineShutdown()
 
-Red_GCI:SetTacticalDisplay(true)
+Red_GCI:SetTacticalDisplay(false)
 
 ----------------------------------------------------------------------
 -- Fighter Squadrons Defintions 
 ----------------------------------------------------------------------
 -- CAP Zones
-Red_CAP = ZONE:New( "CAP Zone Red" )
-Red_CAP2 = ZONE:New( "CAP Zone Red 2" )
+Red_CAP = ZONE_POLYGON:New("CAP Zone Red",GROUP:FindByName("CAP Zone Red"))
+Red_CAP2 = ZONE_POLYGON:New("CAP Zone Red 2",GROUP:FindByName("CAP Zone Red 2"))
+Red_CAP3 = ZONE_POLYGON:New("CAP Zone Red 3",GROUP:FindByName("CAP Zone Red 3"))
+Red_Helo_CAP = ZONE_POLYGON:New("CAP Zone Red Recce",GROUP:FindByName("CAP Zone Red Recce"))
 
--- Novo
-Red_GCI:SetSquadron("Novo_CAP",AIRBASE.Caucasus.Novorossiysk,
+
+-- Sochi
+Red_GCI:SetSquadron("Novo_CAP",AIRBASE.Caucasus.Sochi_Adler,
   {"Red Air CAP Su27","Red Air CAP Mig21","Red Air CAP Mig23","Red Air CAP Mig29A","Red Air CAP Mig29S","Red Air CAP Su30"})
 Red_GCI:SetSquadronCap("Novo_CAP",Red_CAP,3048,6096,560,750,560,1200,"BARO")
-Red_GCI:SetSquadronCapInterval("Novo_CAP",1,30,600)
+Red_GCI:SetSquadronCapInterval("Novo_CAP",1,180,600)
 
--- Mine
-Red_GCI:SetSquadron("Mine_CAP",AIRBASE.Caucasus.Mineralnye_Vody,
+-- Nal
+Red_GCI:SetSquadron("Bes_CAP",AIRBASE.Caucasus.Nalchik,
   {"Red Air CAP Su27","Red Air CAP Mig21","Red Air CAP Mig23","Red Air CAP Mig29A","Red Air CAP Mig29S","Red Air CAP Su30"})
-Red_GCI:SetSquadronCap("Mine_CAP",Red_CAP2,3048,6096,560,750,560,1200,"BARO")
-Red_GCI:SetSquadronCapInterval("Mine_CAP",1,30,600)
+Red_GCI:SetSquadronCap("Bes_CAP",Red_CAP2,3048,6096,560,750,560,1200,"BARO")
+Red_GCI:SetSquadronCapInterval("Bes_CAP",1,180,600)
 
+--Ad
+Red_GCI:SetSquadron("Ad_CAP","Ad Kuznet",{"Red Air CAP SU33"})
+Red_GCI:SetSquadronTakeoffInAir("Ad_CAP",3048)
+Red_GCI:SetSquadronCap("Ad_CAP",Red_CAP3,3048,6096,560,750,560,1200,"BARO")
+Red_GCI:SetSquadronCapInterval("Ad_CAP",1,180,600)
+
+----------------------------------------------------------------------
+-- Ground Attack Setup
+----------------------------------------------------------------------
+Red_A2G = AI_A2G_DISPATCHER:New( Red_Ground_Detection )
+ 
+Red_A2G:AddDefenseCoordinate("A2G",ZONE:FindByName("A2G"):GetCoordinate())
+Red_A2G:AddDefenseCoordinate("A2G Maykop",ZONE:FindByName("A2G Maykop"):GetCoordinate())
+Red_A2G:AddDefenseCoordinate("A2G MSRW",ZONE:FindByName("A2G MSRW"):GetCoordinate())
+Red_A2G:AddDefenseCoordinate("A2G Port Production",ZONE:FindByName("A2G Port Production"):GetCoordinate())
+Red_A2G:AddDefenseCoordinate("A2G Sochi Port",ZONE:FindByName("A2G Sochi Port"):GetCoordinate())
+Red_A2G:AddDefenseCoordinate("A2G Sochi",ZONE:FindByName("A2G Sochi"):GetCoordinate())
+Red_A2G:AddDefenseCoordinate("A2G Gudauta",ZONE:FindByName("A2G Gudauta"):GetCoordinate())
+Red_A2G:AddDefenseCoordinate("A2G Tbilisi",ZONE:FindByName("A2G Tbilisi"):GetCoordinate())
+Red_A2G:AddDefenseCoordinate("A2G MSRE",ZONE:FindByName("A2G MSRE"):GetCoordinate())
+Red_A2G:AddDefenseCoordinate("A2G Beslan",ZONE:FindByName("A2G Beslan"):GetCoordinate())
+Red_A2G:SetDefenseRadius(92600) -- 50nm
+Red_A2G:SetDefenseReactivityMedium()
+
+----------------------------------------------------------------------
+-- Ground Attack Squadron defaults
+----------------------------------------------------------------------
+Red_A2G:SetDefaultFuelThreshold(0.2)
+Red_A2G:SetDefaultOverhead(1)
+Red_A2G:SetDefaultGrouping(2)
+Red_A2G:SetDefaultTakeoffFromParkingHot()
+Red_A2G:SetDefaultLandingAtEngineShutdown()
+Red_A2G:SetDefaultEngageLimit(3)
+
+Red_A2G:SetTacticalDisplay(false)
+----------------------------------------------------------------------
+-- Ground Attack Squadrons Defintions 
+----------------------------------------------------------------------
+-- Vody
+Red_A2G:SetSquadron("Red_Vody_BAI",AIRBASE.Caucasus.Sochi_Adler,
+{"Red Air BAI Su34", "Red Air BAI Mig21", "Red Air BAI Mig23", "Red Air BAI SU25T", "Red Air BAI Mig29A", "Red Air BAI Mig29S"})
+Red_A2G:SetSquadronBai("Red_Vody_BAI")
+
+Red_A2G:SetSquadron("Red_Vody_SEAD",AIRBASE.Caucasus.Sochi_Adler,
+{"Red Air SEAD Su34", "Red Air SEAD Mig27K", "Red Air SEAD Su25T", "Red Air SEAD Su30"})
+Red_A2G:SetSquadronSead("Red_Vody_SEAD")
+
+-- Nal
+Red_A2G:SetSquadron("Red_nal_BAI",AIRBASE.Caucasus.Nalchik,
+{"Red Air BAI Su34", "Red Air BAI Mig21", "Red Air BAI Mig23", "Red Air BAI SU25T", "Red Air BAI Mig29A", "Red Air BAI Mig29S"})
+Red_A2G:SetSquadronBai("Red_nal_BAI")
+
+Red_A2G:SetSquadron("Red_Nal_SEAD",AIRBASE.Caucasus.Nalchik,
+{"Red Air SEAD Su34", "Red Air SEAD Mig27K", "Red Air SEAD Su25T", "Red Air SEAD Su30"})
+Red_A2G:SetSquadronSead("Red_Nal_SEAD")
+
+-- FARP
+Red_A2G:SetSquadron("Red_Helo_BAI","FARP Skala",{"Red_Helo_CAS Ka50", "Red_Helo_CAS_Mi24", "Red_Helo_CAS_Mi28", "Red_Helo_CAS_Mi8"})
+Red_A2G:SetSquadronGrouping("Red_Helo_BAI",1)
+Red_A2G:SetSquadronBaiPatrol("Red_Helo_BAI", Red_Helo_CAP, 76, 91, 148, 250, 250, 300)
+Red_A2G:SetSquadronPatrolInterval("Red_Helo_BAI", 2, 180, 600, 1, "BAI")
+
+----------------------------------------------------------------------
+-- Code to control spawning ground assets.
+----------------------------------------------------------------------
+env.info( "------------------------------------------------" )
+env.info("          Loading blue_spawner")
+env.info( "------------------------------------------------" )
+--TODO: Generalise functions to allow passing in args 
+--- Armour
+-- @function spawnBluArm
+-- @param #none
+function spawnBlueZugFrontLineArm()
+Blu_Arm_Proxy = SPAWN:NewWithAlias("Blu_Arm_Proxy", "Blue Grn Armour")
+  :InitRandomizeZones(Blu_Arm_Zone:GetSetObjects())
+  :InitRandomizePosition(true)
+  :InitRandomizeTemplatePrefixes("Blu_Gnd_Armour")
+  :InitHeading( 270, 330 )
+  :InitLimit( 50, 12 )     -- NOTE: Tune 
+  :SpawnScheduled( 10, 0.5 )  -- NOTE: Tune
+end
+spawnBlueZugFrontLineArm()
+
+--- SAM
+-- @function spawnBluSam
+-- @param #none
+function spawnBlueZugFrontLineSam()
+Blu_Arm_SAM_Proxy = SPAWN:NewWithAlias("Blu_Arm_SAM_Proxy", "Blue Grn Anti-Air")
+  :InitRandomizeZones(Blu_Arm_SAM_Zone:GetSetObjects())
+  :InitRandomizePosition(true)
+  :InitRandomizeTemplatePrefixes("Blu_Gnd_SAM")
+  :InitHeading( 270, 330 )
+  :InitLimit( 15, 5 )     -- NOTE: Tune 
+  :SpawnScheduled( 10, 0.5 )  -- NOTE: Tune
+end
+spawnBlueZugFrontLineSam()
+
+env.info( "------------------------------------------------" )
+env.info("          Loading red_spawner")
+env.info( "------------------------------------------------" )
+--TODO: Generalise functions to allow passing in args 
+--- Armour
+-- @function spawnRedArm
+-- @param #none
+function spawnRedZugFrontLineArm()
+  RedZugFrontLineArm_Proxy = SPAWN:NewWithAlias("Red_Arm_Proxy", "Red Grn Armour")
+    :InitRandomizeZones(Red_Arm_Zone:GetSetObjects())
+    :InitRandomizePosition(true)
+    :InitRandomizeTemplatePrefixes("Red_Gnd_Armour")
+    :InitHeading( 120, 180 )
+    :InitRandomizeRoute( 3, 1, 200 )
+    :InitLimit( 50, 12 )     -- NOTE: Tune 
+    :SpawnScheduled( 10, 0.5 )  -- NOTE: Tune
+end
+spawnRedZugFrontLineArm()
+
+--- SAM
+-- @function spawnRedSam
+-- @param #none
+function spawnRedZugFrontLineSam()
+  Red_Arm_SAM_Proxy = SPAWN:NewWithAlias("Red_Arm_SAM_Proxy", "Red Grn Anti-Air")
+    :InitRandomizeZones(Red_Arm_SAM_Zone:GetSetObjects())
+    :InitRandomizePosition(true)
+    :InitRandomizeTemplatePrefixes("Red_Gnd_SAM")
+    :InitHeading( 120, 180 )
+    :InitLimit( 15, 5 )     -- NOTE: Tune 
+    :SpawnScheduled( 10, 0.5 )  -- NOTE: Tune
+end
+spawnRedZugFrontLineSam()
+
+--- Statics
+-- @function spawnRedArm
+-- @param #none
+function spawnRedStaticArm()
+  RedStaticArm_Proxy = SPAWN:NewWithAlias("Red_Arm_Static_Proxy", "Red Grn Def")
+    :InitRandomizeZones(Red_Static_Zone:GetSetObjects())
+    :InitRandomizePosition(true)
+    :InitRandomizeTemplatePrefixes("Red_Gnd_Armour")
+    :InitHeading( 0, 360 )
+    :InitLimit( 50, 10 )     -- NOTE: Tune 
+    :SpawnScheduled( 1800, 0.5 )  -- NOTE: Tune
+end
+spawnRedStaticArm()
+
+--- MSR West
+-- @function spawnRedArm
+-- @param #none
+function spawnRedMSRWestArm()
+  RedMSRWestArm_Proxy = SPAWN:NewWithAlias("Red_Arm_MSRW_Proxy", "Red Grn MSR")
+    :InitRandomizeZones(Red_MSRW_Zone:GetSetObjects())
+    :InitRandomizePosition(true)
+    :InitRandomizeTemplatePrefixes("Red_Gnd_Armour")
+    :InitHeading( 0, 360 )
+    :InitRandomizeRoute( 1, 1, 200 )
+    :InitLimit( 50, 12 )     -- NOTE: Tune 
+    :SpawnScheduled( 1800, 0.5 )  -- NOTE: Tune
+end
+spawnRedMSRWestArm()
+
+--- MSR East
+-- @function spawnRedArm
+-- @param #none
+--function spawnRedMSREastArm()
+--  Red_Arm_Heavy_Proxy = SPAWN:NewWithAlias("Red_Arm_MSRE_Proxy", "Red Grn Armour")
+--   :InitRandomizeZones(Red_MSRE_Zone:GetSetObjects())
+--    :InitRandomizePosition(true)
+--    :InitRandomizeTemplatePrefixes("Red_Gnd_Armour")
+--    :InitHeading( 0, 360 )
+--    :InitRandomizeRoute( 1, 1, 1000 )
+--    :InitLimit( 20, 12 )     -- NOTE: Tune 
+--    :SpawnScheduled( 190, .5 )  -- NOTE: Tune
+--end
+--spawnRedMSREastArm()
 ----------------------------------------------------------------------
 -- Support Squadrons Defintions 
 ----------------------------------------------------------------------
@@ -274,7 +523,6 @@ env.info( "------------------------------------------------" )
 
 _TANKER_UNITS = {
   {NAME='Texaco', TACAN=12 },
-  {NAME='Shell', TACAN=13 },
   {NAME='Tanker', TACAN=14 },
 }
  
@@ -284,7 +532,7 @@ _TANKER_MIN_FUEL = 0.3
  
 -- Debug
 --------
-_TANKER_DEBUG = true
+_TANKER_DEBUG = false
  
 -- Reinforcement zone radius
 ----------------------------
@@ -664,3 +912,58 @@ do
     _TANKER.INFO('TANKER: INIT: DONE')
  
 end
+
+----------------------------------------------------------------------
+-- Blufor Command
+----------------------------------------------------------------------
+Blufor_HQ = GROUP:FindByName( "Blufor_HQ" )
+Blufor_CC = COMMANDCENTER:New( Blufor_HQ, "MotherHen" )
+
+----------------------------------------------------------------------
+-- Opfor Command
+----------------------------------------------------------------------
+Opfor_HQ = GROUP:FindByName( "Opfor_HQ" )
+Opfor_CC = COMMANDCENTER:New( Opfor_HQ, "SnowFall" )
+----------------------------------------------------------------------
+-- SAM Defensive actions
+----------------------------------------------------------------------
+env.info( "------------------------------------------------" )
+env.info("          Loading SAM C&C")
+env.info( "------------------------------------------------" )
+
+SAM_Defence = SEAD:New({"Blue AB SAM", "Blue Grn Anti-Air", "Red AB SAM", "Red Grn Anti-Air"})
+
+--SCHEDULER:New( nil, function()
+--   SAM_Set:ForEachGroup(
+--   function( MooseGroup )
+--    local chance = math.random(1,99)
+--     if chance > 75 then
+--        MooseGroup:OptionAlarmStateRed()
+--        env.info("*********** SAM: ON ***********")
+--     else
+--        MooseGroup: OptionAlarmStateGreen()
+--        env.info("*********** SAM: Off ***********")
+--     end
+--    end)
+--end, {},1, 120)
+----------------------------------------------------------------------
+-- Blue Designation
+----------------------------------------------------------------------
+env.info( "------------------------------------------------" )
+env.info("          Loading Designation")
+env.info( "------------------------------------------------" )
+BlueRecceDesignation = DESIGNATE:New( Blufor_CC, Blu_Ground_Detection, PlayerGroup )
+-- This sets the threat level prioritization on
+BlueRecceDesignation:SetThreatLevelPrioritization( true )
+-- Set the possible laser codes.
+BlueRecceDesignation:GenerateLaserCodes()
+--BlueRecceDesignation:AddMenuLaserCode( 1113, "Lase with %d for Su-25T" )
+--BlueRecceDesignation:AddMenuLaserCode( 1680, "Lase with %d for A-10A" )
+-- Start the detection process in 5 seconds.
+BlueRecceDesignation:__Detect( -5 )
+
+
+
+
+
+
