@@ -3,6 +3,7 @@
 	<name>Screw Loose</name>
 	<comment></comment>
 	<projects>
+		<project>MOOSE_FRAMEWORK</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
