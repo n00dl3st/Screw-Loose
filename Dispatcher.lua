@@ -4,6 +4,9 @@
 ----------------------------------------------------------------------
 -- NOTES:
 ----------------------------------------------------------------------
+--TODO Need to unify/generalise Tanker/AWACS and their debug code possibly add escort control.
+--
+--
 env.info( "------------------------------------------------" )
 env.info("          Loading Dispatcher")
 env.info( "------------------------------------------------" )
@@ -61,67 +64,9 @@ Red_A2G:SetDefenseReactivityMedium()
 ----------------------------------------------------------------------
 -- Blue Support Squadrons Defintions 
 ----------------------------------------------------------------------
--- Blue AWACS
--- Setup the AWACS Patrol and escort
---- AWACS
--- @function spawnAWACS
--- @param #none
-function spawnAWACS()
-  AWACSGroup = SPAWN
-            :New("Overlord")
-            :InitRepeatOnEngineShutDown()
-            :Spawn()
-  local tempRoute = GROUP:FindByName("Overlord"):CopyRoute(0, 0, true, 100)
-  AWACSGroup:Route(tempRoute)
-  AWACSGroup:EnRouteTaskAWACS()
-end
-spawnAWACS()
---- Escorts
--- @function spawnAWACSEscort
--- @param #none
-function spawnAWACSEscort()
-  AWACSEscortGroup = SPAWN
-            :New("AWACS Escort")
-            :InitRepeatOnEngineShutDown()
-            :Spawn()
-  local escortVec3d = POINT_VEC3:New(-50,0,-100)
-  local escortTask = AWACSEscortGroup:TaskEscort(AWACSGroup, escortVec3d, nil, 74080, {"Air"})
-  AWACSEscortGroup:PushTask(escortTask, 2)
-end
-spawnAWACSEscort()
-
-----------------------------------------------------------------------
--- Red Support Squadrons Defintions 
-----------------------------------------------------------------------
--- Red AWACS
--- Setup the AWACS Patrol and escort
---- AWACS
--- @function spawnAWACS
--- @param #none
-function spawnAWACS()
-  AWACSGroup = SPAWN
-            :New("AWACS")
-            :InitRepeatOnEngineShutDown()
-            :Spawn()
-  local tempRoute = GROUP:FindByName("AWACS"):CopyRoute(0, 0, true, 100)
-  AWACSGroup:Route(tempRoute)
-  AWACSGroup:EnRouteTaskAWACS()
-end
-spawnAWACS()
---- Escorts
--- @function spawnAWACSEscort
--- @param #none
-function spawnAWACSEscort()
-  AWACSEscortGroup = SPAWN
-            :New("Red AWACS Escort")
-            :InitRepeatOnEngineShutDown()
-            :Spawn()
-  local escortVec3d = POINT_VEC3:New(-50,0,-100)
-  local escortTask = AWACSEscortGroup:TaskEscort(AWACSGroup, escortVec3d, nil, 74080, {"Air"})
-  AWACSEscortGroup:PushTask(escortTask, 2)
-end
-spawnAWACSEscort()
-
+env.info( "------------------------------------------------" )
+env.info("          Loading tankers")
+env.info( "------------------------------------------------" )
 ----------------------------------------------------------------------
 -- Tankers
 ----------------------------------------------------------------------
@@ -515,4 +460,365 @@ do
        
     _TANKER.INFO('TANKER: INIT: DONE')
  
+end
+
+----------------------------------------------------------------------
+-- NOTES:
+----------------------------------------------------------------------
+env.info( "------------------------------------------------" )
+env.info("          Loading awacs")
+env.info( "------------------------------------------------" )
+----------------------------------------------------------------------
+-- Preamble, var defs, debug
+----------------------------------------------------------------------
+-- Unit arry
+_AWACS_UNITS = {
+  {NAME='Overlord'},
+  {NAME='AWACS'}
+}
+
+-- min fuel to manage rtb and replacement
+_AWACS_MIN_FUEL = 0.3
+
+-- radius around orbit wp on station unit will be sent home when replacement approches
+_AWACS_ONSTATION_RADIUS = 92600 -- 50nm
+
+_AWACS_DEBUG = false
+
+-- create awacs class and fsm
+_AWACS = {}
+_AWACS._fsm = {}
+
+-- debug
+-- .INFO method which consists of a function with one arg "debugtext"
+-- that is passed to env.info to print "AWACS: <contents of 'debugtext'>"
+_AWACS.INFO = function(debugtext)
+  env.info('AWACS: '..debugtext)
+end
+
+-- .DEBUG method if defeined call .INFO method passing debugtext
+_AWACS.DEBUG = function(debugtext)
+  if _AWACS_DEBUG then
+    _AWACS.INFO(debugtext)
+  end
+end
+  
+-- populate .UNITS table with unit arry
+_AWACS.UNITS = _AWACS_UNITS
+-- populate .MIN_FUEL table from array
+_AWACS.MIN_FUEL = _AWACS_MIN_FUEL
+
+-- add debug menu 
+if _AWACS_DEBUG then
+  _AWACS.DEBUG_MENU = MENU_COALITION:New(coalition.side.BLUE,'AWACS Debug')
+else
+  _AWACS.DEBUG_MENU = nil
+end
+    
+-- AWACS Class
+_AWACS.Awacs = {}
+
+----------------------------------------------------------------------
+-- function _AWACS.Awacs:New
+----------------------------------------------------------------------
+-- @function [parent=#_AWACS.Awacs] New
+-- @param #group
+function _AWACS.Awacs:New(group)
+
+  -- Copy ME awacs group
+  local self = group  
+  
+  -- define and init rtb flag
+  self.rtb = false
+  -- copy ME route from unit
+  self.route = self:GetTaskRoute()
+  
+  ----------------------------------------------------------------------
+  -- function Debug
+  ----------------------------------------------------------------------
+  -- add debug function to unit
+  -- @function [parent=#self] Debug
+  -- @param #debugtext
+  function self:Debug(debugtext)
+    _AWACS.DEBUG(self:GetName()..': '..debugtext)
+  end
+
+
+  if _AWACS.DEBUG_MENU then
+    self.debug_menu = MENU_COALITION_COMMAND:New(
+        coalition.side.BLUE,
+        'Destroy '..self:GetName(),
+        _AWACS.DEBUG_MENU,
+        self.Destroy,
+        self
+    )
+  end
+  
+  self:Debug('AWACS init')
+
+  ----------------------------------------------------------------------
+  -- function RTB
+  ----------------------------------------------------------------------
+  -- RTB function
+  -- @function [parent=#self] RTB
+  -- @param #none
+  function self:RTB()
+    
+    -- check rtb flag
+    if not self.rtb then
+      self:Debug('RTB')
+      
+      -- send awacs to last waypoint
+      local command = self:CommandSwithcWayPoint(2,1)
+      self:SetCommand(command)
+      
+      -- create zone around airbase, to enable stripping commands and force landing
+      local last_wp = self.route[1] -- TODO check array index in debugger
+      self.rtb_zone = ZONE_RADIUS:New(
+        'rtb_'..self:GetName(),
+        {x=last_wp.x, y=last_wp.y},
+        20000
+      )
+      
+      ----------------------------------------------------------------------
+      -- Schedule in zone check
+      ----------------------------------------------------------------------
+      -- check group in zone, strip all tasks
+      self.rtb_scheduler = SCHEDULER:New(self,
+        function()
+          self:Debug('Are we there yet?')
+          if self and self:IsAlive() then
+            if self:IsCompletelyInZone(self.rtb_zone) then
+              self:Debug('In rtb zone')
+              self:ClearTasks()
+              self:RouteRTB()
+              self.rtb_scheduler:Stop()
+              self:remove_debug_menu()
+            end
+          end
+        end, -- remeber  , !!!! this block is an arg list!!
+        {}, 10, 10, 0, 0)
+        
+        ----------------------------------------------------------------------
+        -- Schedule shutdown check
+        ----------------------------------------------------------------------
+        -- when unit stopped despawn
+        self.despawn_scheduler = SCHEDULER:New(self,
+          function()
+            self:Debug('Engines shutdown')
+            if self and self:IsAlive() then
+              local velocity = self:GetUnit(1):GetVelocity()
+              local total_speed = math.abs(velocity.x) + math.abs(velocity.y) + math.abs(velocity.z)
+              if total_speed < 3 then
+                self:Debug('removing unit')
+                self:Destroy()
+              end
+            end
+          end, -- remeber  , !!!! this block is an arg list!!
+        {}, 10, 10, 0, 0)
+        
+      -- set RTB flag
+      self.rtb = true
+    end
+  end
+
+  ----------------------------------------------------------------------
+  -- function Get orbit wp and create zone to mark it
+  ----------------------------------------------------------------------
+  -- create zone round orbit wp
+  -- @function [parent=#self] ZoneFromOrbitWaypoint
+  -- @param #none
+  function self:ZoneFromOrbitWaypoint()
+    -- vars to store x,y coords
+    local x
+    local y
+    
+    -- iterate over wp's
+    for _, wp_ in ipairs(self.route) do
+      -- iterate over tasks
+      for _, task_ in ipairs(wp_['task']['params']['tasks']) do
+        -- wp found
+        if task_['id'] == 'Orbit' then
+          -- save x,y into local vars
+          x = wp_['x']
+          y = wp_['y']
+          -- break loop
+          break
+          
+        -- manage edge cases, player controlled
+        elseif task_['id'] == 'ControlledTask' then
+          if task_['params']['task']['id'] == 'Orbit' then
+            x = wp_['x']
+            y = wp_['y']
+            break
+          end
+        end
+      end
+    
+      -- if wp found break loop completely
+      if not x == nil then 
+        break 
+      end
+    end
+  
+    -- if wp is valid create zone around orbit wp
+    if x then
+      self:Debug('creating ')
+      return ZONE_RADIUS:New(self:GetName(),{x=x, y=y},_AWACS_ONSTATION_RADIUS)
+    end
+  end
+ 
+  ----------------------------------------------------------------------
+  -- function Fuel check
+  ----------------------------------------------------------------------
+  -- obtain fuel to gauge remaining sortie
+  -- @function [parent=#self] GetFuel
+  -- @param #none
+  function self:GetFuel()
+    local fuel_left = self:GetUnit(1):GetFuel()
+    self:Debug('Fuel Remaining: '..fuel_left)
+    return fuel_left
+  end
+  -- return awacs instance
+  return self
+end
+
+----------------------------------------------------------------------
+-- Declare state machine to manage units
+----------------------------------------------------------------------
+_AWACS.FSM = {
+  awacs_log = {}
+}
+
+----------------------------------------------------------------------
+-- function FSM debug
+----------------------------------------------------------------------
+-- @function [parent=#_AWACS.FSM] Debug
+-- @param #debugtext
+function _AWACS.FSM:Debug(debugtext)
+  _AWACS.DEBUG('FSM: '..self.template_name..': '..debugtext)
+end
+
+----------------------------------------------------------------------
+-- function define new FSN instance
+----------------------------------------------------------------------
+-- @function [parent=#_AWACS.FSM] Debug
+-- @param #template
+function _AWACS.FSM:New(template)
+  -- inherit from moose FSM
+  local self = BASE:Inherit(self, FSM:New())
+
+  -- copy template group from ME UNIT
+  self.template_name = template.NAME
+
+  self:Debug('FSM Init ')
+
+  -- Define FSM state transitions
+  FSM.SetStartState(self, 'INIT')
+  FSM.AddTransition(self, 'INIT','Ready','NO_AWACS')
+  FSM.AddTransition(self, '*', 'Failure', 'INIT')
+  FSM.AddTransition(self, '*', 'Destroyed', 'NO_AWACS')
+  FSM.AddTransition(self, 'NO_AWACS', 'Spawned', 'EN_ROUTE')
+  FSM.AddTransition(self, 'EN_ROUTE', 'Arrived', 'ORBIT')
+  FSM.AddTransition(self, 'ORBIT', 'WaitRTB', 'EN_ROUTE')
+
+  -- log catch all "failures"
+  function self:OnBeforeFailure(from, to, event, text)
+    self:Debug('ERROR: '..debugtext)
+  end
+
+  -- spawn AWACS group
+  function self:SpawnNewAWACS()
+    self.group = _AWACS.Awacs:New(self.spawner:Spawn())
+  end
+
+  function self:OnLeaveINIT(From, event, to)
+    self:Debug('init FSM')
+    self:Debug('creating spawner')
+    self.spawner = SPAWN:New(self.template_name)
+  end
+
+  function self:OnEnterNO_AWACS(from, event, to)
+    self:Debug('No AWACS avilable, spawning new AWACS')
+    self:SpawnNewAWACS()
+
+    if from == 'INIT' then
+        self:Debug('capturing orbit zone')
+        local zone = self.group:ZoneFromOrbitWaypoint()
+
+        if zone == nil then
+          self:Failure('No orbit WP found'..self.template_name)
+        end
+
+      self.zone = zone
+    end
+
+    self:Debug('Reginister new group: '..self.group:GetName())
+    self:Spawned()
+  end
+
+  function self:OnEnterEN_ROUTE(from, event, to)
+    if event == 'WaitRTB' then
+      self:Debug('New AWACS on-route')
+    end
+
+    self:Debug('Monitoring AWACS')
+    self.monitor_arriving_awacs = SCHEDULER:New(
+      nil,
+      function(fsm, event)
+        if not fsm.group:IsAlive() then
+          fsm:Debug('AWACS Destroyed')
+          fsm.monitor_arriving_awacs:Stop()
+          fsm:Destroyed()
+        elseif fsm.group:IsCompletelyInZone(fsm.zone) then
+          fsm:Debug('AWACS Arrived')
+          fsm.monitor_arriving_awacs:Stop()
+          if event == 'WaitRTB' then
+            self:Debug('On station AWACS RTB')
+            for _, awacs in ipairs(fsm.awacs_log) do
+              if awacs and awacs:IsAlive() then
+                awacs:RTB()
+              end
+            end
+          end
+          fsm:Arrived()
+        end
+      end,
+    {self, event}, 10, 10, 0, 0)
+  end
+
+  function self:OnEnterORBIT(from, event, to)
+    self:Debug('AWACS orbiting WP')
+
+    self.monitor_orbiting_awacs = SCHEDULER:New(
+      nil,
+      function()
+        if not self.group:IsAlive() then
+          self:Debug('Orbiting AWACS Destroyed')
+          self.monitor_orbiting_awacs:Stop()
+          self:Destroyed()
+        elseif self.group:GetFuel() <= _AWACS_MIN_FUEL then
+          self:Debug('AWACS will be out of fuel soon')
+          table.insert(self.awacs_log, self.group)
+          self.monitor_orbiting_awacs:Stop()
+          self:SpawnNewAWACS()
+          self:WaitRTB()
+        end
+      end,
+    {}, 10, 10, 0, 0)
+  end
+
+  return self
+end
+
+-- bootstrap awacs
+do 
+  _AWACS.INFO('AWACS: INIT: Start')
+  for _, unit in ipairs(_AWACS_UNITS) do
+    _AWACS.DEBUG('INIT: AWACS unt: '..unit.NAME)
+    local fsm = _AWACS.FSM:New(unit)
+    _AWACS._fsm[unit.NAME] = fsm
+    fsm:Ready()
+  end
+  _AWACS.INFO('AWACS: Init: Done')
 end

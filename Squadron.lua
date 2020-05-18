@@ -18,7 +18,7 @@ Blu_GCI:SetDefaultGrouping(2)
 Blu_GCI:SetDefaultTakeoffFromParkingHot()
 Blu_GCI:SetDefaultLandingAtEngineShutdown()
 
-Blu_GCI:SetTacticalDisplay(true)
+Blu_GCI:SetTacticalDisplay(false)
 
 ----------------------------------------------------------------------
 -- Blue Fighter Squadrons Defintions 
@@ -75,7 +75,7 @@ Blu_A2G:SetSquadronSead("Sten_SEAD")
 
 -- FARP
 Blu_A2G:SetSquadron("Helo_BAI","FARP London",{"Blu_Helo_CAS"})
-Blu_A2G:SetSquadronGrouping("Helo_BAI",1)
+Blu_A2G:SetSquadronGrouping("Helo_BAI",2)
 Blu_A2G:SetSquadronBaiPatrol("Helo_BAI", Blu_Helo_CAP, 76, 91, 148, 250, 250, 300)
 Blu_A2G:SetSquadronPatrolInterval("Helo_BAI", 2, 180, 600, 1, "BAI")
 
@@ -123,7 +123,7 @@ Red_A2G:SetDefaultTakeoffFromParkingHot()
 Red_A2G:SetDefaultLandingAtEngineShutdown()
 Red_A2G:SetDefaultEngageLimit(3)
 
-Red_A2G:SetTacticalDisplay(false)
+Red_A2G:SetTacticalDisplay(true)
 ----------------------------------------------------------------------
 -- Ground Attack Squadrons Defintions 
 ----------------------------------------------------------------------
@@ -147,6 +147,7 @@ Red_A2G:SetSquadronSead("Red_Nal_SEAD")
 
 -- FARP
 Red_A2G:SetSquadron("Red_Helo_BAI","FARP Skala",{"Red_Helo_CAS Ka50", "Red_Helo_CAS_Mi24", "Red_Helo_CAS_Mi28", "Red_Helo_CAS_Mi8"})
-Red_A2G:SetSquadronGrouping("Red_Helo_BAI",1)
+Red_A2G:SetSquadronGrouping("Red_Helo_BAI",2)
 Red_A2G:SetSquadronBaiPatrol("Red_Helo_BAI", Red_Helo_CAP, 76, 91, 148, 250, 250, 300)
 Red_A2G:SetSquadronPatrolInterval("Red_Helo_BAI", 2, 180, 600, 1, "BAI")
+

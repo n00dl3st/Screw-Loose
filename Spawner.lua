@@ -4,6 +4,8 @@
 ----------------------------------------------------------------------
 -- NOTES:
 ----------------------------------------------------------------------
+-- TODO move this to warehose control rather than random placement
+
 env.info( "------------------------------------------------" )
 env.info("          Loading Spawner")
 env.info( "------------------------------------------------" )
@@ -24,7 +26,7 @@ Blu_Arm_Proxy = SPAWN:NewWithAlias("Blu_Arm_Proxy", "Blue Grn Armour")
   :InitLimit( 50, 12 )     -- NOTE: Tune 
   :SpawnScheduled( 10, 0.5 )  -- NOTE: Tune
 end
-spawnBlueZugFrontLineArm()
+--spawnBlueZugFrontLineArm()
 
 --- SAM
 -- @function spawnBlueZugFrontLineSam
@@ -38,7 +40,7 @@ Blu_Arm_SAM_Proxy = SPAWN:NewWithAlias("Blu_Arm_SAM_Proxy", "Blue Grn Anti-Air")
   :InitLimit( 15, 5 )     -- NOTE: Tune 
   :SpawnScheduled( 10, 0.5 )  -- NOTE: Tune
 end
-spawnBlueZugFrontLineSam()
+--spawnBlueZugFrontLineSam()
 
 ----------------------------------------------------------------------
 -- Red ground assets.
