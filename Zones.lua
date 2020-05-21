@@ -32,15 +32,7 @@ Red_Arm_SAM_Zone = SET_ZONE:New()
 Red_Static_Zone = SET_ZONE:New()
   :FilterPrefixes("Red_Static_Zone")
   :FilterOnce()
-  
-Red_MSRW_Zone = SET_ZONE:New()
-  :FilterPrefixes("Red_MSRW_Zone")
-  :FilterOnce()
     
-Red_MSRE_Zone = SET_ZONE:New()
-  :FilterPrefixes("Red_MSRE_Zone")
-  :FilterOnce()
-  
 ----------------------------------------------------------------------
 -- Blue Fighter Squadron Zones 
 ----------------------------------------------------------------------
@@ -58,3 +50,4 @@ Red_CAP = ZONE_POLYGON:New("CAP Zone Red",GROUP:FindByName("CAP Zone Red"))
 Red_CAP2 = ZONE_POLYGON:New("CAP Zone Red 2",GROUP:FindByName("CAP Zone Red 2"))
 Red_CAP3 = ZONE_POLYGON:New("CAP Zone Red 3",GROUP:FindByName("CAP Zone Red 3"))
 Red_Helo_CAP = ZONE_POLYGON:New("CAP Zone Red Recce",GROUP:FindByName("CAP Zone Red Recce"))
+

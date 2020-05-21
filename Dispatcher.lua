@@ -31,8 +31,6 @@ Blu_A2G:AddDefenseCoordinate("A2G Sochi Port",ZONE:FindByName("A2G Sochi Port"):
 Blu_A2G:AddDefenseCoordinate("A2G Sochi",ZONE:FindByName("A2G Sochi"):GetCoordinate())
 Blu_A2G:AddDefenseCoordinate("A2G Gudauta",ZONE:FindByName("A2G Gudauta"):GetCoordinate())
 Blu_A2G:AddDefenseCoordinate("A2G Tbilisi",ZONE:FindByName("A2G Tbilisi"):GetCoordinate())
---Blu_A2G:AddDefenseCoordinate("A2G MSRE",ZONE:FindByName("A2G MSRE"):GetCoordinate())
---Blu_A2G:AddDefenseCoordinate("A2G Beslan",ZONE:FindByName("A2G Beslan"):GetCoordinate())
 Blu_A2G:SetDefenseRadius(92600) -- 50nm
 Blu_A2G:SetDefenseReactivityMedium()
 
@@ -56,8 +54,6 @@ Red_A2G:AddDefenseCoordinate("A2G Sochi Port",ZONE:FindByName("A2G Sochi Port"):
 Red_A2G:AddDefenseCoordinate("A2G Sochi",ZONE:FindByName("A2G Sochi"):GetCoordinate())
 Red_A2G:AddDefenseCoordinate("A2G Gudauta",ZONE:FindByName("A2G Gudauta"):GetCoordinate())
 Red_A2G:AddDefenseCoordinate("A2G Tbilisi",ZONE:FindByName("A2G Tbilisi"):GetCoordinate())
-Red_A2G:AddDefenseCoordinate("A2G MSRE",ZONE:FindByName("A2G MSRE"):GetCoordinate())
-Red_A2G:AddDefenseCoordinate("A2G Beslan",ZONE:FindByName("A2G Beslan"):GetCoordinate())
 Red_A2G:SetDefenseRadius(92600) -- 50nm
 Red_A2G:SetDefenseReactivityMedium()
 

@@ -59,7 +59,7 @@ function spawnRedZugFrontLineArm()
     :InitLimit( 50, 12 )     -- NOTE: Tune 
     :SpawnScheduled( 10, 0.5 )  -- NOTE: Tune
 end
-spawnRedZugFrontLineArm()
+--spawnRedZugFrontLineArm()
 
 --- SAM
 -- @function spawnRedSam
@@ -73,7 +73,7 @@ function spawnRedZugFrontLineSam()
     :InitLimit( 15, 5 )     -- NOTE: Tune 
     :SpawnScheduled( 10, 0.5 )  -- NOTE: Tune
 end
-spawnRedZugFrontLineSam()
+--spawnRedZugFrontLineSam()
 
 --- Statics
 -- @function spawnRedArm
@@ -87,7 +87,7 @@ function spawnRedStaticArm()
     :InitLimit( 50, 10 )     -- NOTE: Tune 
     :SpawnScheduled( 1800, 0.5 )  -- NOTE: Tune
 end
-spawnRedStaticArm()
+--spawnRedStaticArm()
 
 --- MSR West
 -- @function spawnRedArm
@@ -102,20 +102,4 @@ function spawnRedMSRWestArm()
     :InitLimit( 50, 12 )     -- NOTE: Tune 
     :SpawnScheduled( 1800, 0.5 )  -- NOTE: Tune
 end
-spawnRedMSRWestArm()
-
---- MSR East
--- @function spawnRedArm
--- @param #none
---function spawnRedMSREastArm()
---  Red_Arm_Heavy_Proxy = SPAWN:NewWithAlias("Red_Arm_MSRE_Proxy", "Red Grn Armour")
---   :InitRandomizeZones(Red_MSRE_Zone:GetSetObjects())
---    :InitRandomizePosition(true)
---    :InitRandomizeTemplatePrefixes("Red_Gnd_Armour")
---    :InitHeading( 0, 360 )
---    :InitRandomizeRoute( 1, 1, 1000 )
---    :InitLimit( 20, 12 )     -- NOTE: Tune 
---    :SpawnScheduled( 190, .5 )  -- NOTE: Tune
---end
---spawnRedMSREastArm()
-
+--spawnRedMSRWestArm()
