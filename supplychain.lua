@@ -31,13 +31,26 @@
 
 -- TODO
 -- Describe table structure for main arrays
---  * winvtemplate
+--  * winvtemplate  -- DONE, refactored, added missing vars for AddAsset() call and added to calls to that function and off map resupply
+--  * Remove, find, track, fix, replace all UNDEF vars
+--  * Replace var names with sanity
+--  * Break out clean up and better document various logical operations chain building loops call out imporatant vars etc..
+--  * CustomInventory is borked, fix and pull inline with other calls that are wrappers for AddAsset()
+--  * Define a set of configuration settings for timers etc that can be turned outside main block
+--  * Look at, check for functioning and rename "Sub Nodes" to "Stub Nodes" to better ilistrate the fact they go nowhere
+--  * Use MOOSE Sets to handle zone management?
+--  * Need a method for associating warehouse names with request functions 
 
--- Pretty sure I can use MOOSE Sets to handle zone management
 
+ -- add alias field to WCHAIN
+ -- create arry of alias for configuration linked against node (ie zone pulled from ME)
+ -- assign at build time
 ----------------------------------------------------------------------
--- NOTES:
+-- Screw Loose ( DynaMis )
 ----------------------------------------------------------------------
+-- Requests to be defined in logistics file for screw loose mission framework
+-- aircraft and ground units control code within dispatcher files.
+
 
 ----------------------------------------------------------------------
 -- WCHAIN CLASS Def
@@ -153,65 +166,86 @@ RedWareHouseCustomInventory = {}
 BlueDefaultWareHouseInventory = {}
 RedDefaultWareHouseInventory = {}
 
+-- TODO for now this list needs to be in the order warehouses are defined in ME #001, #002, #003 etc..
+WareHouseAlias = {"Kobuleti",
+            "Senaki-Kolkhi",
+            "Zugdidi",
+            "BlueFrontLine",
+            "Sukhumi-Babushara",
+            "Sukhumi",
+            "Gudauta",
+            "Sochi-Adler",
+            "Maykop-Khanskaya"
+        }
+
 local warehouse= {}
+
 ----------------------------------------------------------------------
 -- Warehouse Invetory Def
 ----------------------------------------------------------------------
+-- Basically a wrapper for:
+--      WAREHOUSE.__AddAsset(delay, group, ngroups, forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
+-- IMPORTANT NOTE: last field in the table is used for supply chain request timers so defining a line needs to be in FULL, ending in 0
+
 -- @type WCHAIN.winvtemplate
 -- @field #string groupname
 -- @field #number groupqty quantity of groups in inventory
 -- @field #WAREHOUSE.Attribute GroupCategory
+-- @field forcecargobay
+-- @field forceweight
+-- @field loadradius
+-- @field skill
+-- @field liveries
+-- @field assignment
 -- @field #number nextreqtime The next time a request can be made for this inventory group
-
--- WAREHOUSE.__AddAsset(delay, group, ngroups, forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
 
 -- Blue
 -- Warehouse Template for warehouses with baseind = true
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Infantry Platoon", 24, WAREHOUSE.Attribute.GROUND_INFANTRY, 0, 1000, AI.Skill.RANDOM}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Infantry Platoon #002", 12, WAREHOUSE.Attribute.GROUND_INFANTRY, 0, 1000, AI.Skill.RANDOM}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Truck", 20, WAREHOUSE.Attribute.GROUND_TRUCK, 0, nil, AI.Skill.RANDOM}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue APC1", 20, WAREHOUSE.Attribute.GROUND_APC, 0, nil, AI.Skill.RANDOM}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Armor Group", 20, WAREHOUSE.Attribute.GROUND_TANK, 0, nil, AI.Skill.RANDOM}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense SAM", 5, WAREHOUSE.Attribute.GROUND_SAM, 0, nil, AI.Skill.RANDOM}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense Gun #002", 10, WAREHOUSE.Attribute.GROUND_SAM, 0, nil, AI.Skill.RANDOM}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense SAM #002", 10, WAREHOUSE.Attribute.GROUND_SAM, 0, nil, AI.Skill.RANDOM}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"A10 Tactical Bomber", 12, WAREHOUSE.Attribute.AIR_BOMBER, 0, nil, AI.Skill.RANDOM}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue CAP", 12, WAREHOUSE.Attribute.AIR_FIGHTER, 0, nil, AI.Skill.RANDOM}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"C-130Herc", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, 0, nil, AI.Skill.RANDOM}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Transport Helo CH47", 2, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 0, nil, AI.Skill.RANDOM}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Infantry Platoon", 24, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 1000, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Infantry Platoon #002", 12, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 1000, nil,{}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Truck", 20, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil,{}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue APC1", 20, WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil,{}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Armor Group", 20, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil,{}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense SAM", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense Gun #002", 10, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense SAM #002", 10, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"A10 Tactical Bomber", 12, WAREHOUSE.Attribute.AIR_BOMBER, nil, nil, nil, nil,{}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue CAP", 12, WAREHOUSE.Attribute.AIR_FIGHTER, nil, nil, nil, nil,{}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"C-130Herc", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, 50000, nil, nil, nil,{}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Transport Helo CH47", 6, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 4000, nil, nil, nil,{}, "", 0}
 
 -- Red
 -- Warehouse Template for warehouses with baseind = true
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Infantry Platoon", 40, WAREHOUSE.Attribute.GROUND_INFANTRY, 0, nil, AI.Skill.RANDOM}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Truck", 30, WAREHOUSE.Attribute.GROUND_TRUCK, 0, nil, AI.Skill.RANDOM}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red APC", 30, WAREHOUSE.Attribute.GROUND_APC, 0, nil, AI.Skill.RANDOM}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Armor Group", 20, WAREHOUSE.Attribute.GROUND_TANK, 0, nil, AI.Skill.RANDOM}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red SAM #001", 15, WAREHOUSE.Attribute.GROUND_SAM, 0, nil, AI.Skill.RANDOM}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red SAM #002", 15, WAREHOUSE.Attribute.GROUND_SAM, 0, nil, AI.Skill.RANDOM}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"SU-33 CAP", 12, WAREHOUSE.Attribute.AIR_FIGHTER, 0, nil, AI.Skill.RANDOM}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Plane", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, 0, nil, AI.Skill.RANDOM}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Helo MI8", 2, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 0, nil, AI.Skill.RANDOM}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Helo MI24", 2, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 0, nil, AI.Skill.RANDOM}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Infantry Platoon", 40, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 1000, nil, {}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Truck", 30, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red APC", 30, WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Armor Group", 20, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red SAM #001", 15, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red SAM #002", 15, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"SU-33 CAP", 12, WAREHOUSE.Attribute.AIR_FIGHTER, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Plane", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, 50000, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Helo MI8", 2, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Helo MI24", 2, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, nil, nil,{}, "", 0}
 
 
 -- Blue 
 -- Default Warehouse Template for warehouses with baseind = false and No Custom Inventory template
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Infantry Platoon", 4, WAREHOUSE.Attribute.GROUND_INFANTRY, 0, 1000, AI.Skill.RANDOM}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Truck", 4, WAREHOUSE.Attribute.GROUND_TRUCK, 0, nil, AI.Skill.RANDOM}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Armor Group", 4, WAREHOUSE.Attribute.GROUND_TANK, 0, nil, AI.Skill.RANDOM}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense SAM #002", 2, WAREHOUSE.Attribute.GROUND_SAM, 0, nil, AI.Skill.RANDOM}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense Gun #002", 2, WAREHOUSE.Attribute.GROUND_SAM, 0, nil, AI.Skill.RANDOM}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Transport Helo CH47", 1, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 0, nil, AI.Skill.RANDOM}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Infantry Platoon", 4, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 1000, nil, {}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Truck", 4, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil,{}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Armor Group", 4, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil,{}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense SAM #002", 2, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense Gun #002", 2, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Transport Helo CH47", 2, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 4000, nil, nil, nil,{}, "", 0}
 
 -- Red 
 -- Default Warehouse Template for warehouses with baseind = false and No Custom Inventory template
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Infantry Platoon", 4, WAREHOUSE.Attribute.GROUND_INFANTRY, 0, 1000, AI.Skill.RANDOM}
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Truck", 4, WAREHOUSE.Attribute.GROUND_TRUCK, 0, nil, AI.Skill.RANDOM}
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red APC", 4, WAREHOUSE.Attribute.GROUND_APC, 0, nil, AI.Skill.RANDOM}
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Armor Group", 4, WAREHOUSE.Attribute.GROUND_TANK, 0, nil, AI.Skill.RANDOM}
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red SAM #001", 2, WAREHOUSE.Attribute.GROUND_SAM, 0, nil, AI.Skill.RANDOM}
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Transport Helo MI8", 1, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 0, nil, AI.Skill.RANDOM}
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Transport Helo MI24", 1, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 0, nil, AI.Skill.RANDOM}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Infantry Platoon", 4, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 1000, nil, {}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Truck", 4, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil,{}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red APC", 4, WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil,{}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Armor Group", 4, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil,{}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red SAM #001", 2, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Transport Helo MI8", 1, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, nil, nil,{}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Transport Helo MI24", 1, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, nil, nil,{}, "", 0}
 
 -- TODO These are borken
 --[[ 
@@ -340,6 +374,7 @@ function BuildChain()
             BWChain[tempnodename].baseind = true
             BWChain[tempnodename].Node = node
             BWChain[tempnodename].fullstrength = true
+            BWChain[tempnodename].alias = WareHouseAlias[y]
 
             BWChain[tempnodename] = BWChain[tempnodename]:AddWarehouseToChain(coalition.side.BLUE)
         else
@@ -348,6 +383,7 @@ function BuildChain()
             BWChain[tempnodename].nodename = tempnodename
             BWChain[tempnodename].Node = node
             BWChain[tempnodename].wchainindex = y
+            BWChain[tempnodename].alias = WareHouseAlias[y]
             --if y == 2 then
             --    BWChain[tempnodename].fullstrength = true
             --end
@@ -467,6 +503,7 @@ function BuildChain()
             RWChain[tempnodename].baseind = true
             RWChain[tempnodename].Node = node
             RWChain[tempnodename].fullstrength = true
+            RWChain[tempnodename].alias = WareHouseAlias[index]
 
             RWChain[tempnodename] = RWChain[tempnodename]:AddWarehouseToChain(coalition.side.RED)
         else
@@ -474,6 +511,7 @@ function BuildChain()
             RWChain[tempnodename].nodename = tempnodename
             RWChain[tempnodename].Node = node
             RWChain[tempnodename].wchainindex = y
+            RWChain[tempnodename].alias = WareHouseAlias[index]
             RWChain[tempnodename] = RWChain[tempnodename]:GetPrevNodeName(coalition.side.RED)
         end
 
@@ -728,8 +766,11 @@ function WCHAIN:AddWarehouseToChain(coalition)
 
     -- Spawn warehouse and assign object
     if warehousecoalition == 2 then
-        wbuildstring = "BlueWareHouse" .. tostring(BlueWareHouseCounter) -- For some reason this converion to string doesn't stick for the next call?
+        -- Use Human readable alias to name warehouse
+        wbuildstring = self.alias
+        -- Spawn warehouse object from ME placed zone marker
         localwarehouse = BlueSupplyWarehouse:SpawnFromZone(self.Node, 0, tostring(BlueWareHouseCounter)) -- DCS function returns nil if passed int
+        -- Create warehouse object with alias as name.
         warehouse.wbuildstring = WAREHOUSE:New(localwarehouse, wbuildstring) --Functional.Warehouse#WAREHOUSE
 
         BlueWareHouseCounter = tonumber(BlueWareHouseCounter) + 1 -- remember to convert back
@@ -762,7 +803,7 @@ function WCHAIN:AddWarehouseToChain(coalition)
 
                     -- TODO What does this line do??? doesn't seem to have a reference anywhere
                     -- orginal code had two instances of a global, and one local.
-                    Previouswarehouse = self.PrevWarehouse.alias    -- UNDEF
+                    -- local Previouswarehouse = self.PrevWarehouse.alias    -- UNDEF
 
                     break
                 end
@@ -774,8 +815,11 @@ function WCHAIN:AddWarehouseToChain(coalition)
         self.PrevAirhouse = BlueWareHouses[1]
 
     else  -- Process RED AddWarehouseToChain Requests
-        wbuildstring = "RedWareHouse" .. tostring(RedWareHouseCounter + 100) -- For some reason this converion to string doesn't stick for the next call?
+        -- Use Human readable alias to name warehouse
+        wbuildstring = self.alias
+        -- Spawn warehouse object from ME placed zone marker
         localwarehouse = RedSupplyWarehouse:SpawnFromZone(self.Node, 0, tostring(RedWareHouseCounter + 100)) -- DCS function returns nil if passed int
+        -- Create warehouse object with alias as name.
         warehouse.wbuildstring = WAREHOUSE:New(localwarehouse, wbuildstring) --Functional.Warehouse#WAREHOUSE
 
         RedWareHouseCounter = tonumber(RedWareHouseCounter) + 1 -- remember to convert back 
@@ -794,17 +838,22 @@ function WCHAIN:AddWarehouseToChain(coalition)
         end
 
         -- Set ThisWarehouse (Current Node's Warehouse)
+        -- add current warehouse instance to RWChain.ThisWarehouse
         self.ThisWarehouse = warehouse.wbuildstring
         -- store links to next, prev warehouseobj's
+        -- increment ReWareHouses with is warehouse object by full name
         RedWareHouses[#RedWareHouses + 1] = warehouse.wbuildstring
+        -- if RedWareHouses index > 1 then we have a previous warehouse that need registering 
+        -- other wise register RWChain.<warehouse>.BaseWarehouse and RWChain.<warehouse>.PrevAirhouse
         if #RedWareHouses > 1 then
+            -- 
             for z = #RedWareHouses -1, 1, -1  do
                    local tempnodename = self.prevnodename
                    if RWChain[tempnodename].ThisWarehouse ~= nil then
                         self.PrevWarehouse = RWChain[tempnodename].ThisWarehouse
                         RWChain[tempnodename].NextWarehouse = self.ThisWarehouse
 
-                        Previouswarehouse = self.PrevWarehouse.alias -- UNDEF
+                        local Previouswarehouse = self.PrevWarehouse.alias -- UNDEF
 
                         break
                     end
@@ -842,12 +891,19 @@ function WCHAIN:AddWarehouseToChain(coalition)
         WCHAIN.DEBUG(DebugFunc .. "unitstrpercent = " .. unitstrpercent)
         WCHAIN.DEBUG(DebugFunc .. "Count of winvtemplate = " .. #self.winvtemplate)
         for z = 1, #self.winvtemplate do
-            local mygroup = self.winvtemplate[z][1]
-            local mygroupqty = self.winvtemplate[z][2]
-            local mygroupcategory = self.winvtemplate[z][3]
-            local mygroupqty = math.ceil(mygroupqty * unitstrpercent)
+            local group = self.winvtemplate[z][1]
+            local ngroups = self.winvtemplate[z][2]
+            local forceattribute = self.winvtemplate[z][3]
+            local forcecargobay = self.winvtemplate[z][4]
+            local forceweight = self.winvtemplate[z][5]
+            local loadradius = self.winvtemplate[z][6]
+            local skill = self.winvtemplate[z][7]
+            local liveries = self.winvtemplate[z][8]
+            local assignment = self.winvtemplate[z][9]
+            local mygroupqty = math.ceil(ngroups * unitstrpercent)
             WCHAIN.DEBUG(DebugFunc .. "Would Add #Units = " .. mygroupqty)
-            self.ThisWarehouse:AddAsset(mygroup, mygroupqty, mygroupcategory)
+            -- WAREHOUSE:AddAsset(group, ngroups, forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
+            self.ThisWarehouse:AddAsset(group, ngroups, forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
         end
     end
 
@@ -1011,11 +1067,11 @@ function WCHAIN:SupplyChainManager(wrequestcount)
 
     local maxrequests = self.maxrequests 
     local maxunitstospawn = self.maxspawnunits
-    --local warehouseairbaseind = self.airbaseind     -- UNDEF
-    --local fullstrength = self.fullstrength          -- UNDEF
+    local warehouseairbaseind = self.airbaseind     -- UNDEF
+    local fullstrength = self.fullstrength          -- UNDEF
     local maxpendingtransactions = self.maxpending
-    --local previouswarehouse = self.PrevWarehouse    -- UNDEF
-    --local basewarehouse = self.BaseWarehouse        -- UNDEF
+    local previouswarehouse = self.PrevWarehouse    -- UNDEF
+    local basewarehouse = self.BaseWarehouse        -- UNDEF
     local supplierwarehouse = self.PrevWarehouse
     local requestwarehouse = self.ThisWarehouse
     local requestdelay = self.requestdelay
@@ -1044,7 +1100,7 @@ function WCHAIN:SupplyChainManager(wrequestcount)
             local invgroupname = self.winvtemplate[y][1]
             local defunitcount = self.winvtemplate[y][2]
             local groupattrib =  self.winvtemplate[y][3]
-            local nextreqtime =  self.winvtemplate[y][4]
+            local nextreqtime =  self.winvtemplate[y][10]
             -- set some variables for processing
             local supplierassetcount = 0
             --local bsupplierassetcount = 0     -- UNDEF
@@ -1092,12 +1148,12 @@ function WCHAIN:SupplyChainManager(wrequestcount)
                             -- TODO make these a configurable setting?...
                             if intenttospawn > unitstospawn + 2 then
                                 -- set nextreqtime if still supply deficit then wont allow request again for 5min
-                                self.winvtemplate[y][4] = currenttime + (5*60)
+                                self.winvtemplate[y][10] = currenttime + (5*60)
                                 WCHAIN.DEBUG(DebugFunc .. "Next Request time: winvtemplate [y][4] set to : " .. currenttime + (5*60))
                             else
                                 -- set nextreqtime wont allow request again for 60 min since close to full supply
                                 -- TODO adjust time based on distance to warehouse?... maybe.. maybe not worth it
-                                self.winvtemplate[y][4] = currenttime + (60*60)
+                                self.winvtemplate[y][10] = currenttime + (60*60)
                                 WCHAIN.DEBUG(DebugFunc .. "Next Request time: winvtemplate [y][1] set to: " .. currenttime + (60*60))
                             end
 
@@ -1141,7 +1197,7 @@ function WCHAIN:SupplyChainManager(wrequestcount)
 
                                         requestcount = requestcount + 1
                                         -- TODO make this a configurable setting
-                                        self.winvtemplate[y][4] = currenttime + (1*60)  -- airtransport has 1 hour delay after request
+                                        self.winvtemplate[y][10] = currenttime + (1*60)  -- airtransport has 1 hour delay after request
                                         WCHAIN.DEBUG(DebugFunc .. "Pushed Request to: " .. supplierwarehouse.alias .. " for group: " .. invgroupname)
                                         WCHAIN.DEBUG(DebugFunc .. "Requesting Warehouse: " .. requestwarehouse.alias)
                                     else -- Check TransportHeloCount
@@ -1161,7 +1217,7 @@ function WCHAIN:SupplyChainManager(wrequestcount)
 
                                             requestcount = requestcount + 1
                                             -- TODO make this a configurable setting
-                                            self.winvtemplate[y][4] = currenttime + (1*60)  -- airtransport has 1 hour delay after request
+                                            self.winvtemplate[y][10] = currenttime + (1*60)  -- airtransport has 1 hour delay after request
                                             WCHAIN.DEBUG(DebugFunc .. "Pushed Request to: " .. supplierwarehouse.alias .. " for group: " .. invgroupname)
                                             WCHAIN.DEBUG(DebugFunc .. "Requesting Warehouse: " .. requestwarehouse.alias)
                                         else -- no transport
@@ -1197,7 +1253,7 @@ function WCHAIN:SupplyChainManager(wrequestcount)
                             -- TODO make this configurable
                             -- check if air asset and make requestdelay 1 hour
                             if string.sub(groupattrib, 1, 3) == "Air" then
-                                self.winvtemplate[y][4] = currenttime + (10*60)
+                                self.winvtemplate[y][10] = currenttime + (10*60)
                             end
                             -- If no transport make the fuckers walk...
                             -- WAREHOUSE:__AddRequest(Delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
@@ -1285,8 +1341,6 @@ function WCHAIN:WarehouseProcessor(mywchain, coalition)
 return self
 end
 
-
-
 ----------------------------------------------------------------------
 -- ProcessWarehouseChain() -- Test function
 ----------------------------------------------------------------------
@@ -1305,7 +1359,7 @@ function ProcessWarehouseChain(lcoalition)
         BWChain["wchain #002"] = BWChain["wchain #002"]:AddWarehouseToChain(coalition.side.BLUE)
 
         -- Zugdidi (FARP)
-        BWChain["wchain #003"].spawnwithinv = false
+        BWChain["wchain #003"].spawnwithinv = true
         BWChain["wchain #003"].fullstrength = false
         BWChain["wchain #003"].baseind = false
         BWChain["wchain #003"].strengthp = 100
@@ -1313,38 +1367,24 @@ function ProcessWarehouseChain(lcoalition)
         BWChain["wchain #003"] = BWChain["wchain #003"]:AddWarehouseToChain(coalition.side.BLUE)
 
         -- Blue Front Line (FARP)
-        BWChain["wchain #004"].spawnwithinv = false
-        BWChain["wchain #004"].fullstrength = false
+        BWChain["wchain #004"].spawnwithinv = true
+        BWChain["wchain #004"].fullstrength = true
         BWChain["wchain #004"].baseind = false
         BWChain["wchain #004"].strengthp = 100
         BWChain["wchain #004"].nodename = "wchain #004"
         BWChain["wchain #004"] = BWChain["wchain #004"]:AddWarehouseToChain(coalition.side.BLUE)
 
+        -- TODO Order processing here is super important, if Red not added in numerical reverse order the setting
+        -- of .PrevWarehouse WILL FAIL... Seriously needs a logic Fix
+        --[[        --         
+            if #RedWareHouses > 1 then 
+            for z = #RedWareHouses -1, 1, -1  do
+                local tempnodename = self.prevnodename
+                if RWChain[tempnodename].ThisWarehouse ~= nil then --!!!!!! if processed in decending order Previous warehouse doesn't exist! thus chain building fails....
+                     self.PrevWarehouse = RWChain[tempnodename].ThisWarehouse
+                     RWChain[tempnodename].NextWarehouse = self.ThisWarehouse
+        --]]
         -- Red
-        -- Sukhumi-Babushara (Airbase)
-        RWChain["wchain #005"].spawnwithinv = false
-        RWChain["wchain #005"].fullstrength = false
-        RWChain["wchain #005"].baseind = true
-        RWChain["wchain #005"].strengthp = 100
-        RWChain["wchain #005"].nodename = "wchain #005"
-        RWChain["wchain #005"] = RWChain["wchain #005"]:AddWarehouseToChain(coalition.side.RED)
-
-        -- Sukhumi (FARP)
-        RWChain["wchain #006"].spawnwithinv = false
-        RWChain["wchain #006"].fullstrength = false
-        RWChain["wchain #006"].baseind = false
-        RWChain["wchain #006"].strengthp = 100
-        RWChain["wchain #006"].nodename = "wchain #006"
-        RWChain["wchain #006"] = RWChain["wchain #006"]:AddWarehouseToChain(coalition.side.RED)
-
-        -- Gudauta (Airbase)
-        RWChain["wchain #007"].spawnwithinv = false
-        RWChain["wchain #007"].fullstrength = true
-        RWChain["wchain #007"].baseind = true
-        RWChain["wchain #007"].strengthp = 100
-        RWChain["wchain #007"].nodename = "wchain #007"
-        RWChain["wchain #007"] = RWChain["wchain #007"]:AddWarehouseToChain(coalition.side.RED)
-
         -- Sochi-Adler (Airbase)
         RWChain["wchain #008"].spawnwithinv = true
         RWChain["wchain #008"].fullstrength = true
@@ -1352,6 +1392,30 @@ function ProcessWarehouseChain(lcoalition)
         RWChain["wchain #008"].strengthp = 100
         RWChain["wchain #008"].nodename = "wchain #008"
         RWChain["wchain #008"] = RWChain["wchain #008"]:AddWarehouseToChain(coalition.side.RED)
+
+        -- Gudauta (Airbase)
+        RWChain["wchain #007"].spawnwithinv = true
+        RWChain["wchain #007"].fullstrength = false
+        RWChain["wchain #007"].baseind = true
+        RWChain["wchain #007"].strengthp = 100
+        RWChain["wchain #007"].nodename = "wchain #007"
+        RWChain["wchain #007"] = RWChain["wchain #007"]:AddWarehouseToChain(coalition.side.RED)
+
+        -- Sukhumi (FARP)
+        RWChain["wchain #006"].spawnwithinv = true
+        RWChain["wchain #006"].fullstrength = false
+        RWChain["wchain #006"].baseind = false
+        RWChain["wchain #006"].strengthp = 100
+        RWChain["wchain #006"].nodename = "wchain #006"
+        RWChain["wchain #006"] = RWChain["wchain #006"]:AddWarehouseToChain(coalition.side.RED)
+
+        -- Sukhumi-Babushara (Airbase)
+        RWChain["wchain #005"].spawnwithinv = false
+        RWChain["wchain #005"].fullstrength = false
+        RWChain["wchain #005"].baseind = true
+        RWChain["wchain #005"].strengthp = 100
+        RWChain["wchain #005"].nodename = "wchain #005"
+        RWChain["wchain #005"] = RWChain["wchain #005"]:AddWarehouseToChain(coalition.side.RED)
 
         ProcessedChains = true
     end
@@ -1403,12 +1467,13 @@ end     -- End of ProcessWarehouseChain()
 ----------------------------------------------------------------------
 -- Blue Resupply Aircraft
 ----------------------------------------------------------------------
+-- TODO Rewrite, clean up, replace vars with names that make sense.
 -- on landing will add to base warehouse assets
 BlueDailyTransport = SPAWN:New("Blue Daily Transport")
 BlueDailyTransport:OnSpawnGroup(
     function(groupname)
         SpawnedBlueResupplyGroup = GROUP:FindByName(groupname.GroupName)
-        local tempgroupname = groupname.GroupName
+        -- local tempgroupname = groupname.GroupName  -- UNDEF
 
         --setup event handler
         SpawnedResupplyGroup:HandleEvent(
@@ -1418,12 +1483,20 @@ BlueDailyTransport:OnSpawnGroup(
         -- @param Core.Event#EVENTDATA EventData
         function SpawnedResupplyGroup:OnEventLand(EventData)
             for y=1, #BlueBaseWarehouseInv do
-                local groupattrib = BlueBaseWarehouseInv[y][3]
-                local invgroupname = BlueBaseWarehouseInv[y][1]
-                local maxunits = BlueBaseWarehouseInv[y][2]
-                
-                local supplierassetcount = BlueWareHouses[1]:GetNumberOfAssets(WAREHOUSE.Descriptor.GROUPNAME, invgroupname)
-                BlueWareHouses[1]:AddAsset(invgroupname, math.ceil(maxunits/10), groupattrib)
+                local group = self.winvtemplate[y][1]
+                local ngroups = self.winvtemplate[y][2]
+                local forceattribute = self.winvtemplate[y][3]
+                local forcecargobay = self.winvtemplate[y][4]
+                local forceweight = self.winvtemplate[y][5]
+                local loadradius = self.winvtemplate[y][6]
+                local skill = self.winvtemplate[y][7]
+                local liveries = self.winvtemplate[y][8]
+                local assignment = self.winvtemplate[y][9]
+
+                --local supplierassetcount = BlueWareHouses[1]:GetNumberOfAssets(WAREHOUSE.Descriptor.GROUPNAME, group)  -- UNDEF
+
+                -- WAREHOUSE:AddAsset(group, ngroups, forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
+                BlueWareHouses[1]:AddAsset(group, math.ceil(ngroups/10), forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
             end
                 WCHAIN.DEBUG("Adding Daily Assets to Base Warehouse " .. BlueWareHouses[1].alias)
                 EventData.IniGroup:Destroy()
@@ -1435,7 +1508,7 @@ function BlueOffMapSupply()
     local spawnresupply = false
 
     for y=1, #BlueBaseWarehouseInv do
-        local groupattrib = BlueBaseWarehouseInv[y][3]
+        -- local groupattrib = BlueBaseWarehouseInv[y][3]   -- UNDEF
         local invgroupname = BlueBaseWarehouseInv[y][1]
         local maxunits = BlueBaseWarehouseInv[y][2]
         local supplierassetcount = BlueWareHouses[1]:GetNumberOfAssets(WAREHOUSE.Descriptor.GROUPNAME, invgroupname)
@@ -1472,11 +1545,17 @@ RedDailyTransport:OnSpawnGroup(
         function SpawnedRedResupplyGroup:OnEventLand(EventData)
 
             for y=1, #RedBaseWareHouseInv do
-                local groupattrib = RedBaseWareHouseInv[y][3]
-                local invgroupname = RedBaseWareHouseInv[y][1]
-                local maxunits = RedBaseWareHouseInv[y][2]
-                local supplierassetcount = RedWareHouses[1]:GetNumberOfAssets(WAREHOUSE.Descriptor.GROUPNAME, invgroupname)
-                RedWareHouses[1]:AddAsset(invgroupname, math.ceil(maxunits/10), groupattrib)
+                local group = self.winvtemplate[y][1]
+                local ngroups = self.winvtemplate[y][2]
+                local forceattribute = self.winvtemplate[y][3]
+                local forcecargobay = self.winvtemplate[y][4]
+                local forceweight = self.winvtemplate[y][5]
+                local loadradius = self.winvtemplate[y][6]
+                local skill = self.winvtemplate[y][7]
+                local liveries = self.winvtemplate[y][8]
+                local assignment = self.winvtemplate[y][9]
+                -- WAREHOUSE:AddAsset(group, ngroups, forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
+                RedWareHouses[1]:AddAsset(group, math.ceil(ngroups/10), forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
             end
 
             WCHAIN.DEBUG("Adding Daily Assets to Base Warehouse " .. RedWareHouses[1].alias)
@@ -1490,7 +1569,7 @@ function RedOffMapSupply()
     local spawnresupply = false
 
     for y=1, #RedBaseWareHouseInv do
-        local groupattrib = RedBaseWareHouseInv[y][3]
+        -- local groupattrib = RedBaseWareHouseInv[y][3]    -- UNDEF
         local invgroupname = RedBaseWareHouseInv[y][1]
         local maxunits = RedBaseWareHouseInv[y][2]
         local supplierassetcount = RedWareHouses[1]:GetNumberOfAssets(WAREHOUSE.Descriptor.GROUPNAME, invgroupname)

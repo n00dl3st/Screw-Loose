@@ -818,3 +818,5 @@ do
   end
   _AWACS.INFO('AWACS: Init: Done')
 end
+
+-- Spawn managers and control logic
