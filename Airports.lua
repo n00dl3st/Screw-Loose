@@ -22,5 +22,12 @@ pseudoATC:Start()
         (tail call): ?
         [C]: in function 'xpcall'
         [string "Scripts/Moose/Core/ScheduleDispatcher.lua"]:224: in function <[string "Scripts/Moose/Core/ScheduleDispatcher.lua"]:168>
+
+CleanUpAirports = CLEANUP_AIRBASE:New( { AIRBASE.Caucasus.Kobuleti,
+                                AIRBASE.Caucasus.Senaki_Kolkhi,
+                                AIRBASE.Caucasus.Sukhumi_Babushara,
+                                AIRBASE.Caucasus.Gudauta,
+                                AIRBASE.Caucasus.Sochi_Adler,
+                                AIRBASE.Caucasus.Maykop_Khanskaya
+                                } )
 --]]
---CleanUpAirports = CLEANUP_AIRBASE:New( { AIRBASE.Caucasus.Senaki_Kolkhi,AIRBASE.Caucasus.Kobuleti,AIRBASE.Caucasus.Sochi_Adler,AIRBASE.Caucasus.Nalchik } )

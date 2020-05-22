@@ -51,7 +51,11 @@
 -- Requests to be defined in logistics file for screw loose mission framework
 -- aircraft and ground units control code within dispatcher files.
 
-
+----------------------------------------------------------------------
+-- SUPPLY CHAIN BEGINS
+----------------------------------------------------------------------
+-- SUPPLY CHAIN BEGINS
+----------------------------------------------------------------------
 ----------------------------------------------------------------------
 -- WCHAIN CLASS Def
 ----------------------------------------------------------------------
@@ -111,20 +115,9 @@ WCHAIN.DEBUG = function(text)
 end
 
 WCHAIN_DEBUG = true
-
-----------------------------------------------------------------------
--- WCHAIN DB
-----------------------------------------------------------------------
--- @type WCHAIN.db
--- @field #table Nodes Table holding all defined @{#WCHAIN} objects.
-WCHAIN.db = {
-    Nodes = {}
-}
-
 WCHAIN.INFO( "------------------------------------------------" )
 WCHAIN.INFO("             Supply Chain")
 WCHAIN.INFO( "------------------------------------------------" )
-
 ----------------------------------------------------------------------
 -- Global Defines
 ----------------------------------------------------------------------
@@ -167,18 +160,23 @@ BlueDefaultWareHouseInventory = {}
 RedDefaultWareHouseInventory = {}
 
 -- TODO for now this list needs to be in the order warehouses are defined in ME #001, #002, #003 etc..
+-- simple user define keys to match ME zones would make it idiot proof.
 WareHouseAlias = {"Kobuleti",
-            "Senaki-Kolkhi",
+            "Senaki_Kolkhi",
             "Zugdidi",
             "BlueFrontLine",
-            "Sukhumi-Babushara",
+            "Sukhumi_Babushara",
             "Sukhumi",
             "Gudauta",
-            "Sochi-Adler",
-            "Maykop-Khanskaya"
+            "Sochi_Adler",
+            "Maykop_Khanskaya"
         }
 
-local warehouse= {}
+WarehouseDB = {}
+
+-- TODO Is this needed? or is it just an odd hold over from ported code...?
+-- test replacing refereces with WarehouseDB
+local warehouse = {}
 
 ----------------------------------------------------------------------
 -- Warehouse Invetory Def
@@ -202,17 +200,19 @@ local warehouse= {}
 -- Blue
 -- Warehouse Template for warehouses with baseind = true
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Infantry Platoon", 24, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 1000, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Infantry Platoon #002", 12, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 1000, nil,{}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Truck", 20, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil,{}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue APC1", 20, WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil,{}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Armor Group", 20, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil,{}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense SAM", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense Gun #002", 10, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense SAM #002", 10, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"A10 Tactical Bomber", 12, WAREHOUSE.Attribute.AIR_BOMBER, nil, nil, nil, nil,{}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue CAP", 12, WAREHOUSE.Attribute.AIR_FIGHTER, nil, nil, nil, nil,{}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"C-130Herc", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, 50000, nil, nil, nil,{}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Transport Helo CH47", 6, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 4000, nil, nil, nil,{}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Infantry Platoon #002", 12, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 1000, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Truck", 20, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue APC1", 20, WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Armor Group", 20, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense SAM", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense Gun #002", 10, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense SAM #002", 10, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"A10 Tactical Bomber", 12, WAREHOUSE.Attribute.AIR_BOMBER, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue CAP", 12, WAREHOUSE.Attribute.AIR_FIGHTER, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"C-130Herc", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"C-17Globe", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, 50000, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Transport Helo CH47", 6, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 4000, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Overlord", 1, WAREHOUSE.Attribute.AIR_AWACS, nil, nil, nil, nil, {}, "", 0}
 
 -- Red
 -- Warehouse Template for warehouses with baseind = true
@@ -223,7 +223,8 @@ RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Armor Group", 20, WAREHOUSE.
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red SAM #001", 15, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red SAM #002", 15, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"SU-33 CAP", 12, WAREHOUSE.Attribute.AIR_FIGHTER, nil, nil, nil, nil,{}, "", 0}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Plane", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, 50000, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"An30", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"IL76", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, 50000, nil, nil, nil,{}, "", 0}
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Helo MI8", 2, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, nil, nil,{}, "", 0}
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Helo MI24", 2, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, nil, nil,{}, "", 0}
 
@@ -813,6 +814,8 @@ function WCHAIN:AddWarehouseToChain(coalition)
         self.BaseWarehouse = BlueWareHouses[1]
         -- Set PrevAirWarehouse
         self.PrevAirhouse = BlueWareHouses[1]
+        -- Add to Database
+        WarehouseDB[wbuildstring] = self.ThisWarehouse
 
     else  -- Process RED AddWarehouseToChain Requests
         -- Use Human readable alias to name warehouse
@@ -863,6 +866,8 @@ function WCHAIN:AddWarehouseToChain(coalition)
          self.BaseWarehouse = RedWareHouses[1]
          -- Set PrevAirWarehouse
          self.PrevAirhouse = RedWareHouses[1]
+        -- Add to Database
+        WarehouseDB[wbuildstring] = self.ThisWarehouse
     end
 
     -- Set Warehouse status updates to 2min
@@ -1295,6 +1300,11 @@ function WCHAIN:SupplyChainManager(wrequestcount)
 end     -- End of SupplyChainManager()
 
 ----------------------------------------------------------------------
+-- SUPPLY CHAIN ENDS
+----------------------------------------------------------------------
+-- SUPPLY CHAIN ENDS
+----------------------------------------------------------------------
+----------------------------------------------------------------------
 -- WCHAIN:WarehouseProcessor() -- aka Warehouse defence
 ----------------------------------------------------------------------
 -- TODO this was never finished in the original, not sure how or if I'll handle this the same
@@ -1342,7 +1352,7 @@ return self
 end
 
 ----------------------------------------------------------------------
--- ProcessWarehouseChain() -- Test function
+-- ProcessWarehouseChain() 
 ----------------------------------------------------------------------
 function ProcessWarehouseChain(lcoalition)
     local DebugFunc = "ProcessWarehouseChain(): "
@@ -1352,14 +1362,14 @@ function ProcessWarehouseChain(lcoalition)
         -- Blue
         -- Sneaki-Kolkhi (Airbase)
         BWChain["wchain #002"].spawnwithinv = true
-        BWChain["wchain #002"].fullstrength = true
+        BWChain["wchain #002"].fullstrength = false
         BWChain["wchain #002"].baseind = true
         BWChain["wchain #002"].strengthp = 100
         BWChain["wchain #002"].nodename = "wchain #002"
         BWChain["wchain #002"] = BWChain["wchain #002"]:AddWarehouseToChain(coalition.side.BLUE)
 
         -- Zugdidi (FARP)
-        BWChain["wchain #003"].spawnwithinv = true
+        BWChain["wchain #003"].spawnwithinv = false
         BWChain["wchain #003"].fullstrength = false
         BWChain["wchain #003"].baseind = false
         BWChain["wchain #003"].strengthp = 100
@@ -1418,6 +1428,7 @@ function ProcessWarehouseChain(lcoalition)
         RWChain["wchain #005"] = RWChain["wchain #005"]:AddWarehouseToChain(coalition.side.RED)
 
         ProcessedChains = true
+        SUPPLYCHAINREADY = true
     end
 
     WCHAIN.DEBUG(DebugFunc .. "My Coalition = " .. mycoalition)
@@ -1588,8 +1599,8 @@ function RedOffMapSupply()
 end
 
 ----------------------------------------------------------------------
--- Force Testing schedule.
+-- Boot Supply Chain
 ----------------------------------------------------------------------
 SchedulerObject, SchedulerID = SCHEDULER:New( nil, BuildChain, {}, 2, 0 )
-SchedulerObject, SchedulerID = SCHEDULER:New( nil, ProcessWarehouseChain, {coalition.side.RED}, 60, RedSupplyManagerDuration )
-SchedulerObject, SchedulerID = SCHEDULER:New( nil, ProcessWarehouseChain, {coalition.side.BLUE}, 30, BlueSupplyManagerDuration )
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, ProcessWarehouseChain, {coalition.side.RED}, 5, RedSupplyManagerDuration )
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, ProcessWarehouseChain, {coalition.side.BLUE}, 2, BlueSupplyManagerDuration )
