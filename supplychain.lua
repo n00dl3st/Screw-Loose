@@ -114,7 +114,8 @@ WCHAIN.DEBUG = function(text)
    end
 end
 
-WCHAIN_DEBUG = true
+WCHAIN_DEBUG = false
+
 WCHAIN.INFO( "------------------------------------------------" )
 WCHAIN.INFO("             Supply Chain")
 WCHAIN.INFO( "------------------------------------------------" )
@@ -122,6 +123,7 @@ WCHAIN.INFO( "------------------------------------------------" )
 -- Global Defines
 ----------------------------------------------------------------------
 ProcessedChains = false
+SUPPLYCHAINREADY = false
 
 BlueWareHouses = {}
 RedWareHouses = {}
@@ -133,35 +135,41 @@ RWChain = {}
 BlueWareHouseCounter = 1
 RedWareHouseCounter = 1
 
+-- Off map supplies
 BlueSupplyTriggerTime = 0
-BlueResupplyInterval = 1*60  -- 1min  -- 1 * 3600 -- 1 hour
+BlueResupplyInterval = 1 * 3600 -- 1 hour
 
 RedSupplyTriggerTime = 0
 RedResupplyInterval = 1 * 3600 -- 1 hour
 
-RedSupplyManagerDuration = 300
-BlueSupplyManagerDuration = 300
-
-nextactioninterval = 2*60  -- 2min  -- 2 * 3600  -- 2 hours
-
-BlueSupplyWarehouse = SPAWNSTATIC:NewFromStatic("Supply_Zone_Warehouse1", country.id.USA)
-RedSupplyWarehouse = SPAWNSTATIC:NewFromStatic("Supply_Zone_Warehouse1", country.id.RUSSIA)
-
 BlueoffMapZone = ZONE:New("BlueOffMapZone")
 RedOffMapZone = ZONE:New("RedOffMapZone")
+
+-- Supply manager process interval
+BlueSupplyManagerDuration = 300
+RedSupplyManagerDuration = 400
+
+-- Warehouse Defences
+nextactioninterval = 2 * 3600  -- 2 hours
+
+-- Staic object to spawn from
+BlueSupplyWarehouse = SPAWNSTATIC:NewFromStatic("Supply_Zone_Warehouse1", country.id.USA)
+RedSupplyWarehouse = SPAWNSTATIC:NewFromStatic("Supply_Zone_Warehouse1", country.id.RUSSIA)
 
 BlueBaseWarehouseInv = {}
 RedBaseWareHouseInv = {}
 
-BlueWareHouseCustomInventory = {}
-RedWareHouseCustomInventory = {}
-
 BlueDefaultWareHouseInventory = {}
 RedDefaultWareHouseInventory = {}
 
+BlueWareHouseCustomInventory = {}
+RedWareHouseCustomInventory = {}
+
 -- TODO for now this list needs to be in the order warehouses are defined in ME #001, #002, #003 etc..
 -- simple user define keys to match ME zones would make it idiot proof.
-WareHouseAlias = {"Kobuleti",
+-- REPLACED WITH DATABASE
+
+WarehouseDB = {"Kobuleti",
             "Senaki_Kolkhi",
             "Zugdidi",
             "BlueFrontLine",
@@ -171,8 +179,6 @@ WareHouseAlias = {"Kobuleti",
             "Sochi_Adler",
             "Maykop_Khanskaya"
         }
-
-WarehouseDB = {}
 
 -- TODO Is this needed? or is it just an odd hold over from ported code...?
 -- test replacing refereces with WarehouseDB
@@ -199,8 +205,8 @@ local warehouse = {}
 
 -- Blue
 -- Warehouse Template for warehouses with baseind = true
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Infantry Platoon", 24, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 1000, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Infantry Platoon #002", 12, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 1000, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Infantry Platoon", 24, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Infantry Platoon #002", 12, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Truck", 20, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil, {}, "", 0}
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue APC1", 20, WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil, {}, "", 0}
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Armor Group", 20, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil, {}, "", 0}
@@ -209,14 +215,14 @@ BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense Gun #002", 10
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense SAM #002", 10, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"A10 Tactical Bomber", 12, WAREHOUSE.Attribute.AIR_BOMBER, nil, nil, nil, nil, {}, "", 0}
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue CAP", 12, WAREHOUSE.Attribute.AIR_FIGHTER, nil, nil, nil, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"C-130Herc", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, nil, nil, nil, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"C-17Globe", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, 50000, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"C-130Herc", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, nil, nil, 0, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"C-17Globe", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, 50000, nil, 0, nil, {}, "", 0}
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Transport Helo CH47", 6, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 4000, nil, nil, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Overlord", 1, WAREHOUSE.Attribute.AIR_AWACS, nil, nil, nil, nil, {}, "", 0}
-
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Overlord", 2, WAREHOUSE.Attribute.AIR_AWACS, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Texaco", 2, WAREHOUSE.Attribute.AIR_TANKER, nil, nil, nil, nil, {}, "", 0}
 -- Red
 -- Warehouse Template for warehouses with baseind = true
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Infantry Platoon", 40, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 1000, nil, {}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Infantry Platoon", 40, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Truck", 30, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil,{}, "", 0}
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red APC", 30, WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil,{}, "", 0}
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Armor Group", 20, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil,{}, "", 0}
@@ -228,25 +234,27 @@ RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"IL76", 2, WAREHOUSE.Attribute.AI
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Helo MI8", 2, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, nil, nil,{}, "", 0}
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Helo MI24", 2, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, nil, nil,{}, "", 0}
 
-
 -- Blue 
 -- Default Warehouse Template for warehouses with baseind = false and No Custom Inventory template
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Infantry Platoon", 4, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 1000, nil, {}, "", 0}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Truck", 4, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil,{}, "", 0}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Armor Group", 4, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil,{}, "", 0}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense SAM #002", 2, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense Gun #002", 2, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Infantry Platoon", 2, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Infantry Platoon #002", 2, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Truck", 5, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil, {}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue APC1", 5, WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil, {}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Armor Group", 5, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil, {}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense SAM", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense Gun #002", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense SAM #002", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
 BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Transport Helo CH47", 2, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 4000, nil, nil, nil,{}, "", 0}
 
 -- Red 
 -- Default Warehouse Template for warehouses with baseind = false and No Custom Inventory template
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Infantry Platoon", 4, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 1000, nil, {}, "", 0}
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Truck", 4, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil,{}, "", 0}
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red APC", 4, WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil,{}, "", 0}
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Armor Group", 4, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil,{}, "", 0}
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red SAM #001", 2, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Transport Helo MI8", 1, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, nil, nil,{}, "", 0}
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Transport Helo MI24", 1, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, nil, nil,{}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Infantry Platoon", 4, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 5000, nil, {}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Truck", 5, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, 100, nil,{}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red APC", 5, WAREHOUSE.Attribute.GROUND_APC, nil, nil, 100, nil,{}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Armor Group", 5, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil,{}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red SAM #001", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Transport Helo MI8", 1, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, 2000, nil,{}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Transport Helo MI24", 1, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, 2000, nil,{}, "", 0}
 
 -- TODO These are borken
 --[[ 
@@ -375,7 +383,7 @@ function BuildChain()
             BWChain[tempnodename].baseind = true
             BWChain[tempnodename].Node = node
             BWChain[tempnodename].fullstrength = true
-            BWChain[tempnodename].alias = WareHouseAlias[y]
+            BWChain[tempnodename].alias = WarehouseDB[y]
 
             BWChain[tempnodename] = BWChain[tempnodename]:AddWarehouseToChain(coalition.side.BLUE)
         else
@@ -384,7 +392,7 @@ function BuildChain()
             BWChain[tempnodename].nodename = tempnodename
             BWChain[tempnodename].Node = node
             BWChain[tempnodename].wchainindex = y
-            BWChain[tempnodename].alias = WareHouseAlias[y]
+            BWChain[tempnodename].alias = WarehouseDB[y]
             --if y == 2 then
             --    BWChain[tempnodename].fullstrength = true
             --end
@@ -504,7 +512,7 @@ function BuildChain()
             RWChain[tempnodename].baseind = true
             RWChain[tempnodename].Node = node
             RWChain[tempnodename].fullstrength = true
-            RWChain[tempnodename].alias = WareHouseAlias[index]
+            RWChain[tempnodename].alias = WarehouseDB[index]
 
             RWChain[tempnodename] = RWChain[tempnodename]:AddWarehouseToChain(coalition.side.RED)
         else
@@ -512,7 +520,7 @@ function BuildChain()
             RWChain[tempnodename].nodename = tempnodename
             RWChain[tempnodename].Node = node
             RWChain[tempnodename].wchainindex = y
-            RWChain[tempnodename].alias = WareHouseAlias[index]
+            RWChain[tempnodename].alias = WarehouseDB[index]
             RWChain[tempnodename] = RWChain[tempnodename]:GetPrevNodeName(coalition.side.RED)
         end
 
@@ -1240,7 +1248,7 @@ function WCHAIN:SupplyChainManager(wrequestcount)
                                                                     WAREHOUSE.Descriptor.GROUPNAME,
                                                                     invgroupname,
                                                                     unitstospawn,
-                                                                    WAREHOUSE.TransportType.APC,
+                                                                     WAREHOUSE.TransportType.APC,
                                                                     1,
                                                                     10,
                                                                     "AutoResupply"
@@ -1361,8 +1369,8 @@ function ProcessWarehouseChain(lcoalition)
     if ProcessedChains == false then
         -- Blue
         -- Sneaki-Kolkhi (Airbase)
-        BWChain["wchain #002"].spawnwithinv = true
-        BWChain["wchain #002"].fullstrength = false
+        BWChain["wchain #002"].spawnwithinv = false
+        BWChain["wchain #002"].fullstrength = true
         BWChain["wchain #002"].baseind = true
         BWChain["wchain #002"].strengthp = 100
         BWChain["wchain #002"].nodename = "wchain #002"
@@ -1404,16 +1412,16 @@ function ProcessWarehouseChain(lcoalition)
         RWChain["wchain #008"] = RWChain["wchain #008"]:AddWarehouseToChain(coalition.side.RED)
 
         -- Gudauta (Airbase)
-        RWChain["wchain #007"].spawnwithinv = true
-        RWChain["wchain #007"].fullstrength = false
+        RWChain["wchain #007"].spawnwithinv = false
+        RWChain["wchain #007"].fullstrength = true
         RWChain["wchain #007"].baseind = true
         RWChain["wchain #007"].strengthp = 100
         RWChain["wchain #007"].nodename = "wchain #007"
         RWChain["wchain #007"] = RWChain["wchain #007"]:AddWarehouseToChain(coalition.side.RED)
 
         -- Sukhumi (FARP)
-        RWChain["wchain #006"].spawnwithinv = true
-        RWChain["wchain #006"].fullstrength = false
+        RWChain["wchain #006"].spawnwithinv = false
+        RWChain["wchain #006"].fullstrength = true
         RWChain["wchain #006"].baseind = false
         RWChain["wchain #006"].strengthp = 100
         RWChain["wchain #006"].nodename = "wchain #006"
@@ -1421,14 +1429,16 @@ function ProcessWarehouseChain(lcoalition)
 
         -- Sukhumi-Babushara (Airbase)
         RWChain["wchain #005"].spawnwithinv = false
-        RWChain["wchain #005"].fullstrength = false
+        RWChain["wchain #005"].fullstrength = true
         RWChain["wchain #005"].baseind = true
         RWChain["wchain #005"].strengthp = 100
         RWChain["wchain #005"].nodename = "wchain #005"
         RWChain["wchain #005"] = RWChain["wchain #005"]:AddWarehouseToChain(coalition.side.RED)
 
         ProcessedChains = true
+        -- Setup complete call Logistics functions
         SUPPLYCHAINREADY = true
+        Logistics()
     end
 
     WCHAIN.DEBUG(DebugFunc .. "My Coalition = " .. mycoalition)
@@ -1601,6 +1611,6 @@ end
 ----------------------------------------------------------------------
 -- Boot Supply Chain
 ----------------------------------------------------------------------
-SchedulerObject, SchedulerID = SCHEDULER:New( nil, BuildChain, {}, 2, 0 )
-SchedulerObject, SchedulerID = SCHEDULER:New( nil, ProcessWarehouseChain, {coalition.side.RED}, 5, RedSupplyManagerDuration )
-SchedulerObject, SchedulerID = SCHEDULER:New( nil, ProcessWarehouseChain, {coalition.side.BLUE}, 2, BlueSupplyManagerDuration )
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, BuildChain, {}, 5, 0 )
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, ProcessWarehouseChain, {coalition.side.BLUE}, 10, BlueSupplyManagerDuration )
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, ProcessWarehouseChain, {coalition.side.RED}, 15, RedSupplyManagerDuration )

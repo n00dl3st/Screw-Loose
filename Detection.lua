@@ -37,6 +37,7 @@ Red_Ground_Detection:Start()
 ----------------------------------------------------------------------
 -- Blue Designation
 ----------------------------------------------------------------------
+--[[
 env.info( "------------------------------------------------" )
 env.info("          Loading Designation")
 env.info( "------------------------------------------------" )
@@ -49,3 +50,4 @@ BlueRecceDesignation:GenerateLaserCodes()
 --BlueRecceDesignation:AddMenuLaserCode( 1680, "Lase with %d for A-10A" )
 -- Start the detection process in 5 seconds.
 BlueRecceDesignation:__Detect( -5 )
+--]]

@@ -8,6 +8,7 @@ env.info( "------------------------------------------------" )
 env.info("          Loading Squadrons")
 env.info( "------------------------------------------------" )
 
+--[[
 ----------------------------------------------------------------------
 -- Blue Fighter Squadron defaults
 ----------------------------------------------------------------------
@@ -151,3 +152,4 @@ Red_A2G:SetSquadronGrouping("Red_Helo_BAI",2)
 Red_A2G:SetSquadronBaiPatrol("Red_Helo_BAI", Red_Helo_CAP, 76, 91, 148, 250, 250, 300)
 Red_A2G:SetSquadronPatrolInterval("Red_Helo_BAI", 2, 180, 600, 1, "BAI")
 
+--]]

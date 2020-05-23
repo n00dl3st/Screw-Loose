@@ -71,33 +71,123 @@ env.info( "------------------------------------------------" )
 -- WAREHOUSE:onafterAddRequest(From, Event, To, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
 -- WAREHOUSE:onbeforeAddRequest(From, Event, To, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
 
+function Logistics()
 if SUPPLYCHAINREADY == true then
-    ---------------------------------------------------------
-    --  OnAfterSelfRequest
-    ---------------------------------------------------------
-    function WarehouseDB.Kobuleti:OnAfterSelfRequest(From,Event,To,groupset,request)
-        local groupset = groupset
-        local request = request
+-----------------------------------------------------------------
+--  BlUE
+-----------------------------------------------------------------
+        ---------------------------------------------------------
+        -- Kobuleti
+        ---------------------------------------------------------
+        -- OnAfterSelfRequest
+        ---------------------------------------------------------
+        --  Air Assets
+            function WarehouseDB.Kobuleti:OnAfterSelfRequest(From,Event,To,groupset,request)
+            local groupset = groupset
+            local request = request
 
-        if request.assignment == "AWACS" then
-            for _, group in ipairs(groupset:GetSetObjects()) do
-                local group = group --Wrapper.Group#GROUP
-                _AWACS.DEBUG('INIT: AWACS unt: '..group)
-                local fsm = _AWACS.FSM:New(group)
-                _AWACS._fsm[group] = fsm
-                fsm:Ready()
+            if request.assignment == "AWACS" then
+                for _, group in ipairs(groupset:GetSetObjects()) do
+                    local group = group --Wrapper.Group#GROUP
+                    local AWACSGroup = group:GetName()
+
+                    _AWACS.DEBUG('INIT: AWACS unt: '..AWACSGroup)
+
+                    local fsm = _AWACS.FSM:New(group)
+                    group:StartUncontrolled()
+                    _AWACS._fsm[group] = fsm
+                    fsm:Ready()
+                end
             end
+
+            if request.assignment == "TANKER" then
+                for _, group in ipairs(groupset:GetSetObjects()) do
+                    local group = group --Wrapper.Group#GROUP
+                    local TANKERGroup = group:GetName()
+
+                    _TANKER.DEBUG('INIT: TANKER unt: '..TANKERGroup)
+
+                    local fsm = _TANKER.FSM:New(group)
+                    group:StartUncontrolled()
+                    _TANKER._fsm[group] = fsm
+                    fsm:Ready()
+                end
+            end
+
         end
 
-    end
-end
+        --[[ Need to work this out, something like this...
+        function WarehouseDB.Kobuleti:OnAfterDelivered(From,Event,To,request)
+            local request = request
+
+            if request.assignment == "AWACS" then
+                if group and group:IsAlive() then
+                    local velocity = group:GetUnit(1):GetVelocity()
+                    local total_speed = math.abs(velocity.x) + math.abs(velocity.y) + math.abs(velocity.z)
+                    if total_speed < 3 then
+                        group:Debug('removing unit')
+                        group:Destroy()
+                    end
+                end
+        --]]
+
 --[[ Don't run unfinished code...
 function warehouse.Senaki_Kolkhi:OnAfterSelfRequest(From,Event,To,groupset,request)
 
 function warehouse.Zugdidi:OnAfterSelfRequest(From,Event,To,groupset,request)
+--]]
+        ---------------------------------------------------------
+        -- BlueFrontLine
+        ---------------------------------------------------------
+        -- OnAfterSelfRequest
+        ---------------------------------------------------------
+        --  Gound Assets
+        function WarehouseDB.BlueFrontLine:OnAfterSelfRequest(From,Event,To,groupset,request)
+            local groupset=groupset --Core.Set#SET_GROUP
+            local request=request   --Functional.Warehouse#WAREHOUSE.Pendingitem
 
-function warehouse.BlueFrontLine:OnAfterSelfRequest(From,Event,To,groupset,request)
+            if request.assignment == "BlueFrontLine" then -- Check request
+                for _,group in pairs(groupset:GetSet()) do  -- loop over set returned by request
+                    local group=group --Wrapper.Group#GROUP -- get group
+                    -- Route group to location
+                    -- get zone set
+                    -- select random zone
+                    -- pass group route
+                    -- group:RouteGroundOnRoad(ToCoord, group:GetSpeedMax()*0.8)
+                    local BlueAreasOfOperations = Blu_Arm_Zone:GetSetObjects()
+                    local AO = BlueAreasOfOperations[math.random(1, table.getn(BlueAreasOfOperations))]
+                    -- Route group to Battle zone.
+                    local ToCoord=(AO:GetRandomPointVec2())
+                    group:Activate()
+                    -- use on road
+                    group:RouteGroundTo(ToCoord, group:GetSpeedMax()*0.8)
 
+                end
+            end
+        end
+        ---------------------------------------------------------
+        -- OnAfterAssetDead
+        ---------------------------------------------------------
+        function WarehouseDB.BlueFrontLine:OnAfterAssetDead(From, Event, To, asset, request)
+            local asset=asset       --Functional.LOGISTICS#LOGISTICS.Assetitem
+            local request=request   --Functional.LOGISTICS#LOGISTICS.Pendingitem
+            -- Get assignment.
+            local assignment=WarehouseDB.BlueFrontLine:GetAssignment(request)
+            -- make request
+            -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
+            WarehouseDB.BlueFrontLine:AddRequest(WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.CATEGORY, Group.Category.GROUND, 1, nil, nil, 100, assignment)
+        end
+        ---------------------------------------------------------
+        -- OnAfterNewAsset
+        ---------------------------------------------------------
+        function WarehouseDB.BlueFrontLine:OnAfterNewAsset(From, Event, To, asset, assignment)
+            local asset=asset --Functional.Warehouse#WAREHOUSE.Assetitem
+            BootBlueFrontLine()
+        end
+--[[
+-----------------------------------------------------------------
+--  RED
+-----------------------------------------------------------------
 function warehouse.Sukhumi_Babushara:OnAfterSelfRequest(From,Event,To,groupset,request)
 
 function warehouse.Sukhumi:OnAfterSelfRequest(From,Event,To,groupset,request)
@@ -117,8 +207,6 @@ function warehouse.Senaki_Kolkhi:OnAfterAssetDead(From, Event, To, asset, reques
 
 function warehouse.Zugdidi:OnAfterAssetDead(From, Event, To, asset, request)
 
-function warehouse.BlueFrontLine:OnAfterAssetDead(From, Event, To, asset, request)
-
 function warehouse.Sukhumi_Babushara:OnAfterAssetDead(From, Event, To, asset, request)
 
 function warehouse.Sukhumi:OnAfterAssetDead(From, Event, To, asset, request)
@@ -129,3 +217,5 @@ function warehouse.Sochi_Adler:OnAfterAssetDead(From, Event, To, asset, request)
 
 function warehouse.Maykop_Khanskaya:OnAfterAssetDead(From, Event, To, asset, request)
 --]]
+end
+end

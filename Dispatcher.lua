@@ -11,6 +11,7 @@ env.info( "------------------------------------------------" )
 env.info("          Loading Dispatcher")
 env.info( "------------------------------------------------" )
 
+--[[
 ----------------------------------------------------------------------
 -- Blue Fighter GCI Setup
 ----------------------------------------------------------------------
@@ -56,6 +57,31 @@ Red_A2G:AddDefenseCoordinate("A2G Gudauta",ZONE:FindByName("A2G Gudauta"):GetCoo
 Red_A2G:AddDefenseCoordinate("A2G Tbilisi",ZONE:FindByName("A2G Tbilisi"):GetCoordinate())
 Red_A2G:SetDefenseRadius(92600) -- 50nm
 Red_A2G:SetDefenseReactivityMedium()
+--]]
+
+----------------------------------------------------------------------
+-- Supply Chain related Dispatcher Functions.
+----------------------------------------------------------------------
+-- WAREHOUSE:AssetDead(asset, request)   -- Triggers the FSM event "AssetDead" when an asset group has died.
+-- WAREHOUSE:AssetLowFuel(asset, request)    -- Triggers the FSM event "AssetLowFuel" when an asset runs low on fuel
+-- WAREHOUSE:AssetSpawned(group, asset, request)   -- Triggers the FSM e
+
+----------------------------------------------------------------------
+-- Blue Ground Forces Dispatchers
+----------------------------------------------------------------------
+-- Blue front line boot
+function BootBlueFrontLine()
+  for i=1,3 do
+    local time=(i-1)*60+10
+    -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
+    -- Troops Broken
+    --WarehouseDB.BlueFrontLine:AddRequest(WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_INFANTRY, 4,nil, nil, 10, "BlueFrontLine")
+    -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
+    WarehouseDB.BlueFrontLine:AddRequest(WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_APC, 3, nil, nil, 20, "BlueFrontLine")
+    -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
+    WarehouseDB.BlueFrontLine:AddRequest(WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TANK, 3, nil, nil, 30, "BlueFrontLine")
+  end
+end
 
 ----------------------------------------------------------------------
 -- Blue Support Squadrons Defintions 
@@ -66,11 +92,12 @@ env.info( "------------------------------------------------" )
 ----------------------------------------------------------------------
 -- Tankers
 ----------------------------------------------------------------------
+--[[
 _TANKER_UNITS = {
   {NAME='Texaco', TACAN=12 },
   {NAME='Tanker', TACAN=14 },
 }
- 
+--]]
 -- Minimum fuel
 ---------------
 _TANKER_MIN_FUEL = 0.3
@@ -108,97 +135,104 @@ if _TANKER_DEBUG then
 else
     _TANKER.DEBUG_MENU = nil
 end
- 
---- Custom Tanker "class"
+
+  ----------------------------------------------------------------------
+  -- function _TANKER.Awacs:New
+  ----------------------------------------------------------------------
 _TANKER.Tanker = {}
 function _TANKER.Tanker:New( group )
  
-    -- Copy the group spawned
-    local self = group
-   
-    self.going_home = false
-    self.route = self:GetTaskRoute()
-   
-    function self:Debug( text )
-        _TANKER.DEBUG(self:GetName()..': '..text)
+    group.rtb = false
+    --group:StartUncontrolled()
+    --TODO if coalition pick unit template to copy from
+    -- change this route collection method to be tied to REQUEST based template unit to clone
+    -- copy route from template unit
+    local tempRoute = GROUP:FindByName("Texaco"):CopyRoute(0, 0, true, 100)
+    -- add route to unit
+    group:Route(tempRoute)
+    -- copy route to group to allow hooks
+    group.route = tempRoute
+
+    function group:Debug( text )
+        _TANKER.DEBUG(group:GetName()..': '..text)
     end
    
     if _TANKER.DEBUG_MENU then
-        self.debug_menu = MENU_COALITION_COMMAND:New(
+      group.debug_menu = MENU_COALITION_COMMAND:New(
             coalition.side.BLUE,
-            'Destroy '..self:GetName(),
+            'Destroy '..group:GetName(),
             _TANKER.DEBUG_MENU,
-            self.Destroy,
-            self
+            group.Destroy,
+            group
         )
     end
    
-    self:Debug('hullo? Am I a tanker now?')
+    group:Debug('hullo? Am I a tanker now?')
    
     --- Send the tanker back to its homeplate
-    function self:RTB()
+    function group:RTB()
    
-        if not self.going_home then -- check that the tanker isn't already going home
+        if not group.going_home then -- check that the tanker isn't already going home
      
-            self:Debug('screw you guys, I\' going home') -- let the world know
+            group:Debug('screw you guys, I\' going home') -- let the world know
        
             -- Send the tanker to its last waypoint
-            local command = self:CommandSwitchWayPoint( 2, 1 )
-            self:SetCommand( command )
+            local command = group:CommandSwitchWayPoint( 2, 1 )
+            group:SetCommand( command )
            
             -- Create a 5km radius zone around the home plate
-            local last_wp = self.route[1]
-            self.rtb_zone = ZONE_RADIUS:New(
-                'rtb_'..self:GetName(),
+            local last_wp = group.route[1]
+            group.rtb_zone = ZONE_RADIUS:New(
+                'rtb_'..group:GetName(),
                 {x=last_wp.x, y=last_wp.y},
                 20000
             )
            
             -- Wait for the tanker to enter the zone; when it's in, remove all tasks, and force it to land
-            self.rtb_scheduler = SCHEDULER:New(
-                self,
+            group.rtb_scheduler = SCHEDULER:New(
+                group,
                 function()
-                    self:Debug('daddy, is it far yet ?')
-                    if self and self:IsAlive() then
-                        if self:IsCompletelyInZone(self.rtb_zone) then
-                            self:Debug('no place like home')
-                            self:ClearTasks()
-                            self:RouteRTB()
-                            self.rtb_scheduler:Stop()
-                            self:remove_debug_menu()
+                    group:Debug('daddy, is it far yet ?')
+                    if group and group:IsAlive() then
+                        if group:IsCompletelyInZone(group.rtb_zone) then
+                            group:Debug('no place like home')
+                            group:ClearTasks()
+                            group:RouteRTB()
+                            group.rtb_scheduler:Stop()
+                            group:remove_debug_menu()
                         end
                     end
                 end,
                 {}, 10, 10, 0, 0 )
  
             -- Wait for the tanker to stop, and remove it from the game once it has
-            self.despawn_scheduler = SCHEDULER:New(self,
+            group.despawn_scheduler = SCHEDULER:New(group,
                 function()
-                    self:Debug('I am so tired...')
-                    if self and self:IsAlive() then
-                        local velocity = self:GetUnit(1):GetVelocity()
+                    group:Debug('I am so tired...')
+                    if group and group:IsAlive() then
+                        local velocity = group:GetUnit(1):GetVelocity()
                         local total_speed = math.abs(velocity.x) + math.abs(velocity.y) + math.abs(velocity.z)
                         if total_speed < 3 then -- increased from 1
-                            self:Debug('Goodbye, cruel world !')
-                            self:Destroy()
+                            group:Debug('Goodbye, cruel world !')
+                            group:Destroy()
                         end
                     end
                 end,
                 {}, 10, 10, 0, 0)
  
-            self.going_home = true
+            group.going_home = true
         end
     end
    
     --- Create a zone around the first waypoint found with an "Orbit" task
-    function self:ZoneFromOrbitWaypoint()
+    function group:ZoneFromOrbitWaypoint()
        
         -- "x" & "y" are the waypoint's location
         local x
         local y
        
         -- Iterate over all waypoints
-        for _, wp_ in ipairs(self.route) do
+        for _, wp_ in ipairs(group.route) do
        
             -- Iterate over the tasks
             for _, task_ in ipairs(wp_['task']['params']['tasks']) do
@@ -229,21 +263,21 @@ function _TANKER.Tanker:New( group )
      
         -- If the waypoint has been found, create a 5k radius zone around it and return it
         if x then
-            self:Debug('creating ')
-            return ZONE_RADIUS:New(self:GetName(), {x=x, y=y}, _TANKER_REINF_RADIUS)
+            group:Debug('creating ')
+            return ZONE_RADIUS:New(group:GetName(), {x=x, y=y}, _TANKER_REINF_RADIUS)
         end
  
     end
    
     --- Returns the fuel onboard, as a percentage
-    function self:GetFuel()
-        local fuel_left = self:GetUnit(1):GetFuel()
-        self:Debug('I got '..fuel_left..' fuel left.')
+    function group:GetFuel()
+        local fuel_left = group:GetUnit(1):GetFuel()
+        group:Debug('I got '..fuel_left..' fuel left.')
         return fuel_left
     end
    
     --- Return the Tanker "instance"
-    return self
+    return group
 end
  
  
@@ -257,14 +291,18 @@ function _TANKER.FSM:Debug( text )
     _TANKER.DEBUG('FSM: '..self.template_name..': '..text)
 end
  
-function _TANKER.FSM:New( template )
+function _TANKER.FSM:New( group )
    
     -- Inherit from MOOSE's FSM
     local self = BASE:Inherit( self, FSM:New() )
+
+    -- copy template group from ME UNIT
+    self.template_name = group:GetName()
    
     -- Template name is the name of the group in the ME to copy from
-    self.template_name = template.NAME
-    self.tacan_channel = template.TACAN
+    -- TODO Need to code something to set TACAN
+    --self.tacan_channel = template.TACAN
+    self.tacan_channel = 10
    
     self:Debug('FSM created')
    
@@ -284,8 +322,9 @@ function _TANKER.FSM:New( template )
    
     -- Spawn a tanker group
     function self:SpawnNewTanker()    
-        self.group = _TANKER.Tanker:New(self.spawner:Spawn())
-   
+        --self.group = _TANKER.Tanker:New(self.spawner:Spawn())
+              -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
+      WarehouseDB.Kobuleti:AddRequest(WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.GROUPNAME, WAREHOUSE.Attribute.AIR_TANKER, 1, nil, nil, 10, "TANKER")
         -- Schedules the creation of the TACAN 10 seconds later, so the unit has time to appear
         self.tacan_scheduler = SCHEDULER:New(
           nil,
@@ -306,41 +345,38 @@ function _TANKER.FSM:New( template )
     function self:OnLeaveINIT(from, event, to)
         self:Debug('initializing FSM')
         self:Debug('creating spawner')
-        self.spawner = SPAWN:New(self.template_name)
+        self.spawner = group
     end
    
     -- Triggered when there is no *active* tanker
     function self:OnEnterNO_TANKER(from, event, to)
+      if self.template_name == nil then
         self:Debug('no tanker available; spawning new tanker')
-       
         self:SpawnNewTanker()
+      else
+        self.group = _TANKER.Tanker:New(self.spawner)
+      end
        
         -- If we come from "INIT" (the first ever state)
         if from == 'INIT' then
-       
             -- Create a zone around the first "Orbit" waypoint
             self:Debug('registering zone')
             local zone = self.group:ZoneFromOrbitWaypoint()
-           
             -- If we didn't find an "Orbit" waypoint, fail miserably
             if zone == nil then
                 self:Failure('no waypoint with task "Orbit" found for template: '..self.template_name)
             end
-           
             -- Otherwise, we're golden
             self.zone = zone
-
         end
        
         -- Let the FSM know we have a valid tanker
         self:Debug('registering new group: '..self.group:GetName())
         self:Spawned()
-
     end
    
     -- Triggered when there's a tanker making its way to the refueling track
     function self:OnEnterEN_ROUTE(from, event, to)
-   
         -- Triggered by a tanker almost out of fuel
         if event == 'WaitRTB' then
             self:Debug('a new tanker is on its way')
@@ -351,28 +387,21 @@ function _TANKER.FSM:New( template )
         self.monitor_arriving_tanker = SCHEDULER:New(
             nil,
             function(fsm, event)
-           
                 -- Check that it's still alive
                 if not fsm.group:IsAlive() then
                     fsm:Debug('transiting tanker has been destroyed')
-                   
                     -- Kill the periodic check
                     fsm.monitor_arriving_tanker:Stop()
-                   
                     -- Let the FSM know that someone derped
                     fsm:Destroyed()
                
                 -- When the tanker arrives at the orbit waypoint
                 elseif fsm.group:IsCompletelyInZone(fsm.zone) then
-               
                     fsm:Debug('tanker has arrived')
-                   
                     -- Kill the periodic check
                     fsm.monitor_arriving_tanker:Stop()
-                   
                     -- If an WaitRTB event triggered the state
                     if event == 'WaitRTB' then            
-                   
                         self:Debug('sending previous tanker home')
                         for _, tanker in ipairs(fsm.previous_tankers) do
                             if tanker and tanker:IsAlive() then
@@ -380,98 +409,62 @@ function _TANKER.FSM:New( template )
                             end
                         end
                     end
-           
                     -- Let the FSM know that we now have a tanker on station
                     fsm:Arrived()
                 end
             end,
             {self, event}, 10, 10, 0, 0
-        )    
+        )
     end
-   
+
     -- "Normal" state of the FSM; there's a tanker orbiting
     function self:OnEnterORBIT(from, event, to)
         self:Debug('tanker is orbiting at waypoint')
-       
         -- Periodic check
         self.monitor_orbiting_tanker = SCHEDULER:New(
         nil,
         function()
-           
             -- Is the tanker dead ?
             if not self.group:IsAlive() then
                 self:Debug('orbiting tanker has been destroyed')
-               
                 -- kill the check
                 self.monitor_orbiting_tanker:Stop()
-               
                 -- remove the debug menu
                 --self.group:remove_debug_menu()
-               
                 -- let the FSM know
                 self:Destroyed()
-           
             -- Is the tanker out of fuel ?
             elseif self.group:GetFuel() <= _TANKER_MIN_FUEL then
                 self:Debug('tanker will soon be out of fuel, spawning a new one')
-               
                 -- Register the tanker for later RTB
                 table.insert (self.previous_tankers, self.group)
-               
                 -- Kill the check
                 self.monitor_orbiting_tanker:Stop()
-               
                 -- Start a new tanker on the apron
                 self:SpawnNewTanker()
-               
                 -- Switch to the waiting state
                 self:WaitRTB()
             end
         end,
         {}, 10, 10, 0, 0)    
     end
-   
     return self
 end
- 
--- Start the tanker module
-do
- 
-    _TANKER.INFO('TANKER: INIT: START')
-   
-    -- Iterate over all the tanker templates
-    for _, unit in ipairs( _TANKER_UNITS ) do
-   
-        _TANKER.DEBUG('INIT: initializing tanker unit: '..unit.NAME)
-       
-        -- Create the FSM
-        local fsm = _TANKER.FSM:New(unit)
-       
-        -- Add it for sanity's sake
-        _TANKER._fsm[unit.NAME] = fsm
-       
-        -- And start it
-        fsm:Ready()
-    end
-       
-    _TANKER.INFO('TANKER: INIT: DONE')
- 
+
+-- Need to get the group name returned by supply chain
+-- bootstrap awacs
+function BootStrapTANKER()
+  _TANKER.INFO('TANKER: INIT: BootStrapTANKER()')
+  WarehouseDB.Kobuleti:AddRequest(WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_TANKER, 1, nil, nil, 10, "TANKER")
 end
 
 ----------------------------------------------------------------------
--- NOTES:
+-- AWACS
 ----------------------------------------------------------------------
-
 env.info( "------------------------------------------------" )
 env.info("          Loading awacs")
 env.info( "------------------------------------------------" )
 
---[[ Unit arry
-_AWACS_UNITS = {
-    {NAME='Overlord'},
-    --{NAME='AWACS'}
-  }
---]]
   -- min fuel to manage rtb and replacement
   _AWACS_MIN_FUEL = 0.3
   
@@ -519,117 +512,118 @@ _AWACS_UNITS = {
   -- @function [parent=#_AWACS.Awacs] New
   -- @param #group
   function _AWACS.Awacs:New(group)
-  
-    -- Copy ME awacs group
-    local self = group  
-    
     -- define and init rtb flag
-    self.rtb = false
-    -- copy ME route from unit
-    self.route = self:GetTaskRoute()
-    
+    group.rtb = false
+    --group:StartUncontrolled()
+    --TODO if coalition pick unit template to copy from
+    -- copy route from template unit
+    local tempRoute = GROUP:FindByName("Overlord"):CopyRoute(0, 0, true, 100)
+    -- add route to unit
+    group:Route(tempRoute)
+    -- copy route to group to allow hooks
+    group.route = tempRoute
+
     ----------------------------------------------------------------------
     -- function Debug
     ----------------------------------------------------------------------
     -- add debug function to unit
     -- @function [parent=#self] Debug
     -- @param #debugtext
-    function self:Debug(debugtext)
-      _AWACS.DEBUG(self:GetName()..': '..debugtext)
+    function group:Debug(debugtext)
+      _AWACS.DEBUG(group:GetName()..': '..debugtext)
     end
-  
   
     if _AWACS.DEBUG_MENU then
-      self.debug_menu = MENU_COALITION_COMMAND:New(
+      group.debug_menu = MENU_COALITION_COMMAND:New(
           coalition.side.BLUE,
-          'Destroy '..self:GetName(),
+          'Destroy '..group:GetName(),
           _AWACS.DEBUG_MENU,
-          self.Destroy,
-          self
+          group.Destroy,
+          group
       )
     end
-    
-    self:Debug('AWACS init')
-  
+
+    group:Debug('AWACS init')
+
     ----------------------------------------------------------------------
     -- function RTB
     ----------------------------------------------------------------------
     -- RTB function
     -- @function [parent=#self] RTB
     -- @param #none
-    function self:RTB()
+    function group:RTB()
       
       -- check rtb flag
-      if not self.rtb then
-        self:Debug('RTB')
-        
+      if not group.rtb then
+        group:Debug('RTB')
+
         -- send awacs to last waypoint
-        local command = self:CommandSwithcWayPoint(2,1)
-        self:SetCommand(command)
-        
+        local command = group:CommandSwithcWayPoint(2,1)
+        group:SetCommand(command)
+
         -- create zone around airbase, to enable stripping commands and force landing
-        local last_wp = self.route[1] -- TODO check array index in debugger
-        self.rtb_zone = ZONE_RADIUS:New(
-          'rtb_'..self:GetName(),
+        local last_wp = group.route[1] -- TODO check array index in debugger
+        group.rtb_zone = ZONE_RADIUS:New(
+          'rtb_'..group:GetName(),
           {x=last_wp.x, y=last_wp.y},
           20000
         )
-        
+
         ----------------------------------------------------------------------
         -- Schedule in zone check
         ----------------------------------------------------------------------
         -- check group in zone, strip all tasks
-        self.rtb_scheduler = SCHEDULER:New(self,
+        group.rtb_scheduler = SCHEDULER:New(group,
           function()
-            self:Debug('Are we there yet?')
-            if self and self:IsAlive() then
-              if self:IsCompletelyInZone(self.rtb_zone) then
-                self:Debug('In rtb zone')
-                self:ClearTasks()
-                self:RouteRTB()
-                self.rtb_scheduler:Stop()
-                self:remove_debug_menu()
+            group:Debug('Are we there yet?')
+            if group and group:IsAlive() then
+              if group:IsCompletelyInZone(group.rtb_zone) then
+                group:Debug('In rtb zone')
+                group:ClearTasks()
+                group:RouteRTB()
+                group.rtb_scheduler:Stop()
+                group:remove_debug_menu()
               end
             end
           end, -- remeber  , !!!! this block is an arg list!!
           {}, 10, 10, 0, 0)
-          
+
           ----------------------------------------------------------------------
           -- Schedule shutdown check
           ----------------------------------------------------------------------
           -- when unit stopped despawn
-          self.despawn_scheduler = SCHEDULER:New(self,
+          group.despawn_scheduler = SCHEDULER:New(group,
             function()
-              self:Debug('Engines shutdown')
-              if self and self:IsAlive() then
-                local velocity = self:GetUnit(1):GetVelocity()
+              group:Debug('Engines shutdown')
+              if group and group:IsAlive() then
+                local velocity = group:GetUnit(1):GetVelocity()
                 local total_speed = math.abs(velocity.x) + math.abs(velocity.y) + math.abs(velocity.z)
                 if total_speed < 3 then
-                  self:Debug('removing unit')
-                  self:Destroy()
+                  group:Debug('removing unit')
+                  group:Destroy()
                 end
               end
             end, -- remeber  , !!!! this block is an arg list!!
           {}, 10, 10, 0, 0)
-          
+
         -- set RTB flag
-        self.rtb = true
+        group.rtb = true
       end
     end
-  
+
     ----------------------------------------------------------------------
     -- function Get orbit wp and create zone to mark it
     ----------------------------------------------------------------------
     -- create zone round orbit wp
     -- @function [parent=#self] ZoneFromOrbitWaypoint
     -- @param #none
-    function self:ZoneFromOrbitWaypoint()
+    function group:ZoneFromOrbitWaypoint()
       -- vars to store x,y coords
       local x
       local y
-      
+
       -- iterate over wp's
-      for _, wp_ in ipairs(self.route) do
+      for _, wp_ in ipairs(group.route) do
         -- iterate over tasks
         for _, task_ in ipairs(wp_['task']['params']['tasks']) do
           -- wp found
@@ -639,7 +633,7 @@ _AWACS_UNITS = {
             y = wp_['y']
             -- break loop
             break
-            
+
           -- manage edge cases, player controlled
           elseif task_['id'] == 'ControlledTask' then
             if task_['params']['task']['id'] == 'Orbit' then
@@ -649,33 +643,36 @@ _AWACS_UNITS = {
             end
           end
         end
-      
+
         -- if wp found break loop completely
         if not x == nil then 
           break 
         end
       end
-    
+
       -- if wp is valid create zone around orbit wp
       if x then
-        self:Debug('creating ')
-        return ZONE_RADIUS:New(self:GetName(),{x=x, y=y},_AWACS_ONSTATION_RADIUS)
+        group:Debug('creating ')
+        return ZONE_RADIUS:New(group:GetName(),{x=x, y=y},_AWACS_ONSTATION_RADIUS)
       end
     end
    
     ----------------------------------------------------------------------
     -- function Fuel check
     ----------------------------------------------------------------------
+    -- TODO I believe theres a warehouse function for this..?
+    -- WAREHOUSE:__AssetLowFuel(delay, asset, request)
     -- obtain fuel to gauge remaining sortie
     -- @function [parent=#self] GetFuel
     -- @param #none
-    function self:GetFuel()
-      local fuel_left = self:GetUnit(1):GetFuel()
-      self:Debug('Fuel Remaining: '..fuel_left)
+    function group:GetFuel()
+      local fuel_left = group:GetUnit(1):GetFuel()
+      group:Debug('Fuel Remaining: '..fuel_left)
       return fuel_left
     end
+
     -- return awacs instance
-    return self
+    return group
   end
   
   ----------------------------------------------------------------------
@@ -684,7 +681,7 @@ _AWACS_UNITS = {
   _AWACS.FSM = {
     awacs_log = {}
   }
-  
+
   ----------------------------------------------------------------------
   -- function FSM debug
   ----------------------------------------------------------------------
@@ -695,16 +692,17 @@ _AWACS_UNITS = {
   end
   
   ----------------------------------------------------------------------
+  -- AWACS Entry point 
   -- function define new FSN instance
   ----------------------------------------------------------------------
   -- @function [parent=#_AWACS.FSM] Debug
   -- @param #template
-  function _AWACS.FSM:New(template)
+  function _AWACS.FSM:New(group)
     -- inherit from moose FSM
     local self = BASE:Inherit(self, FSM:New())
   
     -- copy template group from ME UNIT
-    self.template_name = template.NAME
+    self.template_name = group:GetName()
   
     self:Debug('FSM Init ')
   
@@ -724,21 +722,26 @@ _AWACS_UNITS = {
   
     -- spawn AWACS group
     function self:SpawnNewAWACS()
+      -- TODO This maybe broken, maybe not....
       --self.group = _AWACS.Awacs:New(self.spawner:Spawn())
   
       -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
-      WarehouseDB.Kobuleti:AddRequest(WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.GROUPNAME, "Overlord", 1, nil, nil, 10, "AWACS")
+      WarehouseDB.Kobuleti:AddRequest(WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.GROUPNAME, WAREHOUSE.Attribute.AIR_AWACS, 1, nil, nil, 10, "AWACS")
     end
   
     function self:OnLeaveINIT(From, event, to)
       self:Debug('init FSM')
-      self:Debug('creating supply request')
-      --self.spawner = SPAWN:New(self.template_name)
+      --self:Debug('creating supply request')
+      self.spawner = group
     end
   
     function self:OnEnterNO_AWACS(from, event, to)
-      self:Debug('No AWACS avilable, spawning new AWACS')
-      self:SpawnNewAWACS()
+      if self.template_name == nil then
+        self:Debug('No AWACS avilable, spawning new AWACS')
+        self:SpawnNewAWACS()
+      else
+        self.group = _AWACS.Awacs:New(self.spawner)
+      end
     end
 
     function self:INIT(from, event, to)
@@ -806,21 +809,18 @@ _AWACS_UNITS = {
 end
 
 -- Need to get the group name returned by supply chain
-  -- bootstrap awacs
+-- bootstrap awacs
 function BootStrapAWACS()
-  _AWACS.INFO('AWACS: INIT: Start')
+  _AWACS.INFO('AWACS: INIT: BootStrapAWACS()')
   WarehouseDB.Kobuleti:AddRequest(WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_AWACS, 1, nil, nil, 10, "AWACS")
-    --[[for _, unit in ipairs(_AWACS_UNITS) do
-      _AWACS.DEBUG('INIT: AWACS unt: '..unit.NAME)
-        local fsm = _AWACS.FSM:New(unit)
-        _AWACS._fsm[unit.NAME] = fsm
-        fsm:Ready()
-    end
-    _AWACS.INFO('AWACS: Init: Done')
-    --]]
 end
 
 ----------------------------------------------------------------------
 -- Boot Support Aircraft
 ----------------------------------------------------------------------
-SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootStrapAWACS, {}, 60, 10 )
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootStrapAWACS, {}, 40, 0)
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootStrapTANKER, {}, 60, 0)
+----------------------------------------------------------------------
+-- Blue Ground forces
+----------------------------------------------------------------------
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootBlueFrontLine, {}, 70, 0)
