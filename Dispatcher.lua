@@ -67,25 +67,312 @@ Red_A2G:SetDefenseReactivityMedium()
 -- WAREHOUSE:AssetSpawned(group, asset, request)   -- Triggers the FSM e
 
 ----------------------------------------------------------------------
--- Blue Ground Forces Dispatchers
+-- Blue Ground Forces DIRTY DIRTY DIRTY CHEAP HACK Dispatchers
 ----------------------------------------------------------------------
+    -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
 -- Blue front line boot
 function BootBlueFrontLine()
-  for i=1,3 do
-    local time=(i-1)*60+10
-    -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
-    -- Troops Broken
-    --WarehouseDB.BlueFrontLine:AddRequest(WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_INFANTRY, 4,nil, nil, 10, "BlueFrontLine")
-    -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
-    WarehouseDB.BlueFrontLine:AddRequest(WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_APC, 3, nil, nil, 20, "BlueFrontLine")
-    -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
-    WarehouseDB.BlueFrontLine:AddRequest(WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TANK, 3, nil, nil, 30, "BlueFrontLine")
+    local time=1*40
+    -- TODO Troops ofthen Broken
+    --WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_INFANTRY, 1, nil, nil, 10, "BlueFrontLine")
+    WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_APC, 4, nil, nil, 20, "BlueFrontLine")
+    WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TANK, 5, nil, nil, 30, "BlueFrontLine")
+    --WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_ARTILLERY, 2, nil, nil, 30, "BlueFrontLine")    
+    WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TRUCK, 4, nil, nil, 30, "BlueFrontLine")
+    WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_AAA, 2, nil, nil, 30, "BlueFrontLine")
+    WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_SAM, 2, nil, nil, 30, "BlueFrontLine")
+end
+
+function BootBlueSecondLine()
+    local time=1*40
+    -- Zugdidi
+    --WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_INFANTRY, 1, nil, nil, 10, "BlueSecondLine")
+    WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_APC, 4, nil, nil, 20, "BlueSecondLine")
+    WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TANK, 4, nil, nil, 30, "BlueSecondLine")
+    --WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_ARTILLERY, 2, nil, nil, 30, "BlueSecondLine")    
+    WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TRUCK, 4, nil, nil, 30, "BlueSecondLine")
+    WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_AAA, 2, nil, nil, 30, "BlueSecondLine")
+    WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_SAM, 2, nil, nil, 30, "BlueSecondLine")
+end
+
+function ForTheMotherLand()
+  --for i=1,2,2 do
+    local time=1*30
+    -- Sukhumi_Babushara
+    --WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_INFANTRY, 2, nil, nil, 10, "ForTheMotherLand")
+    WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_APC, 5, nil, nil, 20, "ForTheMotherLand")
+    WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TANK, 4, nil, nil, 30, "ForTheMotherLand")
+    --WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_ARTILLERY, 4, nil, nil, 30, "ForTheMotherLand")    
+    WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TRUCK, 8, nil, nil, 30, "ForTheMotherLand")
+    WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_AAA, 4, nil, nil, 30, "ForTheMotherLand")
+    WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_SAM, 4, nil, nil, 30, "ForTheMotherLand")
+  --end
+end
+
+-----------------------------------------------------------------
+--  dispatch functions
+-----------------------------------------------------------------
+-- Calling these Dispatchers because I can't think of a real name
+-- code that is run from WAREHOUSE FSM calls like OnAfterSelfRequest
+-- in Logistics source file would prob be more readable in, but they
+-- "dispatch" things so they feckin' live here...
+-----------------------------------------------------------------
+--  Ground Unit dispatcher
+-----------------------------------------------------------------
+function DispatchGroundForces (groupset, assignment)
+  local Zones = BattleZones[assignment]
+  for _,group in pairs(groupset:GetSet()) do  -- loop over set returned by request
+      local group=group --Wrapper.Group#GROUP -- get group
+      local BlueAreasOfOperations = Zones:GetSetObjects()
+      local Destination = BlueAreasOfOperations[math.random(1, table.getn(BlueAreasOfOperations))]
+      -- Route group to Battle zone.
+      local ToCoord=(Destination:GetRandomPointVec2())
+      local RouteType = math.random(1,10)
+      if RouteType <= 5 then
+          group:RouteGroundOnRoad(ToCoord, group:GetSpeedMax()*0.8)
+      else
+          group:RouteGroundTo(ToCoord, group:GetSpeedMax()*0.8)
+      end
+      group:Activate()
+      -- do I need to return group?
+  end
+end
+-----------------------------------------------------------------
+--  Support Unit dispatcher
+-----------------------------------------------------------------
+function DispatchSupportAircraft (groupset, assignment)
+  for _, group in ipairs(groupset:GetSetObjects()) do
+    local group = group --Wrapper.Group#GROUP
+    if assignment == "AWACS" then
+      local fsm = _AWACS.FSM:New(group)
+      group:StartUncontrolled()
+      _AWACS._fsm[group] = fsm
+      fsm:Ready()
+    elseif assignment == "TANKER" then
+      local fsm = _TANKER.FSM:New(group)
+      group:StartUncontrolled()
+      _TANKER._fsm[group] = fsm
+      fsm:Ready()
+    end
   end
 end
 
+-----------------------------------------------------------------
+--  Air CAP dispatcher
+-----------------------------------------------------------------
+--[[
+function DispatchCAPAircraft (groupset, assignment)
+  for _, group in ipairs(groupset:GetSetObjects()) do
+    local group = group --Wrapper.Group#GROUP
+    local CAPZone = BlueCAPZone:GetSetObjects()
+    local Destination = CAPZone[math.random(1, table.getn(CAPZone))]
+--]]
+-----------------------------------------------------------------
+--  Whirly Bird CAS Patrol dispatcher
+-----------------------------------------------------------------
+-- Largely taken from Moose dispatcher classes, to make use of better
+-- moose intergation, 90% of this project so far is reinventing the wheel
+-- wheels that moose already provides for.
+--
+-- TODO generalise this class so it can be used for all aircraft
+-- HeloCAS as proof of concept
+
+--[[
+-- @field #HeloCAS
+HeloCAS = {
+  ClassName = "HeloCAS",
+}
+
+--- @field #HeloCAS.PatrolZones PatrolZones
+HeloCAS.PatrolZones = {}
+
+--- Enumerator for spawns at airbases
+-- @type HeloCAS.Takeoff
+-- @extends Wrapper.Group#GROUP.Takeoff
+--- @field #HeloCAS.Takeoff Takeoff
+HeloCAS.Takeoff = GROUP.Takeoff
+
+--- Defnes Landing location.
+-- @field #HeloCAS.Landing
+HeloCAS.Landing = {}
+
+-- HeloCAS Constructor
+-- @param #HeloCAS self
+-- @param Functional.Detection#DETECTION_BASE Detection The DETECTION object that will detects targets using the the Early Warning Radar network.
+-- @return #HeloCAS self
+function HeloCAS:New(Detection)
+  -- Inherits from DETECTION_MANAGER
+  local self = BASE:Inherit( self, DETECTION_MANAGER:New( nil, Detection ) )
+
+  self.Detection:FilterCategories( Unit.Category.GROUND_UNIT )
+
+  -- This table models Sqn templates
+  self.DefenderSquadrons = {} -- The Defender Squadrons.
+  self.DefenderSpawns = {}
+  self.DefenderTasks = {} -- The Defenders Tasks.
+  self.DefenderDefault = {} -- The Defender Default Settings over all Squadrons.
+
+  self:SetDefaultLanding( HeloCAS.Landing.AtEngineShutdown )
+  self:SetDefaultFuelThreshold( 0.15, 0 ) -- 15% of fuel remaining in the tank will trigger the airplane to return to base or refuel.
+  self:SetDefaultDamageThreshold( 0.4 ) -- When 40% of damage, go RTB.
+
+  self:AddTransition( "Started", "Assign", "Started" )
+
+    --- OnAfter Transition Handler for Event Assign.
+    -- @function [parent=#HeloCAS] OnAfterAssign
+    -- @param #HeloCAS self
+    -- @param #string From The From State string.
+    -- @param #string Event The Event string.
+    -- @param #string To The To State string.
+    -- @param Tasking.Task_A2G#AI_A2G Task
+    -- @param Wrapper.Unit#UNIT TaskUnit
+    -- @param #string PlayerName
+
+    self:AddTransition( "*", "Patrol", "*" )
+
+    --- Patrol Handler OnBefore for HeloCAS
+    -- @function [parent=#HeloCAS] OnBeforePatrol
+    -- @param #HeloCAS self
+    -- @param #string From
+    -- @param #string Event
+    -- @param #string To
+    -- @return #boolean
+
+    --- Patrol Handler OnAfter for HeloCAS
+    -- @function [parent=#HeloCAS] OnAfterPatrol
+    -- @param #HeloCAS self
+    -- @param #string From
+    -- @param #string Event
+    -- @param #string To
+
+    --- Patrol Trigger for HeloCAS
+    -- @function [parent=#HeloCAS] Patrol
+    -- @param #HeloCAS self
+
+    --- Patrol Asynchronous Trigger for HeloCAS
+    -- @function [parent=#HeloCAS] __Patrol
+    -- @param #HeloCAS self
+    -- @param #number Delay
+
+    self:AddTransition( "*", "Defend", "*" )
+
+    --- Defend Handler OnBefore for HeloCAS
+    -- @function [parent=#HeloCAS] OnBeforeDefend
+    -- @param #HeloCAS self
+    -- @param #string From
+    -- @param #string Event
+    -- @param #string To
+    -- @return #boolean
+    
+    --- Defend Handler OnAfter for HeloCAS
+    -- @function [parent=#HeloCAS] OnAfterDefend
+    -- @param #HeloCAS self
+    -- @param #string From
+    -- @param #string Event
+    -- @param #string To
+    
+    --- Defend Trigger for HeloCAS
+    -- @function [parent=#HeloCAS] Defend
+    -- @param #HeloCAS self
+    
+    --- Defend Asynchronous Trigger for HeloCAS
+    -- @function [parent=#HeloCAS] __Defend
+    -- @param #HeloCAS self
+    -- @param #number Delay
+
+    self:AddTransition( "*", "Engage", "*" )
+
+    --- Engage Handler OnBefore for HeloCAS
+    -- @function [parent=#HeloCAS] OnBeforeEngage
+    -- @param #HeloCAS self
+    -- @param #string From
+    -- @param #string Event
+    -- @param #string To
+    -- @return #boolean
+    
+    --- Engage Handler OnAfter for HeloCAS
+    -- @function [parent=#HeloCAS] OnAfterEngage
+    -- @param #HeloCAS self
+    -- @param #string From
+    -- @param #string Event
+    -- @param #string To
+    
+    --- Engage Trigger for HeloCAS
+    -- @function [parent=#HeloCAS] Engage
+    -- @param #HeloCAS self
+    
+    --- Engage Asynchronous Trigger for HeloCAS
+    -- @function [parent=#HeloCAS] __Engage
+    -- @param #HeloCAS self
+    -- @param #number Delay
+
+    -- Subscribe to the CRASH event so that when planes are shot
+    -- by a Unit from the dispatcher, they will be removed from the detection...
+    -- This will avoid the detection to still "know" the shot unit until the next detection.
+    -- Otherwise, a new defense or engage may happen for an already shot plane!
+
+    self:HandleEvent( EVENTS.Crash, self.OnEventCrashOrDead )
+    self:HandleEvent( EVENTS.Dead, self.OnEventCrashOrDead )
+    --self:HandleEvent( EVENTS.RemoveUnit, self.OnEventCrashOrDead )
+
+    self:HandleEvent( EVENTS.Land )
+    self:HandleEvent( EVENTS.EngineShutdown )
+
+    self.DefenderPatrolIndex = 0
+
+    self:__Start( 1 )
+
+    return self
+
+end
+
+for each zone
+ insert into HeloCAS[Zone]
+
+
+local HeloCasAO = HeloCASZone:GetSetObjects()
+
+function DispatchHeloCAS (groupset, assignment)
+  for _, group in ipairs(groupset:GetSetObjects()) do
+    local group = group --Wrapper.Group#GROUP
+    local HeloCasName = group:GetName()
+
+    -- Start the unit
+    group:StartUncontrolled()
+
+need a class to store patrol state
+table = {
+  Zone1 = SomeState
+  Zone2 = SomeOtherState
+  Zone3 = SomeThirdState
+
+    -- Get list of potential AOs
+    local HeloCasAO= HeloCASZone:GetSetObjects()
+
+    A2ACap = AI_A2A_CAP:New( WarehouseUnit, ZoneFromTable, 500, 1000, 500, 600 )
+    A2ACap:Patrol()
+
+end
+
+--- Creates a new AI_A2A_CAP object
+-- @param #AI_A2A_CAP self
+-- @param Wrapper.Group#GROUP AICap
+-- @param Core.Zone#ZONE_BASE PatrolZone The @{Zone} where the patrol needs to be executed.
+-- @param DCS#Altitude PatrolFloorAltitude The lowest altitude in meters where to execute the patrol.
+-- @param DCS#Altitude PatrolCeilingAltitude The highest altitude in meters where to execute the patrol.
+-- @param DCS#Speed  PatrolMinSpeed The minimum speed of the @{Wrapper.Group} in km/h.
+-- @param DCS#Speed  PatrolMaxSpeed The maximum speed of the @{Wrapper.Group} in km/h.
+-- @param DCS#Speed  EngageMinSpeed The minimum speed of the @{Wrapper.Group} in km/h when engaging a target.
+-- @param DCS#Speed  EngageMaxSpeed The maximum speed of the @{Wrapper.Group} in km/h when engaging a target.
+-- @param DCS#AltitudeType PatrolAltType The altitude type ("RADIO"=="AGL", "BARO"=="ASL"). Defaults to RADIO
+-- @return #AI_A2A_CAP
+
+--]]
 ----------------------------------------------------------------------
--- Blue Support Squadrons Defintions 
+-- Blue Support Air craft "Dispatchers" 
 ----------------------------------------------------------------------
+-- TODO Replace ALL this with a unified model its mostly borrowed code and dumb duplicating
+-- for what is a few lines difference. Doubt its even working as I intend vis-ve respawns etc..
 env.info( "------------------------------------------------" )
 env.info("          Loading tankers")
 env.info( "------------------------------------------------" )
@@ -215,6 +502,8 @@ function _TANKER.Tanker:New( group )
                         if total_speed < 3 then -- increased from 1
                             group:Debug('Goodbye, cruel world !')
                             group:Destroy()
+                            -- TODO Return to stock
+                            -- WarehouseDB.<SomeAirBase>:AddAsset(<Me>, 1)
                         end
                     end
                 end,
@@ -808,7 +1097,6 @@ env.info( "------------------------------------------------" )
     return self
 end
 
--- Need to get the group name returned by supply chain
 -- bootstrap awacs
 function BootStrapAWACS()
   _AWACS.INFO('AWACS: INIT: BootStrapAWACS()')
@@ -823,4 +1111,9 @@ SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootStrapTANKER, {}, 60, 0)
 ----------------------------------------------------------------------
 -- Blue Ground forces
 ----------------------------------------------------------------------
-SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootBlueFrontLine, {}, 70, 0)
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootBlueFrontLine, {}, 60, 0)
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootBlueSecondLine, {}, 50, 0)
+----------------------------------------------------------------------
+-- Red Ground forces
+----------------------------------------------------------------------
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, ForTheMotherLand, {}, 90, 0)

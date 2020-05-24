@@ -5,7 +5,8 @@
 -- NOTES:
 ----------------------------------------------------------------------
 -- This will require heavy use of custom function calls to avoid 
--- dublicating tons of code...
+-- dublicating tons of code... need to make this more programatic
+
 
 env.info( "------------------------------------------------" )
 env.info("          Loading Logistics")
@@ -66,54 +67,42 @@ env.info( "------------------------------------------------" )
   WAREHOUSE.Descriptor.UNITTYPE     Typename of the DCS unit, e.g. "A-10C".
 ]]
 
+--[[
+    WAREHOUSE.TransportType.AIRPLANE        Transports are carried out by airplanes.
+    WAREHOUSE.TransportType.APC             Transports are conducted by APCs.
+    WAREHOUSE.TransportType.HELICOPTER      Transports are carried out by helicopters.
+    WAREHOUSE.TransportType.SELFPROPELLED   Assets go to their destination by themselves. No transport carrier needed.
+    WAREHOUSE.TransportType.SHIP            Transports are conducted by ships. Not implemented yet.
+    WAREHOUSE.TransportType.TRAIN           Transports are conducted by trains. Not implemented yet. Also trains are buggy in DCS.
+--]]
+
 -- WAREHOUSE:OnAfterSelfRequest(From, Event, To, groupset, request)
 -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
 -- WAREHOUSE:onafterAddRequest(From, Event, To, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
 -- WAREHOUSE:onbeforeAddRequest(From, Event, To, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
 
+-- The world breaks if this is loaded before Supply chain is created and active
+-- so wraping it in function solves the chicken/egg debate once and for all.
 function Logistics()
+-- Check the chain is actually a thing.
 if SUPPLYCHAINREADY == true then
 -----------------------------------------------------------------
 --  BlUE
 -----------------------------------------------------------------
-        ---------------------------------------------------------
+        ------------------------------------------------------------------------------------------------------------------
         -- Kobuleti
-        ---------------------------------------------------------
+        ------------------------------------------------------------------------------------------------------------------
         -- OnAfterSelfRequest
         ---------------------------------------------------------
         --  Air Assets
-            function WarehouseDB.Kobuleti:OnAfterSelfRequest(From,Event,To,groupset,request)
+        function WarehouseDB.Kobuleti:OnAfterSelfRequest(From,Event,To,groupset,request)
             local groupset = groupset
             local request = request
+            local assignment = request.assignment
 
-            if request.assignment == "AWACS" then
-                for _, group in ipairs(groupset:GetSetObjects()) do
-                    local group = group --Wrapper.Group#GROUP
-                    local AWACSGroup = group:GetName()
-
-                    _AWACS.DEBUG('INIT: AWACS unt: '..AWACSGroup)
-
-                    local fsm = _AWACS.FSM:New(group)
-                    group:StartUncontrolled()
-                    _AWACS._fsm[group] = fsm
-                    fsm:Ready()
-                end
+            if assignment == "AWACS" or "TANKER" then
+                DispatchSupportAircraft (groupset, assignment)
             end
-
-            if request.assignment == "TANKER" then
-                for _, group in ipairs(groupset:GetSetObjects()) do
-                    local group = group --Wrapper.Group#GROUP
-                    local TANKERGroup = group:GetName()
-
-                    _TANKER.DEBUG('INIT: TANKER unt: '..TANKERGroup)
-
-                    local fsm = _TANKER.FSM:New(group)
-                    group:StartUncontrolled()
-                    _TANKER._fsm[group] = fsm
-                    fsm:Ready()
-                end
-            end
-
         end
 
         --[[ Need to work this out, something like this...
@@ -131,39 +120,66 @@ if SUPPLYCHAINREADY == true then
                 end
         --]]
 
---[[ Don't run unfinished code...
-function warehouse.Senaki_Kolkhi:OnAfterSelfRequest(From,Event,To,groupset,request)
+        -- function warehouse.Senaki_Kolkhi:OnAfterSelfRequest(From,Event,To,groupset,request)
 
-function warehouse.Zugdidi:OnAfterSelfRequest(From,Event,To,groupset,request)
---]]
+        ------------------------------------------------------------------------------------------------------------------
+        -- Zugdidi
+        ------------------------------------------------------------------------------------------------------------------
+        -- OnAfterSelfRequest
         ---------------------------------------------------------
+        --  Gound Assets
+        function WarehouseDB.Zugdidi:OnAfterSelfRequest(From,Event,To,groupset,request)
+            local groupset=groupset --Core.Set#SET_GROUP
+            local request=request   --Functional.Warehouse#WAREHOUSE.Pendingitem
+            local assignment = request.assignment
+            for _, group in ipairs(groupset:GetSetObjects()) do
+                local group = group --Wrapper.Group#GROUP
+                if assignment == "HeloCAS" then
+                    --
+                else
+                    -- Ground Forces Dispatcher
+                    -- TODO need to find a handle in WAREHOUSE or request var to use as for logical branching
+                    -- request holds a value like Ground_APC maybe I and regex out and hook on prefix.
+                    -- like:
+                    ---  nodeprefix = string.sub(tempnodename, 1, 8)
+                    DispatchGroundForces(groupset, assignment)
+                end
+            end
+        end
+        ---------------------------------------------------------
+        -- OnAfterAssetDead
+        ---------------------------------------------------------
+        function WarehouseDB.Zugdidi:OnAfterAssetDead(From, Event, To, asset, request)
+            local asset=asset       --Functional.LOGISTICS#LOGISTICS.Assetitem
+            local request=request   --Functional.LOGISTICS#LOGISTICS.Pendingitem
+            -- Get assignment.
+            local assignment=WarehouseDB.Zugdidi:GetAssignment(request)
+            -- make request
+            -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
+            WarehouseDB.Zugdidi:AddRequest(WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.CATEGORY, Group.Category.GROUND, 1, nil, nil, 100, assignment)
+        end
+        ---------------------------------------------------------
+        -- OnAfterNewAsset
+        ---------------------------------------------------------
+        --[[
+        function WarehouseDB.Zugdidi:OnAfterNewAsset(From, Event, To, asset, assignment)
+            local asset=asset --Functional.Warehouse#WAREHOUSE.Assetitem
+            BootBlueFrontLine()
+        end
+        --]]
+
+        ------------------------------------------------------------------------------------------------------------------
         -- BlueFrontLine
-        ---------------------------------------------------------
+        ------------------------------------------------------------------------------------------------------------------
         -- OnAfterSelfRequest
         ---------------------------------------------------------
         --  Gound Assets
         function WarehouseDB.BlueFrontLine:OnAfterSelfRequest(From,Event,To,groupset,request)
             local groupset=groupset --Core.Set#SET_GROUP
             local request=request   --Functional.Warehouse#WAREHOUSE.Pendingitem
-
-            if request.assignment == "BlueFrontLine" then -- Check request
-                for _,group in pairs(groupset:GetSet()) do  -- loop over set returned by request
-                    local group=group --Wrapper.Group#GROUP -- get group
-                    -- Route group to location
-                    -- get zone set
-                    -- select random zone
-                    -- pass group route
-                    -- group:RouteGroundOnRoad(ToCoord, group:GetSpeedMax()*0.8)
-                    local BlueAreasOfOperations = Blu_Arm_Zone:GetSetObjects()
-                    local AO = BlueAreasOfOperations[math.random(1, table.getn(BlueAreasOfOperations))]
-                    -- Route group to Battle zone.
-                    local ToCoord=(AO:GetRandomPointVec2())
-                    group:Activate()
-                    -- use on road
-                    group:RouteGroundTo(ToCoord, group:GetSpeedMax()*0.8)
-
-                end
-            end
+            local assignment = request.assignment
+            -- Ground Forces Dispatcher
+            DispatchGroundForces(groupset, assignment)
         end
         ---------------------------------------------------------
         -- OnAfterAssetDead
@@ -180,14 +196,50 @@ function warehouse.Zugdidi:OnAfterSelfRequest(From,Event,To,groupset,request)
         ---------------------------------------------------------
         -- OnAfterNewAsset
         ---------------------------------------------------------
+        --[[
         function WarehouseDB.BlueFrontLine:OnAfterNewAsset(From, Event, To, asset, assignment)
             local asset=asset --Functional.Warehouse#WAREHOUSE.Assetitem
             BootBlueFrontLine()
         end
---[[
+        --]]
 -----------------------------------------------------------------
 --  RED
 -----------------------------------------------------------------
+        ------------------------------------------------------------------------------------------------------------------
+        -- Red FrontLine (Sukhumi_Babushara)
+        ------------------------------------------------------------------------------------------------------------------
+        -- OnAfterSelfRequest
+        ---------------------------------------------------------
+        --  Gound Assets
+        function WarehouseDB.Sukhumi_Babushara:OnAfterSelfRequest(From,Event,To,groupset,request)
+            local groupset=groupset --Core.Set#SET_GROUP
+            local request=request   --Functional.Warehouse#WAREHOUSE.Pendingitem
+            local assignment = request.assignment
+            -- Ground Forces Dispatcher
+            DispatchGroundForces(groupset, assignment)
+        end
+        ---------------------------------------------------------
+        -- OnAfterAssetDead
+        ---------------------------------------------------------
+        function WarehouseDB.Sukhumi_Babushara:OnAfterAssetDead(From, Event, To, asset, request)
+            local asset=asset       --Functional.LOGISTICS#LOGISTICS.Assetitem
+            local request=request   --Functional.LOGISTICS#LOGISTICS.Pendingitem
+            -- Get assignment.
+            local assignment=WarehouseDB.Sukhumi_Babushara:GetAssignment(request)
+            -- make request
+            -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
+            WarehouseDB.Sukhumi_Babushara:AddRequest(WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.CATEGORY, Group.Category.GROUND, 1, nil, nil, 100, assignment)
+        end
+        ---------------------------------------------------------
+        -- OnAfterNewAsset
+        ---------------------------------------------------------
+        --[[
+        function WarehouseDB.Sukhumi_Babushara:OnAfterNewAsset(From, Event, To, asset, assignment)
+            local asset=asset --Functional.Warehouse#WAREHOUSE.Assetitem
+            ForTheMotherLand()
+        end
+        --]]
+--[[ Don't run unfinished code...
 function warehouse.Sukhumi_Babushara:OnAfterSelfRequest(From,Event,To,groupset,request)
 
 function warehouse.Sukhumi:OnAfterSelfRequest(From,Event,To,groupset,request)

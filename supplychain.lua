@@ -206,7 +206,6 @@ local warehouse = {}
 -- Blue
 -- Warehouse Template for warehouses with baseind = true
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Infantry Platoon", 24, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Infantry Platoon #002", 12, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Truck", 20, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil, {}, "", 0}
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue APC1", 20, WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil, {}, "", 0}
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Armor Group", 20, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil, {}, "", 0}
@@ -217,7 +216,7 @@ BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"A10 Tactical Bomber", 12, WARE
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue CAP", 12, WAREHOUSE.Attribute.AIR_FIGHTER, nil, nil, nil, nil, {}, "", 0}
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"C-130Herc", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, nil, nil, 0, nil, {}, "", 0}
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"C-17Globe", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, 50000, nil, 0, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Transport Helo CH47", 6, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 4000, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Transport Helo CH47", 4, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 4000, nil, nil, nil, {}, "", 0}
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Overlord", 2, WAREHOUSE.Attribute.AIR_AWACS, nil, nil, nil, nil, {}, "", 0}
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Texaco", 2, WAREHOUSE.Attribute.AIR_TANKER, nil, nil, nil, nil, {}, "", 0}
 -- Red
@@ -225,7 +224,7 @@ BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Texaco", 2, WAREHOUSE.Attribut
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Infantry Platoon", 40, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Truck", 30, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil,{}, "", 0}
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red APC", 30, WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil,{}, "", 0}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Armor Group", 20, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Armor Group", 30, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil,{}, "", 0}
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red SAM #001", 15, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red SAM #002", 15, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"SU-33 CAP", 12, WAREHOUSE.Attribute.AIR_FIGHTER, nil, nil, nil, nil,{}, "", 0}
@@ -236,19 +235,18 @@ RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Helo MI24", 2, WAR
 
 -- Blue 
 -- Default Warehouse Template for warehouses with baseind = false and No Custom Inventory template
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Infantry Platoon", 2, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Infantry Platoon #002", 2, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Infantry Platoon", 5, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
 BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Truck", 5, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil, {}, "", 0}
 BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue APC1", 5, WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil, {}, "", 0}
 BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Armor Group", 5, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil, {}, "", 0}
 BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense SAM", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
 BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense Gun #002", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
 BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense SAM #002", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Transport Helo CH47", 2, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 4000, nil, nil, nil,{}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Transport Helo CH47", 1, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 4000, nil, nil, nil,{}, "", 0}
 
 -- Red 
 -- Default Warehouse Template for warehouses with baseind = false and No Custom Inventory template
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Infantry Platoon", 4, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 5000, nil, {}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Infantry Platoon", 5, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 5000, nil, {}, "", 0}
 RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Truck", 5, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, 100, nil,{}, "", 0}
 RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red APC", 5, WAREHOUSE.Attribute.GROUND_APC, nil, nil, 100, nil,{}, "", 0}
 RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Armor Group", 5, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil,{}, "", 0}
@@ -295,7 +293,7 @@ function BuildChain()
     local DebugFunc = "BuildChain(): "
     local wcnodes = SET_ZONE:New()
     wcnodes:FilterPrefixes("wchain #0")
-    wcnodes:FilterStart()
+    wcnodes:FilterOnce()
 
     --local zoneproc = true       -- UNDEF?..
     --local nodecount = 0         -- UNDEF?..
@@ -1369,26 +1367,26 @@ function ProcessWarehouseChain(lcoalition)
     if ProcessedChains == false then
         -- Blue
         -- Sneaki-Kolkhi (Airbase)
-        BWChain["wchain #002"].spawnwithinv = false
+        BWChain["wchain #002"].spawnwithinv = true
         BWChain["wchain #002"].fullstrength = true
         BWChain["wchain #002"].baseind = true
-        BWChain["wchain #002"].strengthp = 100
+        BWChain["wchain #002"].strengthp = 50
         BWChain["wchain #002"].nodename = "wchain #002"
         BWChain["wchain #002"] = BWChain["wchain #002"]:AddWarehouseToChain(coalition.side.BLUE)
 
         -- Zugdidi (FARP)
-        BWChain["wchain #003"].spawnwithinv = false
+        BWChain["wchain #003"].spawnwithinv = true
         BWChain["wchain #003"].fullstrength = false
         BWChain["wchain #003"].baseind = false
-        BWChain["wchain #003"].strengthp = 100
+        BWChain["wchain #003"].strengthp = 50
         BWChain["wchain #003"].nodename = "wchain #003"
         BWChain["wchain #003"] = BWChain["wchain #003"]:AddWarehouseToChain(coalition.side.BLUE)
 
         -- Blue Front Line (FARP)
         BWChain["wchain #004"].spawnwithinv = true
-        BWChain["wchain #004"].fullstrength = true
+        BWChain["wchain #004"].fullstrength = false
         BWChain["wchain #004"].baseind = false
-        BWChain["wchain #004"].strengthp = 100
+        BWChain["wchain #004"].strengthp = 50
         BWChain["wchain #004"].nodename = "wchain #004"
         BWChain["wchain #004"] = BWChain["wchain #004"]:AddWarehouseToChain(coalition.side.BLUE)
 
@@ -1407,31 +1405,31 @@ function ProcessWarehouseChain(lcoalition)
         RWChain["wchain #008"].spawnwithinv = true
         RWChain["wchain #008"].fullstrength = true
         RWChain["wchain #008"].baseind = true
-        RWChain["wchain #008"].strengthp = 100
+        RWChain["wchain #008"].strengthp = 50
         RWChain["wchain #008"].nodename = "wchain #008"
         RWChain["wchain #008"] = RWChain["wchain #008"]:AddWarehouseToChain(coalition.side.RED)
 
         -- Gudauta (Airbase)
-        RWChain["wchain #007"].spawnwithinv = false
-        RWChain["wchain #007"].fullstrength = true
+        RWChain["wchain #007"].spawnwithinv = true
+        RWChain["wchain #007"].fullstrength = false
         RWChain["wchain #007"].baseind = true
-        RWChain["wchain #007"].strengthp = 100
+        RWChain["wchain #007"].strengthp = 50
         RWChain["wchain #007"].nodename = "wchain #007"
         RWChain["wchain #007"] = RWChain["wchain #007"]:AddWarehouseToChain(coalition.side.RED)
 
         -- Sukhumi (FARP)
-        RWChain["wchain #006"].spawnwithinv = false
-        RWChain["wchain #006"].fullstrength = true
+        RWChain["wchain #006"].spawnwithinv = true
+        RWChain["wchain #006"].fullstrength = false
         RWChain["wchain #006"].baseind = false
-        RWChain["wchain #006"].strengthp = 100
+        RWChain["wchain #006"].strengthp = 50
         RWChain["wchain #006"].nodename = "wchain #006"
         RWChain["wchain #006"] = RWChain["wchain #006"]:AddWarehouseToChain(coalition.side.RED)
 
         -- Sukhumi-Babushara (Airbase)
-        RWChain["wchain #005"].spawnwithinv = false
+        RWChain["wchain #005"].spawnwithinv = true
         RWChain["wchain #005"].fullstrength = true
         RWChain["wchain #005"].baseind = true
-        RWChain["wchain #005"].strengthp = 100
+        RWChain["wchain #005"].strengthp = 50
         RWChain["wchain #005"].nodename = "wchain #005"
         RWChain["wchain #005"] = RWChain["wchain #005"]:AddWarehouseToChain(coalition.side.RED)
 
