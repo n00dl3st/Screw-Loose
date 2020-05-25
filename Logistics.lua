@@ -101,7 +101,7 @@ if SUPPLYCHAINREADY == true then
             local assignment = request.assignment
 
             if assignment == "AWACS" or "TANKER" then
-                DispatchSupportAircraft (groupset, assignment)
+                DispatchSupportAircraft(groupset, assignment)
             end
         end
 
@@ -120,8 +120,15 @@ if SUPPLYCHAINREADY == true then
                 end
         --]]
 
-        -- function warehouse.Senaki_Kolkhi:OnAfterSelfRequest(From,Event,To,groupset,request)
+        function WarehouseDB.Senaki_Kolkhi:OnAfterSelfRequest(From,Event,To,groupset,request)
+            local groupset = groupset
+            local request = request
+            local assignment = request.assignment
 
+            if request.assignment=="CAP" then
+                DispatchCapAircraft(groupset, assignment)
+            end
+        end
         ------------------------------------------------------------------------------------------------------------------
         -- Zugdidi
         ------------------------------------------------------------------------------------------------------------------
@@ -135,7 +142,7 @@ if SUPPLYCHAINREADY == true then
             for _, group in ipairs(groupset:GetSetObjects()) do
                 local group = group --Wrapper.Group#GROUP
                 if assignment == "HeloCAS" then
-                    --
+                    DispatchCapAircraft(groupset, assignment)
                 else
                     -- Ground Forces Dispatcher
                     -- TODO need to find a handle in WAREHOUSE or request var to use as for logical branching

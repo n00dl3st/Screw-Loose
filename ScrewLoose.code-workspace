@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "..\\MOOSE_FRAMEWORK\\Moose Development\\Moose"
+		},
+		{
+			"path": "..\\MOOSE_MISSIONS"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "..\\PatrolManager"
+		}
+	],
+	"settings": {
+		"debug.allowBreakpointsEverywhere": true,
+		"telemetry.enableTelemetry": false,
+		"Lua.completion.callSnippet": "Both",
+		"Lua.develop.debuggerPort": 10000
+	},
+	"Lua.workspace.library": {}
+}

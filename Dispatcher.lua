@@ -158,216 +158,171 @@ function DispatchSupportAircraft (groupset, assignment)
 end
 
 -----------------------------------------------------------------
---  Air CAP dispatcher
+--  Scum Unit dispatcher Quick and dirty copy to get something moving
 -----------------------------------------------------------------
---[[
-function DispatchCAPAircraft (groupset, assignment)
-  for _, group in ipairs(groupset:GetSetObjects()) do
-    local group = group --Wrapper.Group#GROUP
-    local CAPZone = BlueCAPZone:GetSetObjects()
-    local Destination = CAPZone[math.random(1, table.getn(CAPZone))]
---]]
------------------------------------------------------------------
---  Whirly Bird CAS Patrol dispatcher
------------------------------------------------------------------
--- Largely taken from Moose dispatcher classes, to make use of better
--- moose intergation, 90% of this project so far is reinventing the wheel
--- wheels that moose already provides for.
---
--- TODO generalise this class so it can be used for all aircraft
--- HeloCAS as proof of concept
+CAPFSM = {}
+CAPGroup = {}
+--BlueCAPManagerRequestTime = timer.getTime()
+function CAPManager()
+  local ZoneCounter = 0
 
---[[
--- @field #HeloCAS
-HeloCAS = {
-  ClassName = "HeloCAS",
-}
+  -- Iterate the zones and launch CAP if necessary
+  -- Zone counter is used as Cap Group id, and zone id
+  -- for each zone get zone from current object
+  BlueCapZonesSet:ForEachZone(
+    function(SomeVar) -- If empty call fails fill wiht SomeVar
+      ---local myzonename = MooseObj:GetName()
+      ZoneCounter = ZoneCounter + 1    -- increment counter by 1
+      if CAPGroup[ZoneCounter] == nil then     -- if capgroup counter is undef
+      CAPGroup[ZoneCounter] = "Pending"    -- mark zone counter as pending
+      -- make request for assets
+      WarehouseDB.Zugdidi:AddRequest(WarehouseDB.Zugdidi,  WAREHOUSE.Descriptor.GROUPNAME, "Blu_Helo_CAS", 1, nil, nil, 10, "HeloCAS")
+      end
+    end
+  )
 
---- @field #HeloCAS.PatrolZones PatrolZones
-HeloCAS.PatrolZones = {}
+  for Group, Fsm in pairs(CAPFSM) do      -- for each group in Fsm in CAPFSM
+    local bluecapstate = Fsm:GetState()    -- get Fsm state() -- core.fsm function call
+    local tempgroup = GROUP:FindByName( Group )
+    local tempgroupname = tempgroup:GetName()
+    local mycapfuel = tempgroup:GetFuelAvg()
+    local tempgroupsize = tempgroup:GetSize()
 
---- Enumerator for spawns at airbases
--- @type HeloCAS.Takeoff
--- @extends Wrapper.Group#GROUP.Takeoff
---- @field #HeloCAS.Takeoff Takeoff
-HeloCAS.Takeoff = GROUP.Takeoff
+    if bluecapstate == "Returning" then    
+      -- CAPFSM[currentgroup] = nil -- zero out cap entry
+      -- nil out vars to launch replacement CAP
+      CAPFSM[tempgroupname] = nil
+      ZoneCounter = 0
 
---- Defnes Landing location.
--- @field #HeloCAS.Landing
-HeloCAS.Landing = {}
+      -- Iterate the zones and nil values as necessary
+      BlueCapZonesSet:ForEachZone(
+        function(SomeVar) -- If empty call fails fill wiht SomeVar
+          ---local myzonename = MooseObj:GetName()
+          ZoneCounter = ZoneCounter + 1
+          if CAPGroup[ZoneCounter] == tempgroupname then
+            CAPGroup[ZoneCounter] = nil
+          end
+        end
+      ) --- ForEach Ends Calling out these ForEach loops syntax is evil
 
--- HeloCAS Constructor
--- @param #HeloCAS self
--- @param Functional.Detection#DETECTION_BASE Detection The DETECTION object that will detects targets using the the Early Warning Radar network.
--- @return #HeloCAS self
-function HeloCAS:New(Detection)
-  -- Inherits from DETECTION_MANAGER
-  local self = BASE:Inherit( self, DETECTION_MANAGER:New( nil, Detection ) )
+    end
 
-  self.Detection:FilterCategories( Unit.Category.GROUND_UNIT )
+    if bluecapstate == "Patrolling" then
+      if mycapfuel then
+        if mycapfuel < .22 then
+          Fsm:RTB()
+        end
+      end
+      -- if not full strength, RTB
+      if tempgroupsize < 2 then
+        Fsm:RTB()
+      end
+    end
 
-  -- This table models Sqn templates
-  self.DefenderSquadrons = {} -- The Defender Squadrons.
-  self.DefenderSpawns = {}
-  self.DefenderTasks = {} -- The Defenders Tasks.
-  self.DefenderDefault = {} -- The Defender Default Settings over all Squadrons.
+    if bluecapstate == "Crashed" then
+      CAPFSM[tempgroupname] = nil
+      ZoneCounter = 0
 
-  self:SetDefaultLanding( HeloCAS.Landing.AtEngineShutdown )
-  self:SetDefaultFuelThreshold( 0.15, 0 ) -- 15% of fuel remaining in the tank will trigger the airplane to return to base or refuel.
-  self:SetDefaultDamageThreshold( 0.4 ) -- When 40% of damage, go RTB.
+      -- Iterate the zones and nil values as necessary
+      BlueCapZonesSet:ForEachZone( 
+        function(SomeVar)  -- If empty call fails fill wiht SomeVar
+          -- local myzonename = MooseObj:GetName()
+          ZoneCounter = ZoneCounter + 1
+          if CAPGroup[ZoneCounter] == tempgroupname then
+            CAPGroup[ZoneCounter] = nil  
+          end
+        end
+      ) --- ForEach Ends Calling out these ForEach loops syntax is evil
 
-  self:AddTransition( "Started", "Assign", "Started" )
+    end
+  end  -- end for loop
 
-    --- OnAfter Transition Handler for Event Assign.
-    -- @function [parent=#HeloCAS] OnAfterAssign
-    -- @param #HeloCAS self
-    -- @param #string From The From State string.
-    -- @param #string Event The Event string.
-    -- @param #string To The To State string.
-    -- @param Tasking.Task_A2G#AI_A2G Task
-    -- @param Wrapper.Unit#UNIT TaskUnit
-    -- @param #string PlayerName
-
-    self:AddTransition( "*", "Patrol", "*" )
-
-    --- Patrol Handler OnBefore for HeloCAS
-    -- @function [parent=#HeloCAS] OnBeforePatrol
-    -- @param #HeloCAS self
-    -- @param #string From
-    -- @param #string Event
-    -- @param #string To
-    -- @return #boolean
-
-    --- Patrol Handler OnAfter for HeloCAS
-    -- @function [parent=#HeloCAS] OnAfterPatrol
-    -- @param #HeloCAS self
-    -- @param #string From
-    -- @param #string Event
-    -- @param #string To
-
-    --- Patrol Trigger for HeloCAS
-    -- @function [parent=#HeloCAS] Patrol
-    -- @param #HeloCAS self
-
-    --- Patrol Asynchronous Trigger for HeloCAS
-    -- @function [parent=#HeloCAS] __Patrol
-    -- @param #HeloCAS self
-    -- @param #number Delay
-
-    self:AddTransition( "*", "Defend", "*" )
-
-    --- Defend Handler OnBefore for HeloCAS
-    -- @function [parent=#HeloCAS] OnBeforeDefend
-    -- @param #HeloCAS self
-    -- @param #string From
-    -- @param #string Event
-    -- @param #string To
-    -- @return #boolean
-    
-    --- Defend Handler OnAfter for HeloCAS
-    -- @function [parent=#HeloCAS] OnAfterDefend
-    -- @param #HeloCAS self
-    -- @param #string From
-    -- @param #string Event
-    -- @param #string To
-    
-    --- Defend Trigger for HeloCAS
-    -- @function [parent=#HeloCAS] Defend
-    -- @param #HeloCAS self
-    
-    --- Defend Asynchronous Trigger for HeloCAS
-    -- @function [parent=#HeloCAS] __Defend
-    -- @param #HeloCAS self
-    -- @param #number Delay
-
-    self:AddTransition( "*", "Engage", "*" )
-
-    --- Engage Handler OnBefore for HeloCAS
-    -- @function [parent=#HeloCAS] OnBeforeEngage
-    -- @param #HeloCAS self
-    -- @param #string From
-    -- @param #string Event
-    -- @param #string To
-    -- @return #boolean
-    
-    --- Engage Handler OnAfter for HeloCAS
-    -- @function [parent=#HeloCAS] OnAfterEngage
-    -- @param #HeloCAS self
-    -- @param #string From
-    -- @param #string Event
-    -- @param #string To
-    
-    --- Engage Trigger for HeloCAS
-    -- @function [parent=#HeloCAS] Engage
-    -- @param #HeloCAS self
-    
-    --- Engage Asynchronous Trigger for HeloCAS
-    -- @function [parent=#HeloCAS] __Engage
-    -- @param #HeloCAS self
-    -- @param #number Delay
-
-    -- Subscribe to the CRASH event so that when planes are shot
-    -- by a Unit from the dispatcher, they will be removed from the detection...
-    -- This will avoid the detection to still "know" the shot unit until the next detection.
-    -- Otherwise, a new defense or engage may happen for an already shot plane!
-
-    self:HandleEvent( EVENTS.Crash, self.OnEventCrashOrDead )
-    self:HandleEvent( EVENTS.Dead, self.OnEventCrashOrDead )
-    --self:HandleEvent( EVENTS.RemoveUnit, self.OnEventCrashOrDead )
-
-    self:HandleEvent( EVENTS.Land )
-    self:HandleEvent( EVENTS.EngineShutdown )
-
-    self.DefenderPatrolIndex = 0
-
-    self:__Start( 1 )
-
-    return self
-
+  --[[
+  -- Destroy planes 5 minutes if they exist after landing at Gudauta
+  -- But OnArrival at Landing has improved taxi deadlocks.
+  local mygroup
+  for groupname, destroytime in pairs(DestroyAfterLanding)  do
+    local mygroupname = groupname
+    local mydestroytime = destroytime
+    if mygroupname then
+      mygroup = GROUP:FindByName(mygroupname)
+    end
+    local currentime = timer.getTime()
+    if mydestroytime + 300 < currentime then
+      if mygroupname then
+        mygroup:Destroy()
+      end
+        DestroyAfterLanding[mygroupname] = nil
+    end
+  end
+  --]]
 end
+  -- End Blue CAP Manager
 
-for each zone
- insert into HeloCAS[Zone]
+-----------------------------------------------------------------
+--  DispatchCapAircraft
+-----------------------------------------------------------------
+function DispatchCapAircraft(groupset, assignment)
+  for _,group in pairs(groupset:GetSetObjects()) do
+    local group=group --Wrapper.Group#GROUP
+    local CAPGroupName = group:GetName()
 
-
-local HeloCasAO = HeloCASZone:GetSetObjects()
-
-function DispatchHeloCAS (groupset, assignment)
-  for _, group in ipairs(groupset:GetSetObjects()) do
-    local group = group --Wrapper.Group#GROUP
-    local HeloCasName = group:GetName()
-
-    -- Start the unit
+   -- Start uncontrolled aircraft.
     group:StartUncontrolled()
 
-need a class to store patrol state
-table = {
-  Zone1 = SomeState
-  Zone2 = SomeOtherState
-  Zone3 = SomeThirdState
+    --get zone count
+    local ZoneCounter = 0
 
-    -- Get list of potential AOs
-    local HeloCasAO= HeloCASZone:GetSetObjects()
+    -- Iterate the zones and nil values as necessary
+    BlueCapZonesSet:ForEachZone( 
+      function(MooseObj)
+        --local myzone = MooseObj
+        ZoneCounter = ZoneCounter + 1
+      end
+    )
 
-    A2ACap = AI_A2A_CAP:New( WarehouseUnit, ZoneFromTable, 500, 1000, 500, 600 )
-    A2ACap:Patrol()
+    BlueCAPMgrZoneList = BlueCapZonesSet:GetSetObjects()
 
+    for CAPgroupcounter = 1, ZoneCounter do
+      if CAPGroup[CAPgroupcounter] == "Pending" then
+         CAPFSM[CAPGroupName] = AI_CAP_ZONE:New(BlueCAPMgrZoneList[CAPgroupcounter], 4000, 5000, 500, 1100 )
+         CAPFSM[CAPGroupName]:SetControllable(group)
+         CAPFSM[CAPGroupName]:SetEngageRange( 40000 )
+         CAPFSM[CAPGroupName]:__Start(5)
+         CAPGroup[CAPgroupcounter] = CAPGroupName
+         break
+      end
+
+    end
+
+    group:HandleEvent( EVENTS.Land )
+    --- @param self
+    -- @param Core.Event#EVENTDATA EventData
+    function group:OnEventLand(EventData)
+      --EventData.IniGroup:MessageToAll("Landed",15,"Land Event")
+      local mygroup = EventData.IniGroup
+      local mygroupname = mygroup:GetName()
+      -- Nil Pointers
+      CAPFSM[mygroupname] = nil
+
+      local ZoneCounter = 0
+
+      -- Iterate the zones and nil values as necessary
+      BlueCapZonesSet:ForEachZone( 
+        function(MooseObj)
+          --local myzonename = MooseObj:GetName()
+          ZoneCounter = ZoneCounter + 1
+          if CAPGroup[ZoneCounter] == mygroupname then
+            CAPGroup[ZoneCounter] = nil  
+          end
+          DestroyAfterLanding[mygroupname] = timer.getTime()
+        end
+      )
+
+    end
+  end
 end
 
---- Creates a new AI_A2A_CAP object
--- @param #AI_A2A_CAP self
--- @param Wrapper.Group#GROUP AICap
--- @param Core.Zone#ZONE_BASE PatrolZone The @{Zone} where the patrol needs to be executed.
--- @param DCS#Altitude PatrolFloorAltitude The lowest altitude in meters where to execute the patrol.
--- @param DCS#Altitude PatrolCeilingAltitude The highest altitude in meters where to execute the patrol.
--- @param DCS#Speed  PatrolMinSpeed The minimum speed of the @{Wrapper.Group} in km/h.
--- @param DCS#Speed  PatrolMaxSpeed The maximum speed of the @{Wrapper.Group} in km/h.
--- @param DCS#Speed  EngageMinSpeed The minimum speed of the @{Wrapper.Group} in km/h when engaging a target.
--- @param DCS#Speed  EngageMaxSpeed The maximum speed of the @{Wrapper.Group} in km/h when engaging a target.
--- @param DCS#AltitudeType PatrolAltType The altitude type ("RADIO"=="AGL", "BARO"=="ASL"). Defaults to RADIO
--- @return #AI_A2A_CAP
-
---]]
 ----------------------------------------------------------------------
 -- Blue Support Air craft "Dispatchers" 
 ----------------------------------------------------------------------
@@ -1108,6 +1063,12 @@ end
 ----------------------------------------------------------------------
 SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootStrapAWACS, {}, 40, 0)
 SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootStrapTANKER, {}, 60, 0)
+
+----------------------------------------------------------------------
+-- Boot Combat Aircraft
+----------------------------------------------------------------------
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, CAPManager, {}, 50, 60 )
+
 ----------------------------------------------------------------------
 -- Blue Ground forces
 ----------------------------------------------------------------------

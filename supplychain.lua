@@ -219,6 +219,8 @@ BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"C-17Globe", 2, WAREHOUSE.Attri
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Transport Helo CH47", 4, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 4000, nil, nil, nil, {}, "", 0}
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Overlord", 2, WAREHOUSE.Attribute.AIR_AWACS, nil, nil, nil, nil, {}, "", 0}
 BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Texaco", 2, WAREHOUSE.Attribute.AIR_TANKER, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blu_Helo_CAS", 8, WAREHOUSE.Attribute.AIR_ATTACKHELO, nil, nil, nil, nil, {}, "", 0}
+
 -- Red
 -- Warehouse Template for warehouses with baseind = true
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Infantry Platoon", 40, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
@@ -233,7 +235,7 @@ RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"IL76", 2, WAREHOUSE.Attribute.AI
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Helo MI8", 2, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, nil, nil,{}, "", 0}
 RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Helo MI24", 2, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, nil, nil,{}, "", 0}
 
--- Blue 
+-- Blue
 -- Default Warehouse Template for warehouses with baseind = false and No Custom Inventory template
 BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Infantry Platoon", 5, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
 BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Truck", 5, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil, {}, "", 0}
@@ -243,6 +245,7 @@ BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Def
 BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense Gun #002", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
 BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense SAM #002", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
 BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Transport Helo CH47", 1, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 4000, nil, nil, nil,{}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blu_Helo_CAS", 4, WAREHOUSE.Attribute.AIR_ATTACKHELO, 4000, nil, nil, nil,{}, "", 0}
 
 -- Red 
 -- Default Warehouse Template for warehouses with baseind = false and No Custom Inventory template

@@ -23,9 +23,9 @@ Blu_Arm_SAM_Zone = SET_ZONE:New()
   :FilterOnce()
 
 ----------------------------------------------------------------------
--- Blue Helo Zones
+-- Blue Cap Zones
 ----------------------------------------------------------------------
-HeloCASZone = SET_ZONE:New()
+BlueCapZonesSet = SET_ZONE:New()
   :FilterPrefixes("HeloCASZone")
   :FilterOnce()
 
