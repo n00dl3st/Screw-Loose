@@ -1381,13 +1381,13 @@ function ProcessWarehouseChain(lcoalition)
         BWChain["wchain #002"].spawnwithinv = true
         BWChain["wchain #002"].fullstrength = true
         BWChain["wchain #002"].baseind = true
-        BWChain["wchain #002"].strengthp = 50
+        BWChain["wchain #002"].strengthp = 20
         BWChain["wchain #002"].nodename = "wchain #002"
         BWChain["wchain #002"] = BWChain["wchain #002"]:AddWarehouseToChain(coalition.side.BLUE)
 
         -- Zugdidi (FARP)
         BWChain["wchain #003"].spawnwithinv = true
-        BWChain["wchain #003"].fullstrength = false
+        BWChain["wchain #003"].fullstrength = true
         BWChain["wchain #003"].baseind = false
         BWChain["wchain #003"].strengthp = 50
         BWChain["wchain #003"].nodename = "wchain #003"
@@ -1395,7 +1395,7 @@ function ProcessWarehouseChain(lcoalition)
 
         -- Blue Front Line (FARP)
         BWChain["wchain #004"].spawnwithinv = true
-        BWChain["wchain #004"].fullstrength = false
+        BWChain["wchain #004"].fullstrength = true
         BWChain["wchain #004"].baseind = false
         BWChain["wchain #004"].strengthp = 50
         BWChain["wchain #004"].nodename = "wchain #004"
@@ -1416,21 +1416,21 @@ function ProcessWarehouseChain(lcoalition)
         RWChain["wchain #008"].spawnwithinv = true
         RWChain["wchain #008"].fullstrength = true
         RWChain["wchain #008"].baseind = true
-        RWChain["wchain #008"].strengthp = 50
+        RWChain["wchain #008"].strengthp = 20
         RWChain["wchain #008"].nodename = "wchain #008"
         RWChain["wchain #008"] = RWChain["wchain #008"]:AddWarehouseToChain(coalition.side.RED)
 
         -- Gudauta (Airbase)
         RWChain["wchain #007"].spawnwithinv = true
-        RWChain["wchain #007"].fullstrength = false
+        RWChain["wchain #007"].fullstrength = true
         RWChain["wchain #007"].baseind = true
-        RWChain["wchain #007"].strengthp = 50
+        RWChain["wchain #007"].strengthp = 20
         RWChain["wchain #007"].nodename = "wchain #007"
         RWChain["wchain #007"] = RWChain["wchain #007"]:AddWarehouseToChain(coalition.side.RED)
 
         -- Sukhumi (FARP)
         RWChain["wchain #006"].spawnwithinv = true
-        RWChain["wchain #006"].fullstrength = false
+        RWChain["wchain #006"].fullstrength = true
         RWChain["wchain #006"].baseind = false
         RWChain["wchain #006"].strengthp = 50
         RWChain["wchain #006"].nodename = "wchain #006"

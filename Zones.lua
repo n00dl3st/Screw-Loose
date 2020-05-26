@@ -18,10 +18,6 @@ Blu_SecondLine = SET_ZONE:New()
   :FilterPrefixes("Blu_SecondLine")
   :FilterOnce()
 
-Blu_Arm_SAM_Zone = SET_ZONE:New()
-  :FilterPrefixes("Blu_Arm_SAM_Zone")
-  :FilterOnce()
-
 ----------------------------------------------------------------------
 -- Blue Cap Zones
 ----------------------------------------------------------------------
@@ -46,14 +42,6 @@ BlueCAPZone = SET_ZONE:New()
 ----------------------------------------------------------------------
 Red_Arm_Zone = SET_ZONE:New()
   :FilterPrefixes("Red_Arm_Zone")
-  :FilterOnce()
-  
-Red_Arm_SAM_Zone = SET_ZONE:New()
-  :FilterPrefixes("Red_Arm_SAM_Zone")
-  :FilterOnce()
-
-Red_Static_Zone = SET_ZONE:New()
-  :FilterPrefixes("Red_Static_Zone")
   :FilterOnce()
 
   ----------------------------------------------------------------------
