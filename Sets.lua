@@ -28,6 +28,13 @@ Blu_A2G_Set = SET_GROUP:New()
   :FilterPrefixes({"Blue", "Blu_Air_Recce", "Blu_Helo_CAS"})
   :FilterStart()
 
+Blu_Tanker_Set = SET_GROUP:New()
+  :FilterPrefixes('Blue Tanker')
+  :FilterOnce()
+
+Blu_AWACS_Set = SET_GROUP:New()
+  :FilterPrefixes('Blue AWACS')
+  :FilterOnce()
 ----------------------------------------------------------------------
 -- Red Sets
 ----------------------------------------------------------------------
@@ -39,3 +46,11 @@ Red_EWR_Set = SET_GROUP:New()
 Red_A2G_Set = SET_GROUP:New()
   :FilterPrefixes({"Red"})
   :FilterStart()
+
+Red_Tanker_Set = SET_GROUP:New()
+  :FilterPrefixes('Red Tanker')
+  :FilterOnce()
+
+Red_AWACS_Set = SET_GROUP:New()
+  :FilterPrefixes('Red AWACS')
+  :FilterOnce()

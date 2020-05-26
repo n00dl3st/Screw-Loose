@@ -11,101 +11,63 @@ env.info( "------------------------------------------------" )
 env.info("          Loading Dispatcher")
 env.info( "------------------------------------------------" )
 
---[[
-----------------------------------------------------------------------
--- Blue Fighter GCI Setup
-----------------------------------------------------------------------
-Blu_GCI = AI_A2A_DISPATCHER:New(Blu_Air_Detection)
-  :SetEngageRadius(74080) -- 40Nm
-  :SetDisengageRadius(370400) -- 200Nm
-  
-----------------------------------------------------------------------
--- Blue Ground Attack Setup
-----------------------------------------------------------------------
-Blu_A2G = AI_A2G_DISPATCHER:New( Blu_Ground_Detection )
- 
-Blu_A2G:AddDefenseCoordinate("A2G",ZONE:FindByName("A2G"):GetCoordinate())
-Blu_A2G:AddDefenseCoordinate("A2G Maykop",ZONE:FindByName("A2G Maykop"):GetCoordinate())
-Blu_A2G:AddDefenseCoordinate("A2G MSRW",ZONE:FindByName("A2G MSRW"):GetCoordinate())
-Blu_A2G:AddDefenseCoordinate("A2G Port Production",ZONE:FindByName("A2G Port Production"):GetCoordinate())
-Blu_A2G:AddDefenseCoordinate("A2G Sochi Port",ZONE:FindByName("A2G Sochi Port"):GetCoordinate())
-Blu_A2G:AddDefenseCoordinate("A2G Sochi",ZONE:FindByName("A2G Sochi"):GetCoordinate())
-Blu_A2G:AddDefenseCoordinate("A2G Gudauta",ZONE:FindByName("A2G Gudauta"):GetCoordinate())
-Blu_A2G:AddDefenseCoordinate("A2G Tbilisi",ZONE:FindByName("A2G Tbilisi"):GetCoordinate())
-Blu_A2G:SetDefenseRadius(92600) -- 50nm
-Blu_A2G:SetDefenseReactivityMedium()
-
-----------------------------------------------------------------------
--- Red Fighter GCI Setup
-----------------------------------------------------------------------
-Red_GCI = AI_A2A_DISPATCHER:New(Red_Air_Detection)
-  :SetEngageRadius(74080) -- 40Nm
-  :SetDisengageRadius(370400) -- 200Nm
-  
-----------------------------------------------------------------------
--- Red Ground Attack Setup
-----------------------------------------------------------------------
-Red_A2G = AI_A2G_DISPATCHER:New( Red_Ground_Detection )
- 
-Red_A2G:AddDefenseCoordinate("A2G",ZONE:FindByName("A2G"):GetCoordinate())
-Red_A2G:AddDefenseCoordinate("A2G Maykop",ZONE:FindByName("A2G Maykop"):GetCoordinate())
-Red_A2G:AddDefenseCoordinate("A2G MSRW",ZONE:FindByName("A2G MSRW"):GetCoordinate())
-Red_A2G:AddDefenseCoordinate("A2G Port Production",ZONE:FindByName("A2G Port Production"):GetCoordinate())
-Red_A2G:AddDefenseCoordinate("A2G Sochi Port",ZONE:FindByName("A2G Sochi Port"):GetCoordinate())
-Red_A2G:AddDefenseCoordinate("A2G Sochi",ZONE:FindByName("A2G Sochi"):GetCoordinate())
-Red_A2G:AddDefenseCoordinate("A2G Gudauta",ZONE:FindByName("A2G Gudauta"):GetCoordinate())
-Red_A2G:AddDefenseCoordinate("A2G Tbilisi",ZONE:FindByName("A2G Tbilisi"):GetCoordinate())
-Red_A2G:SetDefenseRadius(92600) -- 50nm
-Red_A2G:SetDefenseReactivityMedium()
---]]
-
-----------------------------------------------------------------------
--- Supply Chain related Dispatcher Functions.
-----------------------------------------------------------------------
--- WAREHOUSE:AssetDead(asset, request)   -- Triggers the FSM event "AssetDead" when an asset group has died.
--- WAREHOUSE:AssetLowFuel(asset, request)    -- Triggers the FSM event "AssetLowFuel" when an asset runs low on fuel
--- WAREHOUSE:AssetSpawned(group, asset, request)   -- Triggers the FSM e
-
 ----------------------------------------------------------------------
 -- Blue Ground Forces DIRTY DIRTY DIRTY CHEAP HACK Dispatchers
 ----------------------------------------------------------------------
     -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
 -- Blue front line boot
 function BootBlueFrontLine()
-    local time=1*40
+    local time=1*(math.random(1,60))
     -- TODO Troops ofthen Broken
-    --WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_INFANTRY, 1, nil, nil, 10, "BlueFrontLine")
-    WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_APC, 4, nil, nil, 20, "BlueFrontLine")
-    WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TANK, 5, nil, nil, 30, "BlueFrontLine")
-    --WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_ARTILLERY, 2, nil, nil, 30, "BlueFrontLine")    
-    WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TRUCK, 4, nil, nil, 30, "BlueFrontLine")
-    WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_AAA, 2, nil, nil, 30, "BlueFrontLine")
-    WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_SAM, 2, nil, nil, 30, "BlueFrontLine")
+    --WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_INFANTRY, 1, nil, nil, 90, "BlueFrontLine")
+    WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_APC, 4, nil, nil, 90, "BlueFrontLine")
+    WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TANK, 5, nil, nil, 90, "BlueFrontLine")
+    --WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_ARTILLERY, 2, nil, nil, 90, "BlueFrontLine")    
+    WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TRUCK, 4, nil, nil, 90, "BlueFrontLine")
+    WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_AAA, 2, nil, nil, 80, "BlueFrontLine")
+    WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_SAM, 2, nil, nil, 80, "BlueFrontLine")
 end
 
 function BootBlueSecondLine()
-    local time=1*40
+    local time=1*(math.random(1,60))
     -- Zugdidi
     --WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_INFANTRY, 1, nil, nil, 10, "BlueSecondLine")
-    WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_APC, 4, nil, nil, 20, "BlueSecondLine")
-    WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TANK, 4, nil, nil, 30, "BlueSecondLine")
+    WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_APC, 4, nil, nil, 90, "BlueSecondLine")
+    WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TANK, 4, nil, nil, 90, "BlueSecondLine")
     --WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_ARTILLERY, 2, nil, nil, 30, "BlueSecondLine")    
-    WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TRUCK, 4, nil, nil, 30, "BlueSecondLine")
-    WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_AAA, 2, nil, nil, 30, "BlueSecondLine")
-    WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_SAM, 2, nil, nil, 30, "BlueSecondLine")
+    WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TRUCK, 4, nil, nil, 90, "BlueSecondLine")
+    WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_AAA, 2, nil, nil, 80, "BlueSecondLine")
+    WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_SAM, 2, nil, nil, 80, "BlueSecondLine")
+end
+
+function BootBlueCap()
+  --for i=1,3 do
+    local time=1*(math.random(1,60))
+    WarehouseDB.Kobuleti:__AddRequest(time, WarehouseDB.Senaki_Kolkhi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 2, nil, nil, 100, "DoSomePilotShit")
+    WarehouseDB.Senaki_Kolkhi:__AddRequest(time, WarehouseDB.Senaki_Kolkhi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, 100, "DoSomePilotShit")
+  --end
+end
+
+function BootRedCap()
+  --for i=1, do
+    local time=1*(math.random(1,60))
+    WarehouseDB.Gudauta:__AddRequest(time, WarehouseDB.Gudauta, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, 100, "DoSomePilotShit")
+    WarehouseDB.Sochi_Adler:__AddRequest(time, WarehouseDB.Sochi_Adler, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 2, nil, nil, 100, "DoSomePilotShit")
+    WarehouseDB.Maykop_Khanskaya:__AddRequest(time, WarehouseDB.Maykop_Khanskaya, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 2, nil, nil, 100, "DoSomePilotShit")
+  --end
 end
 
 function ForTheMotherLand()
   --for i=1,2,2 do
-    local time=1*30
+    local time=1*(math.random(1,60))
     -- Sukhumi_Babushara
-    --WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_INFANTRY, 2, nil, nil, 10, "ForTheMotherLand")
-    WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_APC, 5, nil, nil, 20, "ForTheMotherLand")
-    WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TANK, 4, nil, nil, 30, "ForTheMotherLand")
+    --WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_INFANTRY, 2, nil, nil, 90, "ForTheMotherLand")
+    WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_APC, 5, nil, nil, 90, "ForTheMotherLand")
+    WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TANK, 4, nil, nil, 90, "ForTheMotherLand")
     --WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_ARTILLERY, 4, nil, nil, 30, "ForTheMotherLand")    
-    WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TRUCK, 8, nil, nil, 30, "ForTheMotherLand")
-    WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_AAA, 4, nil, nil, 30, "ForTheMotherLand")
-    WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_SAM, 4, nil, nil, 30, "ForTheMotherLand")
+    WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TRUCK, 8, nil, nil, 90, "ForTheMotherLand")
+    WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_AAA, 4, nil, nil, 80, "ForTheMotherLand")
+    WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_SAM, 4, nil, nil, 80, "ForTheMotherLand")
   --end
 end
 
@@ -134,22 +96,21 @@ function DispatchGroundForces (groupset, assignment)
           group:RouteGroundTo(ToCoord, group:GetSpeedMax()*0.8)
       end
       group:Activate()
-      -- do I need to return group?
   end
 end
 -----------------------------------------------------------------
 --  Support Unit dispatcher
 -----------------------------------------------------------------
-function DispatchSupportAircraft (groupset, assignment)
+function DispatchSupportAircraft (groupset, assignment, DispatchingWarehouse)
   for _, group in ipairs(groupset:GetSetObjects()) do
-    local group = group --Wrapper.Group#GROUP
+    local group = group
     if assignment == "AWACS" then
-      local fsm = _AWACS.FSM:New(group)
+      local fsm = _AWACS.FSM:New(group, DispatchingWarehouse)
       group:StartUncontrolled()
       _AWACS._fsm[group] = fsm
       fsm:Ready()
     elseif assignment == "TANKER" then
-      local fsm = _TANKER.FSM:New(group)
+      local fsm = _TANKER.FSM:New(group, DispatchingWarehouse)
       group:StartUncontrolled()
       _TANKER._fsm[group] = fsm
       fsm:Ready()
@@ -158,168 +119,141 @@ function DispatchSupportAircraft (groupset, assignment)
 end
 
 -----------------------------------------------------------------
---  Scum Unit dispatcher Quick and dirty copy to get something moving
+--  Air Unit dispatcher
 -----------------------------------------------------------------
-CAPFSM = {}
-CAPGroup = {}
---BlueCAPManagerRequestTime = timer.getTime()
-function CAPManager()
-  local ZoneCounter = 0
+-- First pass on this, mimial functionality.
+-- TODO everyhting.
+function PatrolManager()
+  -- init patrol object, entitiy, thing, concept whatever
+  PATROLMANAGER = {
+      ClassName = "PATROLMANAGER",
+      New = nil,      -- FSM
+      BlueZones = {},     -- Zones
+      RedZones = {},
+      Assets = {},    -- All assets
+      Settings = {},  -- Global settings
+      BlueMission = {},     -- Mission Index
+      RedMission = {},     -- Mission Index
+      BluePending = {}, -- List of zones without mission
+      RedPending = {}   -- List of zones without mission
+  }
 
-  -- Iterate the zones and launch CAP if necessary
-  -- Zone counter is used as Cap Group id, and zone id
-  -- for each zone get zone from current object
-  BlueCapZonesSet:ForEachZone(
-    function(SomeVar) -- If empty call fails fill wiht SomeVar
-      ---local myzonename = MooseObj:GetName()
-      ZoneCounter = ZoneCounter + 1    -- increment counter by 1
-      if CAPGroup[ZoneCounter] == nil then     -- if capgroup counter is undef
-      CAPGroup[ZoneCounter] = "Pending"    -- mark zone counter as pending
-      -- make request for assets
-      WarehouseDB.Zugdidi:AddRequest(WarehouseDB.Zugdidi,  WAREHOUSE.Descriptor.GROUPNAME, "Blu_Helo_CAS", 1, nil, nil, 10, "HeloCAS")
+  -- Debug
+  PATROLMANAGER.Info = function(text)
+      env.info('PatrolManger: '..text)
+  end
+  PATROLMANAGER.Debug = function(text)
+      if PatrolManager_Debug then
+          PATROLMANAGER.Info('DEBUG:'..text)
+      end
+  end
+  PatrolManager_Debug = false
+
+  -- collect zones to patrol
+  PATROLMANAGER.BlueZones = BlueCAPZone:GetSetObjects()
+  PATROLMANAGER.RedZones = RedCAPZone:GetSetObjects()
+
+  -- This secton of branches populates the PATROLMANAGER Class
+  -- Starting with collecting the number of zones to be managed
+  -- then populates PATROLMANAGER.Mission table with MissionID
+  -- State, and Zone object, Indexed from zone count.
+  -- So zone 1 becomes MissionID 1, adds default state and passes in
+  -- zone 1 from PATROLMANAGER.Zones, repeat until all zones processed.
+  -- We also generate a table of pending MissionIDs for easy access
+  -- Structure of PATROLMANAGER class is still subject to change is I
+  -- find more effient methods.
+
+  -- build index from zone list
+  local BlueZoneTableSize = 0
+  for _ in pairs(PATROLMANAGER.BlueZones) do
+      BlueZoneTableSize = BlueZoneTableSize + 1
+  end
+
+  local RedZoneTableSize = 0
+  for _ in pairs(PATROLMANAGER.RedZones) do
+    RedZoneTableSize = RedZoneTableSize + 1
+  end
+
+  for ZoneIndex = 1, BlueZoneTableSize do
+      local TempMissionTable = {MissionID = ZoneIndex, State = "Pending", Zone = PATROLMANAGER.BlueZones[ZoneIndex]}
+      table.insert(PATROLMANAGER.BlueMission, ZoneIndex, TempMissionTable)
+      table.insert(PATROLMANAGER.BluePending, ZoneIndex, ZoneIndex)
+  end
+
+  for ZoneIndex = 1, RedZoneTableSize do
+    local TempMissionTable = {MissionID = ZoneIndex, State = "Pending", Zone = PATROLMANAGER.RedZones[ZoneIndex]}
+    table.insert(PATROLMANAGER.RedMission, ZoneIndex, TempMissionTable)
+    table.insert(PATROLMANAGER.RedPending, ZoneIndex, ZoneIndex)
+  end
+
+end
+-- Init PatrolManager
+PatrolManager()
+
+-- New Patrol, or whatever I'm calling this
+function PATROLMANAGER:New(group, assignment, DispatchingWarehouse)
+
+  local Group = group
+  local Coalition = Group:GetCoalition()
+  local Assignment = assignment
+  local DispatchingWarehouse = DispatchingWarehouse
+
+  if Coalition == 2 then
+    local CurrentMission = nil
+    for ID, Mission in ipairs(PATROLMANAGER.BlueMission) do
+      if Mission.State == 'Pending' then
+          CurrentMission = ID
       end
     end
-  )
 
-  for Group, Fsm in pairs(CAPFSM) do      -- for each group in Fsm in CAPFSM
-    local bluecapstate = Fsm:GetState()    -- get Fsm state() -- core.fsm function call
-    local tempgroup = GROUP:FindByName( Group )
-    local tempgroupname = tempgroup:GetName()
-    local mycapfuel = tempgroup:GetFuelAvg()
-    local tempgroupsize = tempgroup:GetSize()
+    if CurrentMission ~= nil then
+      -- Update Pending mission list
+      local GroupName = Group:GetName()
+      local CurrentMissionZone = PATROLMANAGER.BlueMission[CurrentMission].Zone
+      PATROLMANAGER.BlueMission[CurrentMission].GroupName = GroupName
+      PATROLMANAGER.BlueMission[CurrentMission].State = "Assigned"
+      PATROLMANAGER.BlueMission[CurrentMission].Warehouse = DispatchingWarehouse
+      PATROLMANAGER.BlueMission[CurrentMission].Assignment = Assignment
 
-    if bluecapstate == "Returning" then    
-      -- CAPFSM[currentgroup] = nil -- zero out cap entry
-      -- nil out vars to launch replacement CAP
-      CAPFSM[tempgroupname] = nil
-      ZoneCounter = 0
-
-      -- Iterate the zones and nil values as necessary
-      BlueCapZonesSet:ForEachZone(
-        function(SomeVar) -- If empty call fails fill wiht SomeVar
-          ---local myzonename = MooseObj:GetName()
-          ZoneCounter = ZoneCounter + 1
-          if CAPGroup[ZoneCounter] == tempgroupname then
-            CAPGroup[ZoneCounter] = nil
-          end
-        end
-      ) --- ForEach Ends Calling out these ForEach loops syntax is evil
-
+      group:StartUncontrolled()
+      --AI_CAP_ZONE:New( PatrolZone, PatrolFloorAltitude, PatrolCeilingAltitude, PatrolMinSpeed, PatrolMaxSpeed, PatrolAltType )
+      PATROLMANAGER.BlueMission[CurrentMission].Patrol = AI_CAP_ZONE:New( CurrentMissionZone, 4572, 6096, 500, 600 )
+      PATROLMANAGER.BlueMission[CurrentMission].Patrol:SetControllable( Group )
+      PATROLMANAGER.BlueMission[CurrentMission].Patrol:__Start( 1 )
     end
-
-    if bluecapstate == "Patrolling" then
-      if mycapfuel then
-        if mycapfuel < .22 then
-          Fsm:RTB()
-        end
-      end
-      -- if not full strength, RTB
-      if tempgroupsize < 2 then
-        Fsm:RTB()
+  else
+    local CurrentMission = nil
+    for ID, Mission in ipairs(PATROLMANAGER.RedMission) do
+      if Mission.State == 'Pending' then
+          CurrentMission = ID
       end
     end
 
-    if bluecapstate == "Crashed" then
-      CAPFSM[tempgroupname] = nil
-      ZoneCounter = 0
+    if CurrentMission ~= nil then
+      -- Update Pending mission list
+      local GroupName = Group:GetName()
+      local CurrentMissionZone = PATROLMANAGER.RedMission[CurrentMission].Zone
+      PATROLMANAGER.RedMission[CurrentMission].GroupName = GroupName
+      PATROLMANAGER.RedMission[CurrentMission].State = "Assigned"
+      PATROLMANAGER.RedMission[CurrentMission].Warehouse = DispatchingWarehouse
+      PATROLMANAGER.RedMission[CurrentMission].Assignment = Assignment
 
-      -- Iterate the zones and nil values as necessary
-      BlueCapZonesSet:ForEachZone( 
-        function(SomeVar)  -- If empty call fails fill wiht SomeVar
-          -- local myzonename = MooseObj:GetName()
-          ZoneCounter = ZoneCounter + 1
-          if CAPGroup[ZoneCounter] == tempgroupname then
-            CAPGroup[ZoneCounter] = nil  
-          end
-        end
-      ) --- ForEach Ends Calling out these ForEach loops syntax is evil
-
-    end
-  end  -- end for loop
-
-  --[[
-  -- Destroy planes 5 minutes if they exist after landing at Gudauta
-  -- But OnArrival at Landing has improved taxi deadlocks.
-  local mygroup
-  for groupname, destroytime in pairs(DestroyAfterLanding)  do
-    local mygroupname = groupname
-    local mydestroytime = destroytime
-    if mygroupname then
-      mygroup = GROUP:FindByName(mygroupname)
-    end
-    local currentime = timer.getTime()
-    if mydestroytime + 300 < currentime then
-      if mygroupname then
-        mygroup:Destroy()
-      end
-        DestroyAfterLanding[mygroupname] = nil
+      group:StartUncontrolled()
+      --AI_CAP_ZONE:New( PatrolZone, PatrolFloorAltitude, PatrolCeilingAltitude, PatrolMinSpeed, PatrolMaxSpeed, PatrolAltType )
+      PATROLMANAGER.RedMission[CurrentMission].Patrol = AI_CAP_ZONE:New( CurrentMissionZone, 4572, 6096, 500, 600 )
+      PATROLMANAGER.RedMission[CurrentMission].Patrol:SetControllable( Group )
+      PATROLMANAGER.RedMission[CurrentMission].Patrol:__Start( 1 )
     end
   end
-  --]]
 end
-  -- End Blue CAP Manager
 
 -----------------------------------------------------------------
 --  DispatchCapAircraft
 -----------------------------------------------------------------
-function DispatchCapAircraft(groupset, assignment)
-  for _,group in pairs(groupset:GetSetObjects()) do
-    local group=group --Wrapper.Group#GROUP
-    local CAPGroupName = group:GetName()
-
-   -- Start uncontrolled aircraft.
-    group:StartUncontrolled()
-
-    --get zone count
-    local ZoneCounter = 0
-
-    -- Iterate the zones and nil values as necessary
-    BlueCapZonesSet:ForEachZone( 
-      function(MooseObj)
-        --local myzone = MooseObj
-        ZoneCounter = ZoneCounter + 1
-      end
-    )
-
-    BlueCAPMgrZoneList = BlueCapZonesSet:GetSetObjects()
-
-    for CAPgroupcounter = 1, ZoneCounter do
-      if CAPGroup[CAPgroupcounter] == "Pending" then
-         CAPFSM[CAPGroupName] = AI_CAP_ZONE:New(BlueCAPMgrZoneList[CAPgroupcounter], 4000, 5000, 500, 1100 )
-         CAPFSM[CAPGroupName]:SetControllable(group)
-         CAPFSM[CAPGroupName]:SetEngageRange( 40000 )
-         CAPFSM[CAPGroupName]:__Start(5)
-         CAPGroup[CAPgroupcounter] = CAPGroupName
-         break
-      end
-
-    end
-
-    group:HandleEvent( EVENTS.Land )
-    --- @param self
-    -- @param Core.Event#EVENTDATA EventData
-    function group:OnEventLand(EventData)
-      --EventData.IniGroup:MessageToAll("Landed",15,"Land Event")
-      local mygroup = EventData.IniGroup
-      local mygroupname = mygroup:GetName()
-      -- Nil Pointers
-      CAPFSM[mygroupname] = nil
-
-      local ZoneCounter = 0
-
-      -- Iterate the zones and nil values as necessary
-      BlueCapZonesSet:ForEachZone( 
-        function(MooseObj)
-          --local myzonename = MooseObj:GetName()
-          ZoneCounter = ZoneCounter + 1
-          if CAPGroup[ZoneCounter] == mygroupname then
-            CAPGroup[ZoneCounter] = nil  
-          end
-          DestroyAfterLanding[mygroupname] = timer.getTime()
-        end
-      )
-
-    end
+function DispatchPatrolAircraft(groupset, assignment, DispatchingWarehouse)
+  for _, group in ipairs(groupset:GetSetObjects()) do
+    local group = group
+    PATROLMANAGER:New(group, assignment, DispatchingWarehouse)
   end
 end
 
@@ -328,18 +262,13 @@ end
 ----------------------------------------------------------------------
 -- TODO Replace ALL this with a unified model its mostly borrowed code and dumb duplicating
 -- for what is a few lines difference. Doubt its even working as I intend vis-ve respawns etc..
+-- TODO Replace ALL This..
 env.info( "------------------------------------------------" )
 env.info("          Loading tankers")
 env.info( "------------------------------------------------" )
 ----------------------------------------------------------------------
 -- Tankers
 ----------------------------------------------------------------------
---[[
-_TANKER_UNITS = {
-  {NAME='Texaco', TACAN=12 },
-  {NAME='Tanker', TACAN=14 },
-}
---]]
 -- Minimum fuel
 ---------------
 _TANKER_MIN_FUEL = 0.3
@@ -383,17 +312,29 @@ end
   ----------------------------------------------------------------------
 _TANKER.Tanker = {}
 function _TANKER.Tanker:New( group )
- 
+
     group.rtb = false
-    --group:StartUncontrolled()
+
     --TODO if coalition pick unit template to copy from
-    -- change this route collection method to be tied to REQUEST based template unit to clone
     -- copy route from template unit
-    local tempRoute = GROUP:FindByName("Texaco"):CopyRoute(0, 0, true, 100)
+    local Template = ""
+    local TempRoute
+    local GroupCoalition = group:GetCoalition()
+
+    if GroupCoalition == 2 then
+      Template = Blu_Tanker_Set:Get("Blue Tanker")
+      local TemplateName = Template:GetName()
+      TempRoute = GROUP:FindByName(TemplateName):CopyRoute(0, 0, true, 100)
+    else
+      Template = Red_Tanker_Set:Get("Red Tanker")
+      local TemplateName = Template:GetName()
+      TempRoute = GROUP:FindByName(TemplateName):CopyRoute(0, 0, true, 100)
+    end
+
     -- add route to unit
-    group:Route(tempRoute)
+    group:Route(TempRoute)
     -- copy route to group to allow hooks
-    group.route = tempRoute
+    group.route = TempRoute
 
     function group:Debug( text )
         _TANKER.DEBUG(group:GetName()..': '..text)
@@ -535,7 +476,7 @@ function _TANKER.FSM:Debug( text )
     _TANKER.DEBUG('FSM: '..self.template_name..': '..text)
 end
  
-function _TANKER.FSM:New( group )
+function _TANKER.FSM:New( group, DispatchingWarehouse )
    
     -- Inherit from MOOSE's FSM
     local self = BASE:Inherit( self, FSM:New() )
@@ -568,7 +509,7 @@ function _TANKER.FSM:New( group )
     function self:SpawnNewTanker()    
         --self.group = _TANKER.Tanker:New(self.spawner:Spawn())
               -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
-      WarehouseDB.Kobuleti:AddRequest(WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.GROUPNAME, WAREHOUSE.Attribute.AIR_TANKER, 1, nil, nil, 10, "TANKER")
+        --DispatchingWarehouse:AddRequest(DispatchingWarehouse, WAREHOUSE.Descriptor.GROUPNAME, WAREHOUSE.Attribute.AIR_TANKER, 1, nil, nil, 10, "TANKER")
         -- Schedules the creation of the TACAN 10 seconds later, so the unit has time to appear
         self.tacan_scheduler = SCHEDULER:New(
           nil,
@@ -699,7 +640,8 @@ end
 -- bootstrap awacs
 function BootStrapTANKER()
   _TANKER.INFO('TANKER: INIT: BootStrapTANKER()')
-  WarehouseDB.Kobuleti:AddRequest(WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_TANKER, 1, nil, nil, 10, "TANKER")
+  WarehouseDB.Kobuleti:AddRequest(WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_TANKER, 1, nil, nil, 100, "TANKER")
+  WarehouseDB.Maykop_Khanskaya:AddRequest(WarehouseDB.Maykop_Khanskaya, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_TANKER, 1, nil, nil, 100, "TANKER")
 end
 
 ----------------------------------------------------------------------
@@ -715,7 +657,7 @@ env.info( "------------------------------------------------" )
   -- radius around orbit wp on station unit will be sent home when replacement approches
   _AWACS_ONSTATION_RADIUS = 92600 -- 50nm
   
-  _AWACS_DEBUG = true
+  _AWACS_DEBUG = false
   
   -- create awacs class and fsm
   _AWACS = {}
@@ -735,9 +677,7 @@ env.info( "------------------------------------------------" )
     end
   end
     
-  -- populate .UNITS table with unit arry
   _AWACS.UNITS = _AWACS_UNITS
-  -- populate .MIN_FUEL table from array
   _AWACS.MIN_FUEL = _AWACS_MIN_FUEL
   
   -- add debug menu 
@@ -753,26 +693,35 @@ env.info( "------------------------------------------------" )
   ----------------------------------------------------------------------
   -- function _AWACS.Awacs:New
   ----------------------------------------------------------------------
-  -- @function [parent=#_AWACS.Awacs] New
-  -- @param #group
+
   function _AWACS.Awacs:New(group)
     -- define and init rtb flag
     group.rtb = false
-    --group:StartUncontrolled()
-    --TODO if coalition pick unit template to copy from
+
     -- copy route from template unit
-    local tempRoute = GROUP:FindByName("Overlord"):CopyRoute(0, 0, true, 100)
+    local Template = ""
+    local TempRoute
+    local GroupCoalition = group:GetCoalition()
+
+    if GroupCoalition == 2 then
+      Template = Blu_AWACS_Set:Get("Blue AWACS")
+      local TemplateName = Template:GetName()
+      TempRoute = GROUP:FindByName(TemplateName):CopyRoute(0, 0, true, 100)
+    else
+      Template = Red_AWACS_Set:Get("Red AWACS")
+      local TemplateName = Template:GetName()
+      TempRoute = GROUP:FindByName(TemplateName):CopyRoute(0, 0, true, 100)
+    end
+
     -- add route to unit
-    group:Route(tempRoute)
+    group:Route(TempRoute)
     -- copy route to group to allow hooks
-    group.route = tempRoute
+    group.route = TempRoute
 
     ----------------------------------------------------------------------
     -- function Debug
     ----------------------------------------------------------------------
     -- add debug function to unit
-    -- @function [parent=#self] Debug
-    -- @param #debugtext
     function group:Debug(debugtext)
       _AWACS.DEBUG(group:GetName()..': '..debugtext)
     end
@@ -793,8 +742,6 @@ env.info( "------------------------------------------------" )
     -- function RTB
     ----------------------------------------------------------------------
     -- RTB function
-    -- @function [parent=#self] RTB
-    -- @param #none
     function group:RTB()
       
       -- check rtb flag
@@ -859,8 +806,6 @@ env.info( "------------------------------------------------" )
     -- function Get orbit wp and create zone to mark it
     ----------------------------------------------------------------------
     -- create zone round orbit wp
-    -- @function [parent=#self] ZoneFromOrbitWaypoint
-    -- @param #none
     function group:ZoneFromOrbitWaypoint()
       -- vars to store x,y coords
       local x
@@ -905,10 +850,6 @@ env.info( "------------------------------------------------" )
     -- function Fuel check
     ----------------------------------------------------------------------
     -- TODO I believe theres a warehouse function for this..?
-    -- WAREHOUSE:__AssetLowFuel(delay, asset, request)
-    -- obtain fuel to gauge remaining sortie
-    -- @function [parent=#self] GetFuel
-    -- @param #none
     function group:GetFuel()
       local fuel_left = group:GetUnit(1):GetFuel()
       group:Debug('Fuel Remaining: '..fuel_left)
@@ -929,8 +870,6 @@ env.info( "------------------------------------------------" )
   ----------------------------------------------------------------------
   -- function FSM debug
   ----------------------------------------------------------------------
-  -- @function [parent=#_AWACS.FSM] Debug
-  -- @param #debugtext
   function _AWACS.FSM:Debug(debugtext)
     _AWACS.DEBUG('FSM: '..self.template_name..': '..debugtext)
   end
@@ -939,9 +878,7 @@ env.info( "------------------------------------------------" )
   -- AWACS Entry point 
   -- function define new FSN instance
   ----------------------------------------------------------------------
-  -- @function [parent=#_AWACS.FSM] Debug
-  -- @param #template
-  function _AWACS.FSM:New(group)
+  function _AWACS.FSM:New(group, DispatchingWarehouse)
     -- inherit from moose FSM
     local self = BASE:Inherit(self, FSM:New())
   
@@ -968,9 +905,9 @@ env.info( "------------------------------------------------" )
     function self:SpawnNewAWACS()
       -- TODO This maybe broken, maybe not....
       --self.group = _AWACS.Awacs:New(self.spawner:Spawn())
-  
+      -- TODO Handle Red/Blue cases
       -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
-      WarehouseDB.Kobuleti:AddRequest(WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.GROUPNAME, WAREHOUSE.Attribute.AIR_AWACS, 1, nil, nil, 10, "AWACS")
+      --DispatchingWarehouse:AddRequest(DispatchingWarehouse, WAREHOUSE.Descriptor.GROUPNAME, WAREHOUSE.Attribute.AIR_AWACS, 1, nil, nil, 10, "AWACS")
     end
   
     function self:OnLeaveINIT(From, event, to)
@@ -1055,8 +992,133 @@ end
 -- bootstrap awacs
 function BootStrapAWACS()
   _AWACS.INFO('AWACS: INIT: BootStrapAWACS()')
-  WarehouseDB.Kobuleti:AddRequest(WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_AWACS, 1, nil, nil, 10, "AWACS")
+  WarehouseDB.Kobuleti:AddRequest(WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_AWACS, 1, nil, nil, 100, "AWACS")
+  WarehouseDB.Maykop_Khanskaya:AddRequest(WarehouseDB.Maykop_Khanskaya, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_AWACS, 1, nil, nil, 100, "AWACS")
 end
+
+----------------------------------------------------------------------
+-- Blue Resupply Aircraft
+----------------------------------------------------------------------
+-- TODO Rewrite, clean up, replace vars with names that make sense.
+-- on landing will add to base warehouse assets
+BlueDailyTransport = SPAWN:New("Blue Daily Transport")
+BlueDailyTransport:OnSpawnGroup(
+    function(groupname)
+        SpawnedBlueResupplyGroup = GROUP:FindByName(groupname.GroupName)
+        -- local tempgroupname = groupname.GroupName  -- UNDEF
+
+        --setup event handler
+        SpawnedResupplyGroup:HandleEvent(
+            EVENTS.Land
+        )
+        -- @param self
+        -- @param Core.Event#EVENTDATA EventData
+        function SpawnedResupplyGroup:OnEventLand(EventData)
+            for y=1, #BlueBaseWarehouseInv do
+                local group = self.winvtemplate[y][1]
+                local ngroups = self.winvtemplate[y][2]
+                local forceattribute = self.winvtemplate[y][3]
+                local forcecargobay = self.winvtemplate[y][4]
+                local forceweight = self.winvtemplate[y][5]
+                local loadradius = self.winvtemplate[y][6]
+                local skill = self.winvtemplate[y][7]
+                local liveries = self.winvtemplate[y][8]
+                local assignment = self.winvtemplate[y][9]
+
+                --local supplierassetcount = BlueWareHouses[1]:GetNumberOfAssets(WAREHOUSE.Descriptor.GROUPNAME, group)  -- UNDEF
+
+                -- WAREHOUSE:AddAsset(group, ngroups, forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
+                BlueWareHouses[1]:AddAsset(group, math.ceil(ngroups/10), forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
+            end
+                WCHAIN.DEBUG("Adding Daily Assets to Base Warehouse " .. BlueWareHouses[1].alias)
+                EventData.IniGroup:Destroy()
+            end
+        end
+)
+
+function BlueOffMapSupply()
+    local spawnresupply = false
+
+    for y=1, #BlueBaseWarehouseInv do
+        local groupattrib = BlueBaseWarehouseInv[y][3]   -- UNDEF
+        local invgroupname = BlueBaseWarehouseInv[y][1]
+        local maxunits = BlueBaseWarehouseInv[y][2]
+        local supplierassetcount = BlueWareHouses[1]:GetNumberOfAssets(WAREHOUSE.Descriptor.GROUPNAME, invgroupname)
+    
+        -- check to see if delivery required
+        if supplierassetcount < maxunits then
+            spawnresupply = true
+        end
+
+    end
+
+    if spawnresupply == true then
+        BlueResupplyPlane = BlueDailyTransport:SpawnInZone(BlueOffMapZone, false, 5000, 6500, nil)
+    end
+
+end
+
+----------------------------------------------------------------------
+-- Red Resupply Aircraft
+----------------------------------------------------------------------
+-- on landing will add to base warehouse assets
+RedDailyTransport = SPAWN:New("Red Daily Transport")
+RedDailyTransport:OnSpawnGroup(
+    function(groupname)
+        SpawnedRedResupplyGroup = GROUP:FindByName(groupname.GroupName)
+        local tempgroupname = groupname.GroupName
+
+        --setup event handler 
+        SpawnedRedResupplyGroup:HandleEvent(
+                EVENTS.Land
+        )
+        -- @param self
+        -- @param Core.Event#EVENTDATA EventData
+        function SpawnedRedResupplyGroup:OnEventLand(EventData)
+
+            for y=1, #RedBaseWareHouseInv do
+                local group = self.winvtemplate[y][1]
+                local ngroups = self.winvtemplate[y][2]
+                local forceattribute = self.winvtemplate[y][3]
+                local forcecargobay = self.winvtemplate[y][4]
+                local forceweight = self.winvtemplate[y][5]
+                local loadradius = self.winvtemplate[y][6]
+                local skill = self.winvtemplate[y][7]
+                local liveries = self.winvtemplate[y][8]
+                local assignment = self.winvtemplate[y][9]
+                -- WAREHOUSE:AddAsset(group, ngroups, forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
+                RedWareHouses[1]:AddAsset(group, math.ceil(ngroups/10), forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
+            end
+
+            WCHAIN.DEBUG("Adding Daily Assets to Base Warehouse " .. RedWareHouses[1].alias)
+            EventData.IniGroup:Destroy()
+        end
+
+    end
+)
+
+function RedOffMapSupply()
+    local spawnresupply = false
+
+    for y=1, #RedBaseWareHouseInv do
+        local groupattrib = RedBaseWareHouseInv[y][3]    -- UNDEF
+        local invgroupname = RedBaseWareHouseInv[y][1]
+        local maxunits = RedBaseWareHouseInv[y][2]
+        local supplierassetcount = RedWareHouses[1]:GetNumberOfAssets(WAREHOUSE.Descriptor.GROUPNAME, invgroupname)
+
+        -- check to see if delivery required
+        if supplierassetcount < maxunits then
+            spawnresupply = true
+        end
+
+    end
+
+    if spawnresupply == true then
+        RedResupplyPlane = RedDailyTransport:SpawnInZone(RedOffMapZone, false, 5000, 6500, nil)
+    end
+
+end
+
 
 ----------------------------------------------------------------------
 -- Boot Support Aircraft
@@ -1067,14 +1129,20 @@ SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootStrapTANKER, {}, 60, 0)
 ----------------------------------------------------------------------
 -- Boot Combat Aircraft
 ----------------------------------------------------------------------
-SchedulerObject, SchedulerID = SCHEDULER:New( nil, CAPManager, {}, 50, 60 )
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootBlueCap, {}, 50, 0 )
 
 ----------------------------------------------------------------------
 -- Blue Ground forces
 ----------------------------------------------------------------------
-SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootBlueFrontLine, {}, 60, 0)
-SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootBlueSecondLine, {}, 50, 0)
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootBlueFrontLine, {}, 60, (2 * 3600))
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootBlueSecondLine, {}, 50, (3 * 3600))
+
 ----------------------------------------------------------------------
 -- Red Ground forces
 ----------------------------------------------------------------------
-SchedulerObject, SchedulerID = SCHEDULER:New( nil, ForTheMotherLand, {}, 90, 0)
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, ForTheMotherLand, {}, 90, (2 * 3600))
+
+----------------------------------------------------------------------
+-- Boot Combat Aircraft
+----------------------------------------------------------------------
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootRedCap, {}, 50, 0 )

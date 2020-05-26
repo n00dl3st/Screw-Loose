@@ -184,6 +184,9 @@ WarehouseDB = {"Kobuleti",
 -- test replacing refereces with WarehouseDB
 local warehouse = {}
 
+WAREHOUSE.Debug = false
+WAREHOUSE.Report = false
+
 ----------------------------------------------------------------------
 -- Warehouse Invetory Def
 ----------------------------------------------------------------------
@@ -205,55 +208,60 @@ local warehouse = {}
 
 -- Blue
 -- Warehouse Template for warehouses with baseind = true
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Infantry Platoon", 24, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Truck", 20, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue APC1", 20, WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Armor Group", 20, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense SAM", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense Gun #002", 10, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense SAM #002", 10, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"A10 Tactical Bomber", 12, WAREHOUSE.Attribute.AIR_BOMBER, nil, nil, nil, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue CAP", 12, WAREHOUSE.Attribute.AIR_FIGHTER, nil, nil, nil, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"C-130Herc", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, nil, nil, 0, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"C-17Globe", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, 50000, nil, 0, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Transport Helo CH47", 4, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 4000, nil, nil, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Overlord", 2, WAREHOUSE.Attribute.AIR_AWACS, nil, nil, nil, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Texaco", 2, WAREHOUSE.Attribute.AIR_TANKER, nil, nil, nil, nil, {}, "", 0}
-BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blu_Helo_CAS", 8, WAREHOUSE.Attribute.AIR_ATTACKHELO, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Infantry Platoon", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Truck", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue APC1", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Armor Group", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense SAM", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense Gun #002", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Air Defense SAM #002", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"A10 Tactical Bomber", (math.random(1,10)), WAREHOUSE.Attribute.AIR_BOMBER, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"C-130Herc", (math.random(1,5)), WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, nil, nil, 0, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"C-17Globe", (math.random(1,5)), WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, 50000, nil, 0, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Transport Helo CH47", (math.random(1,6)), WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 4000, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue AWACS", (math.random(1,5)), WAREHOUSE.Attribute.AIR_AWACS, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue Tanker", (math.random(1,5)), WAREHOUSE.Attribute.AIR_TANKER, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blu_Helo_CAS", (math.random(1,5)), WAREHOUSE.Attribute.AIR_ATTACKHELO, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue F-16", (math.random(1,20)), WAREHOUSE.Attribute.AIR_FIGHTER, nil, nil, nil, nil, {}, "", 0}
+BlueBaseWarehouseInv[#BlueBaseWarehouseInv+1] = {"Blue F-15C", (math.random(1,20)), WAREHOUSE.Attribute.AIR_FIGHTER, nil, nil, nil, nil, {}, "", 0}
 
 -- Red
 -- Warehouse Template for warehouses with baseind = true
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Infantry Platoon", 40, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Truck", 30, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil,{}, "", 0}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red APC", 30, WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil,{}, "", 0}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Armor Group", 30, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil,{}, "", 0}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red SAM #001", 15, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red SAM #002", 15, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"SU-33 CAP", 12, WAREHOUSE.Attribute.AIR_FIGHTER, nil, nil, nil, nil,{}, "", 0}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"An30", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, nil, nil, nil, nil,{}, "", 0}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"IL76", 2, WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, 50000, nil, nil, nil,{}, "", 0}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Helo MI8", 2, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, nil, nil,{}, "", 0}
-RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Helo MI24", 2, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Infantry Platoon", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Truck", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red APC", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Armor Group", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red SAM #001", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red SAM #002", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"An30", (math.random(1,5)), WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"IL76", (math.random(1,5)), WAREHOUSE.Attribute.AIR_TRANSPORTPLANE, 50000, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Tanker", (math.random(1,5)), WAREHOUSE.Attribute.AIR_TANKER, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red AWACS", (math.random(1,5)), WAREHOUSE.Attribute.AIR_AWACS, 50000, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Helo MI8", (math.random(1,5)), WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Transport Helo MI24", (math.random(1,5)), WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Mig21", (math.random(1,5)), WAREHOUSE.Attribute.AIR_FIGHTER, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Mig29", (math.random(1,10)), WAREHOUSE.Attribute.AIR_FIGHTER, nil, nil, nil, nil,{}, "", 0}
+RedBaseWareHouseInv[#RedBaseWareHouseInv+1] = {"Red Su27", (math.random(1,8)), WAREHOUSE.Attribute.AIR_FIGHTER, nil, nil, nil, nil,{}, "", 0}
 
 -- Blue
 -- Default Warehouse Template for warehouses with baseind = false and No Custom Inventory template
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Infantry Platoon", 5, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Truck", 5, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil, {}, "", 0}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue APC1", 5, WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil, {}, "", 0}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Armor Group", 5, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil, {}, "", 0}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense SAM", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense Gun #002", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
-BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense SAM #002", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Infantry Platoon", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, nil, nil, {}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Truck", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, nil, nil, {}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue APC1", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_APC, nil, nil, nil, nil, {}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Armor Group", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil, {}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense SAM", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense Gun #002", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
+BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Air Defense SAM #002", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil, {}, "", 0}
 BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blue Transport Helo CH47", 1, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 4000, nil, nil, nil,{}, "", 0}
 BlueDefaultWareHouseInventory[#BlueDefaultWareHouseInventory+1] = {"Blu_Helo_CAS", 4, WAREHOUSE.Attribute.AIR_ATTACKHELO, 4000, nil, nil, nil,{}, "", 0}
 
 -- Red 
 -- Default Warehouse Template for warehouses with baseind = false and No Custom Inventory template
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Infantry Platoon", 5, WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 5000, nil, {}, "", 0}
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Truck", 5, WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, 100, nil,{}, "", 0}
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red APC", 5, WAREHOUSE.Attribute.GROUND_APC, nil, nil, 100, nil,{}, "", 0}
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Armor Group", 5, WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil,{}, "", 0}
-RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red SAM #001", 5, WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Infantry Platoon", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_INFANTRY, nil, nil, 5000, nil, {}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Truck", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_TRUCK, nil, nil, 100, nil,{}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red APC", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_APC, nil, nil, 100, nil,{}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Armor Group", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_TANK, nil, nil, nil, nil,{}, "", 0}
+RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red SAM #001", (math.random(1,24)), WAREHOUSE.Attribute.GROUND_SAM, nil, nil, nil, nil,{}, "", 0}
 RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Transport Helo MI8", 1, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, 2000, nil,{}, "", 0}
 RedDefaultWareHouseInventory[#RedDefaultWareHouseInventory+1] = {"Red Transport Helo MI24", 1, WAREHOUSE.Attribute.AIR_TRANSPORTHELO, 3000, nil, 2000, nil,{}, "", 0}
 
@@ -1485,129 +1493,6 @@ function ProcessWarehouseChain(lcoalition)
         end
     end
 end     -- End of ProcessWarehouseChain()
-
-----------------------------------------------------------------------
--- Blue Resupply Aircraft
-----------------------------------------------------------------------
--- TODO Rewrite, clean up, replace vars with names that make sense.
--- on landing will add to base warehouse assets
-BlueDailyTransport = SPAWN:New("Blue Daily Transport")
-BlueDailyTransport:OnSpawnGroup(
-    function(groupname)
-        SpawnedBlueResupplyGroup = GROUP:FindByName(groupname.GroupName)
-        -- local tempgroupname = groupname.GroupName  -- UNDEF
-
-        --setup event handler
-        SpawnedResupplyGroup:HandleEvent(
-            EVENTS.Land
-        )
-        -- @param self
-        -- @param Core.Event#EVENTDATA EventData
-        function SpawnedResupplyGroup:OnEventLand(EventData)
-            for y=1, #BlueBaseWarehouseInv do
-                local group = self.winvtemplate[y][1]
-                local ngroups = self.winvtemplate[y][2]
-                local forceattribute = self.winvtemplate[y][3]
-                local forcecargobay = self.winvtemplate[y][4]
-                local forceweight = self.winvtemplate[y][5]
-                local loadradius = self.winvtemplate[y][6]
-                local skill = self.winvtemplate[y][7]
-                local liveries = self.winvtemplate[y][8]
-                local assignment = self.winvtemplate[y][9]
-
-                --local supplierassetcount = BlueWareHouses[1]:GetNumberOfAssets(WAREHOUSE.Descriptor.GROUPNAME, group)  -- UNDEF
-
-                -- WAREHOUSE:AddAsset(group, ngroups, forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
-                BlueWareHouses[1]:AddAsset(group, math.ceil(ngroups/10), forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
-            end
-                WCHAIN.DEBUG("Adding Daily Assets to Base Warehouse " .. BlueWareHouses[1].alias)
-                EventData.IniGroup:Destroy()
-            end
-        end
-)
-
-function BlueOffMapSupply()
-    local spawnresupply = false
-
-    for y=1, #BlueBaseWarehouseInv do
-        -- local groupattrib = BlueBaseWarehouseInv[y][3]   -- UNDEF
-        local invgroupname = BlueBaseWarehouseInv[y][1]
-        local maxunits = BlueBaseWarehouseInv[y][2]
-        local supplierassetcount = BlueWareHouses[1]:GetNumberOfAssets(WAREHOUSE.Descriptor.GROUPNAME, invgroupname)
-    
-        -- check to see if delivery required
-        if supplierassetcount < maxunits then
-            spawnresupply = true
-        end
-
-    end
-
-    if spawnresupply == true then
-        BlueResupplyPlane = BlueDailyTransport:SpawnInZone(BlueOffMapZone, false, 5000, 6500, nil)
-    end
-
-end
-
-----------------------------------------------------------------------
--- Red Resupply Aircraft
-----------------------------------------------------------------------
--- on landing will add to base warehouse assets
-RedDailyTransport = SPAWN:New("Red Daily Transport")
-RedDailyTransport:OnSpawnGroup(
-    function(groupname)
-        SpawnedRedResupplyGroup = GROUP:FindByName(groupname.GroupName)
-        local tempgroupname = groupname.GroupName
-
-        --setup event handler 
-        SpawnedRedResupplyGroup:HandleEvent(
-                EVENTS.Land
-        )
-        -- @param self
-        -- @param Core.Event#EVENTDATA EventData
-        function SpawnedRedResupplyGroup:OnEventLand(EventData)
-
-            for y=1, #RedBaseWareHouseInv do
-                local group = self.winvtemplate[y][1]
-                local ngroups = self.winvtemplate[y][2]
-                local forceattribute = self.winvtemplate[y][3]
-                local forcecargobay = self.winvtemplate[y][4]
-                local forceweight = self.winvtemplate[y][5]
-                local loadradius = self.winvtemplate[y][6]
-                local skill = self.winvtemplate[y][7]
-                local liveries = self.winvtemplate[y][8]
-                local assignment = self.winvtemplate[y][9]
-                -- WAREHOUSE:AddAsset(group, ngroups, forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
-                RedWareHouses[1]:AddAsset(group, math.ceil(ngroups/10), forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
-            end
-
-            WCHAIN.DEBUG("Adding Daily Assets to Base Warehouse " .. RedWareHouses[1].alias)
-            EventData.IniGroup:Destroy()
-        end
-
-    end
-)
-
-function RedOffMapSupply()
-    local spawnresupply = false
-
-    for y=1, #RedBaseWareHouseInv do
-        -- local groupattrib = RedBaseWareHouseInv[y][3]    -- UNDEF
-        local invgroupname = RedBaseWareHouseInv[y][1]
-        local maxunits = RedBaseWareHouseInv[y][2]
-        local supplierassetcount = RedWareHouses[1]:GetNumberOfAssets(WAREHOUSE.Descriptor.GROUPNAME, invgroupname)
-
-        -- check to see if delivery required
-        if supplierassetcount < maxunits then
-            spawnresupply = true
-        end
-
-    end
-
-    if spawnresupply == true then
-        RedResupplyPlane = RedDailyTransport:SpawnInZone(RedOffMapZone, false, 5000, 6500, nil)
-    end
-
-end
 
 ----------------------------------------------------------------------
 -- Boot Supply Chain

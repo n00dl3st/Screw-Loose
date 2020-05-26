@@ -25,16 +25,16 @@ Blu_Arm_SAM_Zone = SET_ZONE:New()
 ----------------------------------------------------------------------
 -- Blue Cap Zones
 ----------------------------------------------------------------------
-BlueCapZonesSet = SET_ZONE:New()
+BlueHeloZone = SET_ZONE:New()
   :FilterPrefixes("HeloCASZone")
   :FilterOnce()
 
   ----------------------------------------------------------------------
 -- Blue CAP Zones
 ----------------------------------------------------------------------
---  BlueCAPZone = SET_ZONE:New()
---  :FilterPrefixes("BlueCAPZone")
---  :FilterOnce()
+BlueCAPZone = SET_ZONE:New()
+  :FilterPrefixes("BlueCAPZone")
+  :FilterOnce()
 
 ----------------------------------------------------------------------
 -- Blue Polygon Zones
@@ -56,25 +56,12 @@ Red_Static_Zone = SET_ZONE:New()
   :FilterPrefixes("Red_Static_Zone")
   :FilterOnce()
 
---[[[
+  ----------------------------------------------------------------------
+-- Blue CAP Zones
 ----------------------------------------------------------------------
--- Blue Fighter Squadron Zones 
-----------------------------------------------------------------------
--- CAP Zones
-Blu_CAP = ZONE_POLYGON:New("CAP Zone Blue",GROUP:FindByName("CAP Zone Blue"))
-Blu_CAP2 = ZONE_POLYGON:New("CAP Zone Blue 2",GROUP:FindByName("CAP Zone Blue 2"))
-Blu_CAP3 = ZONE_POLYGON:New("CAP Zone Blue 3",GROUP:FindByName("CAP Zone Blue 3"))
-Blu_Helo_CAP = ZONE_POLYGON:New("HeloCASZone",GROUP:FindByName("HeloCASZone"))
-
-----------------------------------------------------------------------
--- Red Fighter Squadron Zones 
-----------------------------------------------------------------------
--- CAP Zones
-Red_CAP = ZONE_POLYGON:New("CAP Zone Red",GROUP:FindByName("CAP Zone Red"))
-Red_CAP2 = ZONE_POLYGON:New("CAP Zone Red 2",GROUP:FindByName("CAP Zone Red 2"))
-Red_CAP3 = ZONE_POLYGON:New("CAP Zone Red 3",GROUP:FindByName("CAP Zone Red 3"))
-Red_Helo_CAP = ZONE_POLYGON:New("CAP Zone Red Recce",GROUP:FindByName("CAP Zone Red Recce"))
---]]
+RedCAPZone = SET_ZONE:New()
+  :FilterPrefixes("RedCAPZone")
+  :FilterOnce()
 
 ----------------------------------------------------------------------
 -- Assignment/zone Table

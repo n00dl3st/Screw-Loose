@@ -22,6 +22,8 @@ Opfor_CC = COMMANDCENTER:New( Opfor_HQ, "SnowFall" )
 ----------------------------------------------------------------------
 -- SAM Defensive actions
 ----------------------------------------------------------------------
+-- TODO Everything..
+--[[
 env.info( "------------------------------------------------" )
 env.info("          Loading SAM C&C")
 env.info( "------------------------------------------------" )
@@ -41,4 +43,4 @@ SAM_Defence = SEAD:New({"Blue AB SAM", "Blue Grn Anti-Air", "Red AB SAM", "Red G
 --     end
 --    end)
 --end, {},1, 120)
-
+--]]

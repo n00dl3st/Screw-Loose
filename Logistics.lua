@@ -84,8 +84,8 @@ env.info( "------------------------------------------------" )
 -- The world breaks if this is loaded before Supply chain is created and active
 -- so wraping it in function solves the chicken/egg debate once and for all.
 function Logistics()
--- Check the chain is actually a thing.
-if SUPPLYCHAINREADY == true then
+    -- Check the chain is actually a thing.
+    if SUPPLYCHAINREADY == true then
 -----------------------------------------------------------------
 --  BlUE
 -----------------------------------------------------------------
@@ -99,12 +99,21 @@ if SUPPLYCHAINREADY == true then
             local groupset = groupset
             local request = request
             local assignment = request.assignment
+            local DispatchingWarehouse = WarehouseDB.Kobuleti
 
             if assignment == "AWACS" or "TANKER" then
-                DispatchSupportAircraft(groupset, assignment)
+                DispatchSupportAircraft(groupset, assignment, DispatchingWarehouse)
             end
+
+            if assignment == "DoSomePilotShit" then
+                DispatchPatrolAircraft(groupset, assignment, DispatchingWarehouse)
+            end
+
         end
 
+        ---------------------------------------------------------
+        -- OnAfterDelivered
+        ---------------------------------------------------------
         --[[ Need to work this out, something like this...
         function WarehouseDB.Kobuleti:OnAfterDelivered(From,Event,To,request)
             local request = request
@@ -120,48 +129,82 @@ if SUPPLYCHAINREADY == true then
                 end
         --]]
 
+        ---------------------------------------------------------
+        -- OnAfterAssetDead
+        ---------------------------------------------------------
+        function WarehouseDB.Kobuleti:OnAfterAssetDead(From, Event, To, asset, request)
+            local request = request
+            local assignment = WarehouseDB.Kobuleti:GetAssignment(request)
+
+            if assignment == "AWACS" or "TANKER" then
+                local delay=1*(math.random(1,300))
+                WarehouseDB.Kobuleti:__AddRequest(delay, WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.GROUPNAME, WAREHOUSE.Attribute.AIR_TANKER, 1, nil, nil, 100, assignment)
+            end
+
+            if assignment == "DoSomePilotShit" then
+                local delay=1*(math.random(1,300))
+                WarehouseDB.Kobuleti:__AddRequest(delay, WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, 100, assignment)
+            end
+        end
+
+        ------------------------------------------------------------------------------------------------------------------
+        -- Senaki_Kolkhi
+        ------------------------------------------------------------------------------------------------------------------
+        ---------------------------------------------------------
+        -- OnAfterSelfRequest
+        ---------------------------------------------------------
         function WarehouseDB.Senaki_Kolkhi:OnAfterSelfRequest(From,Event,To,groupset,request)
             local groupset = groupset
             local request = request
-            local assignment = request.assignment
-
-            if request.assignment=="CAP" then
-                DispatchCapAircraft(groupset, assignment)
+            local assignment = WarehouseDB.Senaki_Kolkhi:GetAssignment(request)
+            local DispatchingWarehouse = WarehouseDB.Senaki_Kolkhi
+        
+            if assignment == "DoSomePilotShit" then
+                DispatchPatrolAircraft(groupset, assignment, DispatchingWarehouse)
             end
         end
+
+        ---------------------------------------------------------
+        -- OnAfterAssetDead
+        ---------------------------------------------------------
+        function WarehouseDB.Senaki_Kolkhi:OnAfterAssetDead(From, Event, To, asset, request)
+            local request = request
+            local assignment = WarehouseDB.Senaki_Kolkhi:GetAssignment(request)
+            if assignment == "DoSomePilotShit" then
+                local delay=1*(math.random(1,300))
+                WarehouseDB.Senaki_Kolkhi:__AddRequest(delay, WarehouseDB.Senaki_Kolkhi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, 100, assignment)
+            end
+        end
+
         ------------------------------------------------------------------------------------------------------------------
-        -- Zugdidi
+        -- Zugdidi (FARP)
         ------------------------------------------------------------------------------------------------------------------
         -- OnAfterSelfRequest
         ---------------------------------------------------------
-        --  Gound Assets
         function WarehouseDB.Zugdidi:OnAfterSelfRequest(From,Event,To,groupset,request)
-            local groupset=groupset --Core.Set#SET_GROUP
-            local request=request   --Functional.Warehouse#WAREHOUSE.Pendingitem
+            local groupset=groupset
+            local request=request
             local assignment = request.assignment
+            --local DispatchingWarehouse = WarehouseDB.Zugdidi
+
             for _, group in ipairs(groupset:GetSetObjects()) do
-                local group = group --Wrapper.Group#GROUP
-                if assignment == "HeloCAS" then
-                    DispatchCapAircraft(groupset, assignment)
-                else
-                    -- Ground Forces Dispatcher
+                local group = group
                     -- TODO need to find a handle in WAREHOUSE or request var to use as for logical branching
                     -- request holds a value like Ground_APC maybe I and regex out and hook on prefix.
                     -- like:
                     ---  nodeprefix = string.sub(tempnodename, 1, 8)
                     DispatchGroundForces(groupset, assignment)
-                end
+                --end
             end
         end
         ---------------------------------------------------------
         -- OnAfterAssetDead
         ---------------------------------------------------------
         function WarehouseDB.Zugdidi:OnAfterAssetDead(From, Event, To, asset, request)
-            local asset=asset       --Functional.LOGISTICS#LOGISTICS.Assetitem
-            local request=request   --Functional.LOGISTICS#LOGISTICS.Pendingitem
-            -- Get assignment.
+            --local asset=asset
+            local request=request
+            --local DispatchingWarehouse = WarehouseDB.Zugdidi
             local assignment=WarehouseDB.Zugdidi:GetAssignment(request)
-            -- make request
             -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
             WarehouseDB.Zugdidi:AddRequest(WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.CATEGORY, Group.Category.GROUND, 1, nil, nil, 100, assignment)
         end
@@ -170,21 +213,20 @@ if SUPPLYCHAINREADY == true then
         ---------------------------------------------------------
         --[[
         function WarehouseDB.Zugdidi:OnAfterNewAsset(From, Event, To, asset, assignment)
-            local asset=asset --Functional.Warehouse#WAREHOUSE.Assetitem
-            BootBlueFrontLine()
         end
         --]]
 
         ------------------------------------------------------------------------------------------------------------------
-        -- BlueFrontLine
+        -- BlueFrontLine (FARP)
         ------------------------------------------------------------------------------------------------------------------
         -- OnAfterSelfRequest
         ---------------------------------------------------------
         --  Gound Assets
         function WarehouseDB.BlueFrontLine:OnAfterSelfRequest(From,Event,To,groupset,request)
-            local groupset=groupset --Core.Set#SET_GROUP
-            local request=request   --Functional.Warehouse#WAREHOUSE.Pendingitem
-            local assignment = request.assignment
+            local groupset=groupset
+            local request=request
+            --local DispatchingWarehouse = WarehouseDB.BlueFrontLine
+            local assignment=WarehouseDB.BlueFrontLine:GetAssignment(request)
             -- Ground Forces Dispatcher
             DispatchGroundForces(groupset, assignment)
         end
@@ -192,36 +234,33 @@ if SUPPLYCHAINREADY == true then
         -- OnAfterAssetDead
         ---------------------------------------------------------
         function WarehouseDB.BlueFrontLine:OnAfterAssetDead(From, Event, To, asset, request)
-            local asset=asset       --Functional.LOGISTICS#LOGISTICS.Assetitem
-            local request=request   --Functional.LOGISTICS#LOGISTICS.Pendingitem
-            -- Get assignment.
+            --local asset=asset
+            local request=request
+            --local DispatchingWarehouse = WarehouseDB.BlueFrontLine
             local assignment=WarehouseDB.BlueFrontLine:GetAssignment(request)
-            -- make request
             -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
             WarehouseDB.BlueFrontLine:AddRequest(WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.CATEGORY, Group.Category.GROUND, 1, nil, nil, 100, assignment)
         end
         ---------------------------------------------------------
         -- OnAfterNewAsset
         ---------------------------------------------------------
-        --[[
-        function WarehouseDB.BlueFrontLine:OnAfterNewAsset(From, Event, To, asset, assignment)
-            local asset=asset --Functional.Warehouse#WAREHOUSE.Assetitem
-            BootBlueFrontLine()
-        end
-        --]]
+        --function WarehouseDB.BlueFrontLine:OnAfterNewAsset(From, Event, To, asset, assignment)
+        --end
+
 -----------------------------------------------------------------
 --  RED
 -----------------------------------------------------------------
         ------------------------------------------------------------------------------------------------------------------
-        -- Red FrontLine (Sukhumi_Babushara)
+        -- Red Sukhumi_Babushara (FrontLine)
         ------------------------------------------------------------------------------------------------------------------
         -- OnAfterSelfRequest
         ---------------------------------------------------------
         --  Gound Assets
         function WarehouseDB.Sukhumi_Babushara:OnAfterSelfRequest(From,Event,To,groupset,request)
-            local groupset=groupset --Core.Set#SET_GROUP
-            local request=request   --Functional.Warehouse#WAREHOUSE.Pendingitem
-            local assignment = request.assignment
+            local groupset=groupset
+            local request=request
+            --local DispatchingWarehouse = WarehouseDB.Sukhumi_Babushara
+            local assignment=WarehouseDB.Sukhumi_Babushara:GetAssignment(request)
             -- Ground Forces Dispatcher
             DispatchGroundForces(groupset, assignment)
         end
@@ -229,11 +268,10 @@ if SUPPLYCHAINREADY == true then
         -- OnAfterAssetDead
         ---------------------------------------------------------
         function WarehouseDB.Sukhumi_Babushara:OnAfterAssetDead(From, Event, To, asset, request)
-            local asset=asset       --Functional.LOGISTICS#LOGISTICS.Assetitem
-            local request=request   --Functional.LOGISTICS#LOGISTICS.Pendingitem
-            -- Get assignment.
+            --local asset=asset
+            local request=request
+            --local DispatchingWarehouse = WarehouseDB.Sukhumi_Babushara
             local assignment=WarehouseDB.Sukhumi_Babushara:GetAssignment(request)
-            -- make request
             -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
             WarehouseDB.Sukhumi_Babushara:AddRequest(WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.CATEGORY, Group.Category.GROUND, 1, nil, nil, 100, assignment)
         end
@@ -246,35 +284,109 @@ if SUPPLYCHAINREADY == true then
             ForTheMotherLand()
         end
         --]]
---[[ Don't run unfinished code...
-function warehouse.Sukhumi_Babushara:OnAfterSelfRequest(From,Event,To,groupset,request)
 
-function warehouse.Sukhumi:OnAfterSelfRequest(From,Event,To,groupset,request)
+        ------------------------------------------------------------------------------------------------------------------
+        -- Red Sukhumi (FARP)
+        ------------------------------------------------------------------------------------------------------------------
+        -- OnAfterSelfRequest
+        ---------------------------------------------------------
+        --function WarehouseDB.Sukhumi:OnAfterSelfRequest(From,Event,To,groupset,request)
+        --end
+        ---------------------------------------------------------
+        -- OnAfterAssetDead
+        ---------------------------------------------------------
+        --function WarehouseDB.Sukhumi:OnAfterAssetDead(From, Event, To, asset, request)
+        --end
 
-function warehouse.Gudauta:OnAfterSelfRequest(From,Event,To,groupset,request)
+        ------------------------------------------------------------------------------------------------------------------
+        -- Red Gudauta (AIRBASE)
+        ------------------------------------------------------------------------------------------------------------------
+        -- OnAfterSelfRequest
+        ---------------------------------------------------------
+        function WarehouseDB.Gudauta:OnAfterSelfRequest(From,Event,To,groupset,request)
+            local groupset = groupset
+            local request = request
+            local assignment = WarehouseDB.Senaki_Kolkhi:GetAssignment(request)
+            local DispatchingWarehouse = WarehouseDB.Senaki_Kolkhi
+    
+            if assignment == "DoSomePilotShit" then
+                DispatchPatrolAircraft(groupset, assignment, DispatchingWarehouse)
+            end
+        end
 
-function warehouse.Sochi_Adler:OnAfterSelfRequest(From,Event,To,groupset,request)
+        ---------------------------------------------------------
+        -- OnAfterAssetDead
+        ---------------------------------------------------------
+        function WarehouseDB.Gudauta:OnAfterAssetDead(From, Event, To, asset, request)
+            local request = request
+            local assignment = WarehouseDB.Gudauta:GetAssignment(request)
+            if assignment == "DoSomePilotShit" then
+                local delay=1*(math.random(1,300))
+                WarehouseDB.Gudauta:__AddRequest(delay, WarehouseDB.Gudauta, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, 100, assignment)
+            end
+        end
 
-function warehouse.Maykop_Khanskaya:OnAfterSelfRequest(From,Event,To,groupset,request)
+        ------------------------------------------------------------------------------------------------------------------
+        -- Red Sochi_Adler (AIRBASE)
+        ------------------------------------------------------------------------------------------------------------------
+        -- OnAfterSelfRequest
+        ---------------------------------------------------------
+        function WarehouseDB.Sochi_Adler:OnAfterSelfRequest(From,Event,To,groupset,request)
+            local groupset = groupset
+            local request = request
+            local assignment = WarehouseDB.Senaki_Kolkhi:GetAssignment(request)
+            local DispatchingWarehouse = WarehouseDB.Senaki_Kolkhi
 
----------------------------------------------------------
---  OnAfterAssetDead
----------------------------------------------------------
-function warehouse.Kobuleti:OnAfterAssetDead(From, Event, To, asset, request)
+            if assignment == "DoSomePilotShit" then
+                DispatchPatrolAircraft(groupset, assignment, DispatchingWarehouse)
+            end
+        end
+        ---------------------------------------------------------
+        -- OnAfterAssetDead
+        ---------------------------------------------------------
+        function WarehouseDB.Sochi_Adler:OnAfterAssetDead(From, Event, To, asset, request)
+            local request = request
+            local assignment = WarehouseDB.Sochi_Adler:GetAssignment(request)
+            if assignment == "DoSomePilotShit" then
+                local delay=1*(math.random(1,300))
+                WarehouseDB.Sochi_Adler:__AddRequest(delay, WarehouseDB.Sochi_Adler, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, 100, assignment)
+            end
+        end
 
-function warehouse.Senaki_Kolkhi:OnAfterAssetDead(From, Event, To, asset, request)
+        ------------------------------------------------------------------------------------------------------------------
+        -- Red Maykop_Khanskaya
+        ------------------------------------------------------------------------------------------------------------------
+        -- OnAfterSelfRequest
+        ---------------------------------------------------------
+        function WarehouseDB.Maykop_Khanskaya:OnAfterSelfRequest(From,Event,To,groupset,request)
+            local groupset = groupset
+            local request = request
+            local assignment = request.assignment
+            local DispatchingWarehouse = WarehouseDB.Maykop_Khanskaya
 
-function warehouse.Zugdidi:OnAfterAssetDead(From, Event, To, asset, request)
+            if assignment == "AWACS" or "TANKER" then
+                DispatchSupportAircraft(groupset, assignment)
+            end
 
-function warehouse.Sukhumi_Babushara:OnAfterAssetDead(From, Event, To, asset, request)
+            if assignment == "DoSomePilotShit" then
+                DispatchPatrolAircraft(groupset, assignment, DispatchingWarehouse)
+            end
+        end
 
-function warehouse.Sukhumi:OnAfterAssetDead(From, Event, To, asset, request)
-
-function warehouse.Gudauta:OnAfterAssetDead(From, Event, To, asset, request)
-
-function warehouse.Sochi_Adler:OnAfterAssetDead(From, Event, To, asset, request)
-
-function warehouse.Maykop_Khanskaya:OnAfterAssetDead(From, Event, To, asset, request)
---]]
-end
+        ---------------------------------------------------------
+        -- OnAfterAssetDead
+        ---------------------------------------------------------
+        function WarehouseDB.Maykop_Khanskaya:OnAfterAssetDead(From, Event, To, asset, request)
+            local request = request
+            local assignment = WarehouseDB.Maykop_Khanskaya:GetAssignment(request)
+            if assignment == "AWACS" or "TANKER" then
+                local delay=1*(math.random(1,300))
+                WarehouseDB.Maykop_Khanskaya:__AddRequest(delay, WarehouseDB.Maykop_Khanskaya, WAREHOUSE.Descriptor.GROUPNAME, WAREHOUSE.Attribute.AIR_TANKER, 1, nil, nil, 100, assignment)
+            end
+            if assignment == "DoSomePilotShit" then
+                local delay=1*(math.random(1,300))
+                WarehouseDB.Maykop_Khanskaya:__AddRequest(delay, WarehouseDB.Maykop_Khanskaya, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, 100, assignment)
+            end
+        end
+    end
 end
