@@ -1448,6 +1448,7 @@ function ProcessWarehouseChain(lcoalition)
         -- Setup complete call Logistics functions
         SUPPLYCHAINREADY = true
         Logistics()
+        UnitSchedulers()
     end
 
     WCHAIN.DEBUG(DebugFunc .. "My Coalition = " .. mycoalition)

@@ -17,7 +17,7 @@ env.info( "------------------------------------------------" )
     -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
 -- Blue front line boot
 function BootBlueFrontLine()
-    local time=1*(math.random(1,60))
+    local time=1*(math.random(30,180))
     -- TODO Troops ofthen Broken
     --WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_INFANTRY, 4, WAREHOUSE.TransportType.HELICOPTER, nil, 90, "BlueFrontLine")
     WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_APC, 4, nil, nil, 90, "BlueFrontLine")
@@ -29,7 +29,7 @@ function BootBlueFrontLine()
 end
 
 function BootBlueSecondLine()
-    local time=1*(math.random(1,60))
+    local time=1*(math.random(60,180))
     -- Zugdidi
     --WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_INFANTRY, 4, WAREHOUSE.TransportType.HELICOPTER, nil, 10, "BlueSecondLine")
     WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_APC, 4, nil, nil, 90, "BlueSecondLine")
@@ -40,26 +40,9 @@ function BootBlueSecondLine()
     WarehouseDB.Zugdidi:__AddRequest(time, WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_SAM, 2, nil, nil, 80, "BlueSecondLine")
 end
 
-function BootBlueCap()
-  --for i=1,3 do
-    local time=1*(math.random(1,60))
-    WarehouseDB.Kobuleti:__AddRequest(time, WarehouseDB.Senaki_Kolkhi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 2, nil, nil, 100, "DoSomePilotShit")
-    WarehouseDB.Senaki_Kolkhi:__AddRequest(time, WarehouseDB.Senaki_Kolkhi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, 100, "DoSomePilotShit")
-  --end
-end
-
-function BootRedCap()
-  --for i=1, do
-    local time=1*(math.random(1,60))
-    WarehouseDB.Gudauta:__AddRequest(time, WarehouseDB.Gudauta, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, 100, "DoSomePilotShit")
-    WarehouseDB.Sochi_Adler:__AddRequest(time, WarehouseDB.Sochi_Adler, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 2, nil, nil, 100, "DoSomePilotShit")
-    WarehouseDB.Maykop_Khanskaya:__AddRequest(time, WarehouseDB.Maykop_Khanskaya, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 2, nil, nil, 100, "DoSomePilotShit")
-  --end
-end
-
 function ForTheMotherLand()
   --for i=1,2,2 do
-    local time=1*(math.random(1,60))
+    local time=1*(math.random(30,180))
     -- Sukhumi_Babushara
     --WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_INFANTRY, 8, WAREHOUSE.TransportType.HELICOPTER, nil, 90, "ForTheMotherLand")
     WarehouseDB.Sukhumi_Babushara:__AddRequest(time, WarehouseDB.Sukhumi_Babushara, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_APC, 10, nil, nil, 90, "ForTheMotherLand")
@@ -138,17 +121,6 @@ function PatrolManager()
       RedPending = {}   -- List of zones without mission
   }
 
-  -- Debug
-  PATROLMANAGER.Info = function(text)
-      env.info('PatrolManger: '..text)
-  end
-  PATROLMANAGER.Debug = function(text)
-      if PatrolManager_Debug then
-          PATROLMANAGER.Info('DEBUG:'..text)
-      end
-  end
-  PatrolManager_Debug = false
-
   -- collect zones to patrol
   PATROLMANAGER.BlueZones = BlueCAPZone:GetSetObjects()
   PATROLMANAGER.RedZones = RedCAPZone:GetSetObjects()
@@ -177,74 +149,165 @@ function PatrolManager()
   for ZoneIndex = 1, BlueZoneTableSize do
       local TempMissionTable = {MissionID = ZoneIndex, State = "Pending", Zone = PATROLMANAGER.BlueZones[ZoneIndex]}
       table.insert(PATROLMANAGER.BlueMission, ZoneIndex, TempMissionTable)
-      table.insert(PATROLMANAGER.BluePending, ZoneIndex, ZoneIndex)
   end
 
   for ZoneIndex = 1, RedZoneTableSize do
     local TempMissionTable = {MissionID = ZoneIndex, State = "Pending", Zone = PATROLMANAGER.RedZones[ZoneIndex]}
     table.insert(PATROLMANAGER.RedMission, ZoneIndex, TempMissionTable)
-    table.insert(PATROLMANAGER.RedPending, ZoneIndex, ZoneIndex)
   end
 
 end
 -- Init PatrolManager
 PatrolManager()
 
--- New Patrol, or whatever I'm calling this
-function PATROLMANAGER:New(group, assignment, DispatchingWarehouse)
-
-  local Group = group
-  local Coalition = Group:GetCoalition()
-  local Assignment = assignment
-  local DispatchingWarehouse = DispatchingWarehouse
-
-  if Coalition == 2 then
-    local CurrentMission = nil
-    for ID, Mission in ipairs(PATROLMANAGER.BlueMission) do
-      if Mission.State == 'Pending' then
-          CurrentMission = ID
+function PollPatrolManager()
+  for _, Mission in ipairs(PATROLMANAGER.BlueMission) do
+    if Mission.State == 'Pending' then
+      local delay = 1*(math.random(180, 300))
+      local base = (math.random(1, 2))
+      if base == 1 then
+        WarehouseDB.Kobuleti:__AddRequest(delay, WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, nil, "DoSomePilotShit")
+      else
+        if base == 2 then
+          WarehouseDB.Senaki_Kolkhi:__AddRequest(delay, WarehouseDB.Senaki_Kolkhi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, nil, "DoSomePilotShit")
+        end
       end
-    end
-
-    if CurrentMission ~= nil then
-      -- Update Pending mission list
-      local GroupName = Group:GetName()
-      local CurrentMissionZone = PATROLMANAGER.BlueMission[CurrentMission].Zone
-      PATROLMANAGER.BlueMission[CurrentMission].GroupName = GroupName
-      PATROLMANAGER.BlueMission[CurrentMission].State = "Assigned"
-      PATROLMANAGER.BlueMission[CurrentMission].Warehouse = DispatchingWarehouse
-      PATROLMANAGER.BlueMission[CurrentMission].Assignment = Assignment
-
-      group:StartUncontrolled()
-      --AI_CAP_ZONE:New( PatrolZone, PatrolFloorAltitude, PatrolCeilingAltitude, PatrolMinSpeed, PatrolMaxSpeed, PatrolAltType )
-      PATROLMANAGER.BlueMission[CurrentMission].Patrol = AI_CAP_ZONE:New( CurrentMissionZone, 4572, 6096, 500, 600 )
-      PATROLMANAGER.BlueMission[CurrentMission].Patrol:SetControllable( Group )
-      PATROLMANAGER.BlueMission[CurrentMission].Patrol:__Start( 1 )
-    end
-  else
-    local CurrentMission = nil
-    for ID, Mission in ipairs(PATROLMANAGER.RedMission) do
-      if Mission.State == 'Pending' then
-          CurrentMission = ID
-      end
-    end
-
-    if CurrentMission ~= nil then
-      -- Update Pending mission list
-      local GroupName = Group:GetName()
-      local CurrentMissionZone = PATROLMANAGER.RedMission[CurrentMission].Zone
-      PATROLMANAGER.RedMission[CurrentMission].GroupName = GroupName
-      PATROLMANAGER.RedMission[CurrentMission].State = "Assigned"
-      PATROLMANAGER.RedMission[CurrentMission].Warehouse = DispatchingWarehouse
-      PATROLMANAGER.RedMission[CurrentMission].Assignment = Assignment
-
-      group:StartUncontrolled()
-      --AI_CAP_ZONE:New( PatrolZone, PatrolFloorAltitude, PatrolCeilingAltitude, PatrolMinSpeed, PatrolMaxSpeed, PatrolAltType )
-      PATROLMANAGER.RedMission[CurrentMission].Patrol = AI_CAP_ZONE:New( CurrentMissionZone, 4572, 6096, 500, 600 )
-      PATROLMANAGER.RedMission[CurrentMission].Patrol:SetControllable( Group )
-      PATROLMANAGER.RedMission[CurrentMission].Patrol:__Start( 1 )
     end
   end
+
+  for _, Mission in ipairs(PATROLMANAGER.RedMission) do
+    if Mission.State == 'Pending' then
+      local delay = 1*(math.random(180, 300))
+      local base = (math.random(1, 3))
+      if base == 1 then
+        WarehouseDB.Gudauta:__AddRequest(delay, WarehouseDB.Gudauta, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, nil, "DoSomePilotShit")
+      else
+        if base == 2 then
+          WarehouseDB.Sochi_Adler:__AddRequest(delay, WarehouseDB.Sochi_Adler, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, nil, "DoSomePilotShit")
+      elseif base == 3 then
+          WarehouseDB.Maykop_Khanskaya:__AddRequest(delay, WarehouseDB.Maykop_Khanskaya, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, nil, "DoSomePilotShit")
+        end
+      end
+    end
+  end
+end
+
+-- New Patrol, or whatever I'm calling this
+function PATROLMANAGER:New(group, assignment, DispatchingWarehouse)
+    -- TODO Handle verious events, landing, crash etc..
+    -- PATROLMANAGER.BlueMission[CurrentMission].Patrol prob needs to go to mission group insted
+    -- Need a better method of calling and monitoring patrols should be watching the pending list
+    -- and spawning off that. 
+    -- First I need active flight event handlers to reset Active flags
+      local Coalition = group:GetCoalition()
+      local Assignment = assignment
+      local DispatchingWarehouse = DispatchingWarehouse
+    
+      -- TODO These blocks can be condensed/turned into a function
+      if Coalition == 2 then
+        local CurrentMission = nil
+        for ID, Mission in ipairs(PATROLMANAGER.BlueMission) do
+          if Mission.State == 'Pending' then
+              CurrentMission = ID
+          end
+        end
+        if CurrentMission ~= nil then
+          -- Update Pending mission list
+          local GroupName = group:GetName()
+          local CurrentMissionZone = PATROLMANAGER.BlueMission[CurrentMission].Zone
+          PATROLMANAGER.BlueMission[CurrentMission].GroupName = GroupName
+          PATROLMANAGER.BlueMission[CurrentMission].Group = group
+          PATROLMANAGER.BlueMission[CurrentMission].State = "Assigned"
+          PATROLMANAGER.BlueMission[CurrentMission].Warehouse = DispatchingWarehouse
+          PATROLMANAGER.BlueMission[CurrentMission].Assignment = Assignment
+          group:StartUncontrolled()
+          --AI_CAP_ZONE:New( PatrolZone, PatrolFloorAltitude, PatrolCeilingAltitude, PatrolMinSpeed, PatrolMaxSpeed, PatrolAltType )
+          PATROLMANAGER.BlueMission[CurrentMission].Patrol = AI_CAP_ZONE:New( CurrentMissionZone, 4572, 6096, 500, 600 )
+          PATROLMANAGER.BlueMission[CurrentMission].Patrol:SetControllable( group )
+          PATROLMANAGER.BlueMission[CurrentMission].Patrol:SetEngageRange( 40000 )
+          PATROLMANAGER.BlueMission[CurrentMission].Patrol:__Start( 1 )
+          group.BlueMissionID = CurrentMission
+        end
+      else
+        local CurrentMission = nil
+        for ID, Mission in ipairs(PATROLMANAGER.RedMission) do
+          if Mission.State == 'Pending' then
+              CurrentMission = ID
+          end
+        end
+        if CurrentMission ~= nil then
+          -- Update Pending mission list
+          local GroupName = group:GetName()
+          local CurrentMissionZone = PATROLMANAGER.RedMission[CurrentMission].Zone
+          PATROLMANAGER.RedMission[CurrentMission].GroupName = GroupName
+          PATROLMANAGER.RedMission[CurrentMission].Group = group
+          PATROLMANAGER.RedMission[CurrentMission].State = "Assigned"
+          PATROLMANAGER.RedMission[CurrentMission].Warehouse = DispatchingWarehouse
+          PATROLMANAGER.RedMission[CurrentMission].Assignment = Assignment
+          group:StartUncontrolled()
+          --AI_CAP_ZONE:New( PatrolZone, PatrolFloorAltitude, PatrolCeilingAltitude, PatrolMinSpeed, PatrolMaxSpeed, PatrolAltType )
+          PATROLMANAGER.RedMission[CurrentMission].Patrol = AI_CAP_ZONE:New( CurrentMissionZone, 4572, 6096, 500, 600 )
+          PATROLMANAGER.RedMission[CurrentMission].Patrol:SetControllable( group )
+          PATROLMANAGER.RedMission[CurrentMission].Patrol:SetEngageRange( 40000 )
+          PATROLMANAGER.RedMission[CurrentMission].Patrol:__Start( 1 )
+          group.RedMissionID = CurrentMission
+        end
+      end
+  
+      function SetMissionPending(group)
+          local Coalition = group:GetCoalition()
+          if Coalition == 2 then
+              local MissionID = group.BlueMissionID
+              PATROLMANAGER.BlueMission[MissionID].State = "Pending"
+              PATROLMANAGER.BlueMission[MissionID].Assignment = nil
+              PATROLMANAGER.BlueMission[MissionID].GroupName = nil
+              PATROLMANAGER.BlueMission[MissionID].Group = nil
+              PATROLMANAGER.BlueMission[MissionID].Warehouse = nil
+          else
+              local MissionID = group.RedMissionID
+              PATROLMANAGER.RedMission[MissionID].State = "Pending"
+              PATROLMANAGER.RedMission[MissionID].Assignment = nil
+              PATROLMANAGER.RedMission[MissionID].GroupName = nil
+              PATROLMANAGER.RedMission[MissionID].Group = nil
+              PATROLMANAGER.RedMission[MissionID].Warehouse = nil
+          end
+      end
+  
+      group:HandleEvent( EVENTS.Crash, group.OnEventCrashOrDead )
+      group:HandleEvent( EVENTS.Dead, group.OnEventCrashOrDead )
+      group:HandleEvent( EVENTS.Land )
+      group:HandleEvent( EVENTS.EngineShutdown )
+  
+      function group:OnEventCrash(EventData)
+          local GroupUnit = EventData.IniUnit
+          local Group = EventData.IniGroup
+          SetMissionPending(group)
+      end
+  
+      function group:OnEventDead(EventData)
+          local GroupUnit = EventData.IniUnit
+          local Group = EventData.IniGroup
+          local Coalition = Group:GetCoalition()
+          SetMissionPending(group)
+      end
+  
+      function group:OnEventLand(EventData)
+          local GroupUnit = EventData.IniUnit
+          local Group = EventData.IniGroup
+          SetMissionPending(group)
+          if GroupUnit:GetLife() ~= GroupUnit:GetLife0() then
+              GroupUnit:Destroy()
+          end
+      end
+  
+      function group:OnEventEngineShutdown( EventData )
+          local GroupUnit = EventData.IniUnit
+          local Group = EventData.IniGroup
+          SetMissionPending(group)
+          if not GroupUnit:InAir() then
+              GroupUnit:Destroy()
+          end
+        end
 end
 
 -----------------------------------------------------------------
@@ -1120,6 +1183,8 @@ function RedOffMapSupply()
 end
 
 
+function UnitSchedulers()
+  if SUPPLYCHAINREADY == true then
 ----------------------------------------------------------------------
 -- Boot Support Aircraft
 ----------------------------------------------------------------------
@@ -1127,9 +1192,9 @@ SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootStrapAWACS, {}, 40, 0)
 SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootStrapTANKER, {}, 60, 0)
 
 ----------------------------------------------------------------------
--- Boot Combat Aircraft
+-- Poll Combat Aircraft
 ----------------------------------------------------------------------
-SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootBlueCap, {}, 50, 0 )
+SchedulerObject, SchedulerID = SCHEDULER:New( nil, PollPatrolManager(), {}, 180, (1 *(math.random(180,300))) )
 
 ----------------------------------------------------------------------
 -- Blue Ground forces
@@ -1141,8 +1206,5 @@ SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootBlueSecondLine, {}, 50, (
 -- Red Ground forces
 ----------------------------------------------------------------------
 SchedulerObject, SchedulerID = SCHEDULER:New( nil, ForTheMotherLand, {}, 90, (2 * 3600))
-
-----------------------------------------------------------------------
--- Boot Combat Aircraft
-----------------------------------------------------------------------
-SchedulerObject, SchedulerID = SCHEDULER:New( nil, BootRedCap, {}, 50, 0 )
+  end
+end

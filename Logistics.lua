@@ -108,7 +108,6 @@ function Logistics()
             if assignment == "DoSomePilotShit" then
                 DispatchPatrolAircraft(groupset, assignment, DispatchingWarehouse)
             end
-
         end
 
         ---------------------------------------------------------
@@ -140,13 +139,20 @@ function Logistics()
                 local delay=1*(math.random(1,300))
                 WarehouseDB.Kobuleti:__AddRequest(delay, WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.GROUPNAME, WAREHOUSE.Attribute.AIR_TANKER, 1, nil, nil, 100, assignment)
             end
-
-            if assignment == "DoSomePilotShit" then
-                local delay=1*(math.random(1,300))
-                WarehouseDB.Kobuleti:__AddRequest(delay, WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, 100, assignment)
-            end
         end
 
+        --[[ --TODO TEST THIS 
+        ---------------------------------------------------------
+        -- OnAfterNewAsset
+        ---------------------------------------------------------
+        function WarehouseDB.Kobuleti:OnAfterNewAsset(From, Event, To, asset, assignment)
+            local Asset = asset
+            if Asset.speedmax>0 then
+                -- WAREHOUSE:AddAsset(group, ngroups, forceattribute, forcecargobay, forceweight, loadradius, skill, liveries, assignment)
+                WarehouseDB.Kobuleti:AddAsset(Asset)
+            end
+        end
+        --]]
         ------------------------------------------------------------------------------------------------------------------
         -- Senaki_Kolkhi
         ------------------------------------------------------------------------------------------------------------------
@@ -167,15 +173,12 @@ function Logistics()
         ---------------------------------------------------------
         -- OnAfterAssetDead
         ---------------------------------------------------------
+        --[[
         function WarehouseDB.Senaki_Kolkhi:OnAfterAssetDead(From, Event, To, asset, request)
             local request = request
             local assignment = WarehouseDB.Senaki_Kolkhi:GetAssignment(request)
-            if assignment == "DoSomePilotShit" then
-                local delay=1*(math.random(1,300))
-                WarehouseDB.Senaki_Kolkhi:__AddRequest(delay, WarehouseDB.Senaki_Kolkhi, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, 100, assignment)
-            end
         end
-
+        --]]
         ------------------------------------------------------------------------------------------------------------------
         -- Zugdidi (FARP)
         ------------------------------------------------------------------------------------------------------------------
@@ -197,6 +200,7 @@ function Logistics()
                 --end
             end
         end
+
         ---------------------------------------------------------
         -- OnAfterAssetDead
         ---------------------------------------------------------
@@ -208,15 +212,8 @@ function Logistics()
             -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
             WarehouseDB.Zugdidi:AddRequest(WarehouseDB.Zugdidi, WAREHOUSE.Descriptor.CATEGORY, Group.Category.GROUND, 1, nil, nil, 100, assignment)
         end
-        ---------------------------------------------------------
-        -- OnAfterNewAsset
-        ---------------------------------------------------------
-        --[[
-        function WarehouseDB.Zugdidi:OnAfterNewAsset(From, Event, To, asset, assignment)
-        end
-        --]]
 
-        ------------------------------------------------------------------------------------------------------------------
+        ----------------------------------------------------------------------------------------------------------
         -- BlueFrontLine (FARP)
         ------------------------------------------------------------------------------------------------------------------
         -- OnAfterSelfRequest
@@ -241,11 +238,6 @@ function Logistics()
             -- WAREHOUSE:__AddRequest(delay, warehouse, AssetDescriptor, AssetDescriptorValue, nAsset, TransportType, nTransport, Prio, Assignment)
             WarehouseDB.BlueFrontLine:AddRequest(WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.CATEGORY, Group.Category.GROUND, 1, nil, nil, 100, assignment)
         end
-        ---------------------------------------------------------
-        -- OnAfterNewAsset
-        ---------------------------------------------------------
-        --function WarehouseDB.BlueFrontLine:OnAfterNewAsset(From, Event, To, asset, assignment)
-        --end
 
 -----------------------------------------------------------------
 --  RED
@@ -308,7 +300,7 @@ function Logistics()
             local request = request
             local assignment = WarehouseDB.Senaki_Kolkhi:GetAssignment(request)
             local DispatchingWarehouse = WarehouseDB.Senaki_Kolkhi
-    
+
             if assignment == "DoSomePilotShit" then
                 DispatchPatrolAircraft(groupset, assignment, DispatchingWarehouse)
             end
@@ -317,15 +309,12 @@ function Logistics()
         ---------------------------------------------------------
         -- OnAfterAssetDead
         ---------------------------------------------------------
+        --[[
         function WarehouseDB.Gudauta:OnAfterAssetDead(From, Event, To, asset, request)
             local request = request
             local assignment = WarehouseDB.Gudauta:GetAssignment(request)
-            if assignment == "DoSomePilotShit" then
-                local delay=1*(math.random(1,300))
-                WarehouseDB.Gudauta:__AddRequest(delay, WarehouseDB.Gudauta, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, 100, assignment)
-            end
         end
-
+        --]]
         ------------------------------------------------------------------------------------------------------------------
         -- Red Sochi_Adler (AIRBASE)
         ------------------------------------------------------------------------------------------------------------------
@@ -344,15 +333,12 @@ function Logistics()
         ---------------------------------------------------------
         -- OnAfterAssetDead
         ---------------------------------------------------------
+        --[[
         function WarehouseDB.Sochi_Adler:OnAfterAssetDead(From, Event, To, asset, request)
             local request = request
             local assignment = WarehouseDB.Sochi_Adler:GetAssignment(request)
-            if assignment == "DoSomePilotShit" then
-                local delay=1*(math.random(1,300))
-                WarehouseDB.Sochi_Adler:__AddRequest(delay, WarehouseDB.Sochi_Adler, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, 100, assignment)
-            end
         end
-
+        --]]
         ------------------------------------------------------------------------------------------------------------------
         -- Red Maykop_Khanskaya
         ------------------------------------------------------------------------------------------------------------------
@@ -382,10 +368,6 @@ function Logistics()
             if assignment == "AWACS" or "TANKER" then
                 local delay=1*(math.random(1,300))
                 WarehouseDB.Maykop_Khanskaya:__AddRequest(delay, WarehouseDB.Maykop_Khanskaya, WAREHOUSE.Descriptor.GROUPNAME, WAREHOUSE.Attribute.AIR_TANKER, 1, nil, nil, 100, assignment)
-            end
-            if assignment == "DoSomePilotShit" then
-                local delay=1*(math.random(1,300))
-                WarehouseDB.Maykop_Khanskaya:__AddRequest(delay, WarehouseDB.Maykop_Khanskaya, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.AIR_FIGHTER, 1, nil, nil, 100, assignment)
             end
         end
     end
