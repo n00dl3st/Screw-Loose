@@ -137,11 +137,12 @@ function Logistics()
 
             if assignment == "AWACS" or "TANKER" then
                 local delay=1*(math.random(1,300))
+                -- Attrib AIR_TANKER? what about AWACSzzzz
                 WarehouseDB.Kobuleti:__AddRequest(delay, WarehouseDB.Kobuleti, WAREHOUSE.Descriptor.GROUPNAME, WAREHOUSE.Attribute.AIR_TANKER, 1, nil, nil, 100, assignment)
             end
         end
 
-        --[[ --TODO TEST THIS 
+        --[[ --TODO TEST THIS
         ---------------------------------------------------------
         -- OnAfterNewAsset
         ---------------------------------------------------------

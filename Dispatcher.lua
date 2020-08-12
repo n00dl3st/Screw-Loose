@@ -18,7 +18,7 @@ env.info( "------------------------------------------------" )
 -- Blue front line boot
 function BootBlueFrontLine()
     local time=1*(math.random(30,180))
-    -- TODO Troops ofthen Broken
+    -- TODO Troops often Broken
     --WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_INFANTRY, 4, WAREHOUSE.TransportType.HELICOPTER, nil, 90, "BlueFrontLine")
     WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_APC, 4, nil, nil, 90, "BlueFrontLine")
     WarehouseDB.BlueFrontLine:__AddRequest(time, WarehouseDB.BlueFrontLine, WAREHOUSE.Descriptor.ATTRIBUTE, WAREHOUSE.Attribute.GROUND_TANK, 5, nil, nil, 90, "BlueFrontLine")
@@ -59,7 +59,7 @@ end
 -----------------------------------------------------------------
 -- Calling these Dispatchers because I can't think of a real name
 -- code that is run from WAREHOUSE FSM calls like OnAfterSelfRequest
--- in Logistics source file would prob be more readable in, but they
+-- in Logistics source file would prob be more readable, but they
 -- "dispatch" things so they feckin' live here...
 -----------------------------------------------------------------
 --  Ground Unit dispatcher

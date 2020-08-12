@@ -5,8 +5,6 @@
 -- NOTES:
 ----------------------------------------------------------------------
 -- Prototype taken from Mongrelf on Moose Discord 7th Jan 2019
--- https://discordapp.com/channels/378590350614462464/492386897474224128/531516388615913472
--- YouTube: YouTube: https://youtu.be/STIttEogxto
 
 -- Main Functions
 -------------------
@@ -132,29 +130,29 @@ WChainTable = {}
 BWChain = {}
 RWChain = {}
 
-BlueWareHouseCounter = 1
-RedWareHouseCounter = 1
+local BlueWareHouseCounter = 1
+local RedWareHouseCounter = 1
 
 -- Off map supplies
-BlueSupplyTriggerTime = 0
-BlueResupplyInterval = 1 * 3600 -- 1 hour
+local BlueSupplyTriggerTime = 0
+local BlueResupplyInterval = 1 * 3600 -- 1 hour
 
-RedSupplyTriggerTime = 0
-RedResupplyInterval = 1 * 3600 -- 1 hour
+local RedSupplyTriggerTime = 0
+local RedResupplyInterval = 1 * 3600 -- 1 hour
 
-BlueoffMapZone = ZONE:New("BlueOffMapZone")
-RedOffMapZone = ZONE:New("RedOffMapZone")
+local BlueoffMapZone = ZONE:New("BlueOffMapZone")
+local RedOffMapZone = ZONE:New("RedOffMapZone")
 
 -- Supply manager process interval
-BlueSupplyManagerDuration = 300
-RedSupplyManagerDuration = 400
+local BlueSupplyManagerDuration = 300
+local RedSupplyManagerDuration = 400
 
 -- Warehouse Defences
-nextactioninterval = 2 * 3600  -- 2 hours
+local nextactioninterval = 2 * 3600  -- 2 hours
 
 -- Staic object to spawn from
-BlueSupplyWarehouse = SPAWNSTATIC:NewFromStatic("Supply_Zone_Warehouse1", country.id.USA)
-RedSupplyWarehouse = SPAWNSTATIC:NewFromStatic("Supply_Zone_Warehouse1", country.id.RUSSIA)
+local BlueSupplyWarehouse = SPAWNSTATIC:NewFromStatic("Supply_Zone_Warehouse1", country.id.USA)
+local RedSupplyWarehouse = SPAWNSTATIC:NewFromStatic("Supply_Zone_Warehouse1", country.id.RUSSIA)
 
 BlueBaseWarehouseInv = {}
 RedBaseWareHouseInv = {}
@@ -1257,7 +1255,7 @@ function WCHAIN:SupplyChainManager(wrequestcount)
                                                                     WAREHOUSE.Descriptor.GROUPNAME,
                                                                     invgroupname,
                                                                     unitstospawn,
-                                                                     WAREHOUSE.TransportType.APC,
+                                                                    WAREHOUSE.TransportType.APC,
                                                                     1,
                                                                     10,
                                                                     "AutoResupply"
@@ -1288,7 +1286,7 @@ function WCHAIN:SupplyChainManager(wrequestcount)
                                                         nil,
                                                         10,
                                                         "AutoResupply"
-                                                   )
+                                                    )
 
                                     requestcount = requestcount + 1
                                     WCHAIN.DEBUG(DebugFunc .. "Pushed Request to: " .. supplierwarehouse.alias .. " for " .. " Group: " .. invgroupname)
@@ -1408,8 +1406,8 @@ function ProcessWarehouseChain(lcoalition)
             for z = #RedWareHouses -1, 1, -1  do
                 local tempnodename = self.prevnodename
                 if RWChain[tempnodename].ThisWarehouse ~= nil then --!!!!!! if processed in decending order Previous warehouse doesn't exist! thus chain building fails....
-                     self.PrevWarehouse = RWChain[tempnodename].ThisWarehouse
-                     RWChain[tempnodename].NextWarehouse = self.ThisWarehouse
+                    self.PrevWarehouse = RWChain[tempnodename].ThisWarehouse
+                    RWChain[tempnodename].NextWarehouse = self.ThisWarehouse
         --]]
         -- Red
         -- Sochi-Adler (Airbase)

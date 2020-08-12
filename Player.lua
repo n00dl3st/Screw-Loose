@@ -26,4 +26,4 @@ PlayerRotaryGroup = SET_GROUP:New()
 ----------------------------------------------------------------------
 -- Scoring
 ----------------------------------------------------------------------
-Scoring = SCORING:New("DynaMis")
+--Scoring = SCORING:New("DynaMis")
